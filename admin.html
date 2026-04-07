@@ -816,7 +816,8 @@ auth.onAuthStateChanged(function(user) {
 
 document.getElementById("btn-admin-login").addEventListener("click", function() {
   var provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(function(e) {
+  auth.signInWithRedirect(provider);
+  auth.getRedirectResult().catch(function(e) {
     if (e.code !== "auth/popup-closed-by-user") showToast("Login failed: " + e.message, "error");
   });
 });
