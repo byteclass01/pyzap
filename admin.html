@@ -616,15 +616,15 @@ auth.getRedirectResult().then(function(result) {
   console.warn("[Admin] getRedirectResult error:", e.code);
 });
 
-// Auth state listener
+// Auth state listener — ALWAYS show login if no user
 auth.onAuthStateChanged(function(user) {
   if (user) {
     console.log("[Admin] onAuthStateChanged: user=" + user.email);
     handleAdminUser(user);
   } else {
-    if (!_adminHandled) {
-      showLoginScreen();
-    }
+    // Always reset and show login when signed out
+    _adminHandled = false;
+    showLoginScreen();
   }
 });
 
