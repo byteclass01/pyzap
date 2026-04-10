@@ -120,14 +120,71 @@ header{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
 #logout-btn{background:transparent;border:1px solid var(--bdr);border-radius:8px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:all .15s;}
 #logout-btn:hover{border-color:var(--red);color:var(--red);}
 
-/* ─── MAIN TABS ─── */
-.main-tabs{display:flex;gap:2px;padding:10px 0 0;border-bottom:1px solid var(--bdr);flex-shrink:0;}
-.main-tab{padding:8px 18px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);background:transparent;border:none;transition:all .12s;position:relative;bottom:-1px;}
-.main-tab.active{background:var(--surf);color:var(--gold);border:1px solid var(--bdr);border-bottom-color:var(--surf);font-weight:700;}
-.main-tab:not(.active):hover{color:var(--text);}
-.main-panel{display:none;flex-direction:column;width:100%;min-height:0;}
+/* ─── APP SHELL OVERRIDE: sidebar layout ─── */
+#app{display:flex;flex-direction:row;padding:0;max-width:100%;min-height:100dvh;}
+
+/* Sidebar */
+.app-sidebar{width:220px;flex-shrink:0;background:var(--surf);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:100;}
+.app-sb-logo{padding:20px 18px 16px;border-bottom:1px solid var(--bdr);}
+.app-sb-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--gold);letter-spacing:-1px;}
+.app-sb-email{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all;}
+.app-sb-plan{margin-top:7px;}
+.app-sb-nav{padding:12px 10px;flex:1;}
+.app-sb-section{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 10px 4px;}
+.app-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;margin-bottom:2px;border:1px solid transparent;}
+.app-nav-item:hover{background:var(--card);color:var(--text);}
+.app-nav-item.active{background:var(--gdim);color:var(--gold);border-color:rgba(245,166,35,.15);}
+.app-nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.app-sb-footer{padding:14px;border-top:1px solid var(--bdr);}
+.app-sb-stats{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.app-sb-stat{background:var(--card);border:1px solid var(--bdr);border-radius:7px;padding:5px 8px;text-align:center;flex:1;min-width:44px;}
+.app-sb-stat-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text2);}
+.app-sb-stat-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.app-sb-stat.sc .app-sb-stat-val{color:var(--green);}
+.app-sb-stat.sw .app-sb-stat-val{color:var(--red);}
+.app-sb-stat.ss .app-sb-stat-val{color:var(--gold);}
+.btn-sb-logout{width:100%;padding:8px;background:transparent;border:1px solid var(--bdr);border-radius:7px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .12s;}
+.btn-sb-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* Main content area */
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto;min-height:100dvh;}
+
+/* Panels */
+.main-panel{display:none;flex-direction:column;flex:1;padding:20px 24px 32px;}
 .main-panel.active{display:flex;}
-#panel-practice{gap:0;}
+
+/* FREE BANNER */
+.free-banner{background:linear-gradient(135deg,var(--gdim2),var(--gdim));border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:14px 16px;margin-bottom:16px;flex-shrink:0;}
+.free-banner-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:10px;}
+.free-concept-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.free-concept-name{font-size:12px;font-weight:700;color:var(--text2);min-width:60px;}
+.free-concept-bar{flex:1;height:5px;background:var(--bdr2);border-radius:999px;overflow:hidden;}
+.free-concept-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:999px;transition:width .3s ease;}
+.free-concept-count{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);min-width:40px;text-align:right;}
+.free-concept-done{color:var(--muted);}
+
+/* Bottom nav for mobile */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);z-index:200;padding:6px 0 env(safe-area-inset-bottom,0);}
+.bottom-nav-inner{display:flex;justify-content:space-around;}
+.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 16px;cursor:pointer;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:color .12s;background:transparent;border:none;font-family:'Outfit',sans-serif;}
+.bottom-nav-item.active{color:var(--gold);}
+.bottom-nav-item .bn-icon{font-size:18px;}
+
+/* Hide old header when sidebar active */
+header.app-header-hide{display:none;}
+
+/* Responsive */
+@media(max-width:767px){
+  #app{flex-direction:column;}
+  .app-sidebar{display:none;}
+  .bottom-nav{display:block;}
+  .app-main{padding-bottom:72px;}
+  .main-panel{padding:14px 14px 24px;}
+}
+@media(min-width:768px){
+  .bottom-nav{display:none;}
+  header{display:none;}
+}
 
 /* ═══════════════════════════════
    PRACTICE PANEL
@@ -563,29 +620,43 @@ header{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
 
 <!-- MAIN APP -->
 <div id="app" style="display:none">
-  <header>
-    <div class="h-brand">
-      <span class="h-name">PyZap</span><span class="h-bolt">&#x26A1;</span>
-    </div>
-    <div class="h-right">
-      <div class="hstat"><div class="hstat-lbl">Done</div><div class="hstat-val" id="hs-done">0</div></div>
-      <div class="hstat sc"><div class="hstat-lbl">Correct</div><div class="hstat-val" id="hs-correct">0</div></div>
-      <div class="hstat sw"><div class="hstat-lbl">Wrong</div><div class="hstat-val" id="hs-wrong">0</div></div>
-      <div class="hstat ss"><div class="hstat-lbl">Streak</div><div class="hstat-val" id="hs-streak">0</div></div>
-      <span class="plan-badge free" id="plan-badge">Free</span>
-      <button id="logout-btn">Exit</button>
-    </div>
-  </header>
 
-  <!-- MAIN TABS -->
-  <div class="main-tabs">
-    <button class="main-tab active" data-tab="practice">&#x26A1; Practice</button>
-    <button class="main-tab" data-tab="tests">&#x1F4DD; Tests</button>
-    <button class="main-tab" data-tab="history">&#x1F4CA; History</button>
-  </div>
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar">
+    <div class="app-sb-logo">
+      <div class="app-sb-name">PyZap &#x26A1;</div>
+      <div class="app-sb-email" id="sb-email">student@email.com</div>
+      <div class="app-sb-plan"><span class="plan-badge free" id="plan-badge">Free</span></div>
+    </div>
+    <div class="app-sb-nav">
+      <div class="app-sb-section">Menu</div>
+      <div class="app-nav-item active" data-tab="practice"><span class="app-nav-icon">&#x26A1;</span> Practice</div>
+      <div class="app-nav-item" data-tab="tests"><span class="app-nav-icon">&#x1F4DD;</span> Tests</div>
+      <div class="app-nav-item" data-tab="history"><span class="app-nav-icon">&#x1F4CA;</span> History</div>
+      <div class="app-nav-item" data-tab="profile"><span class="app-nav-icon">&#x1F464;</span> Profile</div>
+    </div>
+    <div class="app-sb-footer">
+      <div class="app-sb-stats">
+        <div class="app-sb-stat"><div class="app-sb-stat-val" id="hs-done">0</div><div class="app-sb-stat-lbl">Done</div></div>
+        <div class="app-sb-stat sc"><div class="app-sb-stat-val" id="hs-correct">0</div><div class="app-sb-stat-lbl">Correct</div></div>
+        <div class="app-sb-stat sw"><div class="app-sb-stat-val" id="hs-wrong">0</div><div class="app-sb-stat-lbl">Wrong</div></div>
+        <div class="app-sb-stat ss"><div class="app-sb-stat-val" id="hs-streak">0</div><div class="app-sb-stat-lbl">Streak</div></div>
+      </div>
+      <button class="btn-sb-logout" id="logout-btn">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="app-main">
 
   <!-- ═══ PRACTICE PANEL ═══ -->
   <div class="main-panel active" id="panel-practice">
+    <!-- Free daily limit banner -->
+    <div class="free-banner" id="free-banner" style="display:none">
+      <div class="free-banner-title">&#x1F4CA; Today's Practice Limit</div>
+      <div id="free-banner-concepts"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Resets daily at midnight &nbsp;&#x2022;&nbsp; <button onclick="showUpgrade('Upgrade to Pro for unlimited practice!')" style="background:none;border:none;color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Upgrade for unlimited &#x2192;</button></div>
+    </div>
     <div class="sbar">
       <div class="srow" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;">
         <div class="sg">
@@ -675,6 +746,34 @@ header{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
   <!-- ═══ HISTORY PANEL ═══ -->
   <div class="main-panel" id="panel-history">
     <div id="history-content"><div class="empty-state" style="margin-top:20px">No tests attempted yet.</div></div>
+  </div>
+
+  <!-- ═══ PROFILE PANEL ═══ -->
+  <div class="main-panel" id="panel-profile">
+    <div style="max-width:480px">
+      <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px;margin-bottom:14px">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:16px">My Profile</div>
+        <div id="profile-details" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:4px">My Plan</div>
+        <div id="profile-plan" style="margin-bottom:14px"></div>
+        <button class="btn-save" id="profile-upgrade-btn" style="display:none">Upgrade to Pro &#x26A1;</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end app-main -->
+
+</div><!-- end app -->
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bottom-nav-item active" data-tab="practice"><span class="bn-icon">&#x26A1;</span>Practice</button>
+    <button class="bottom-nav-item" data-tab="tests"><span class="bn-icon">&#x1F4DD;</span>Tests</button>
+    <button class="bottom-nav-item" data-tab="history"><span class="bn-icon">&#x1F4CA;</span>History</button>
+    <button class="bottom-nav-item" data-tab="profile"><span class="bn-icon">&#x1F464;</span>Profile</button>
   </div>
 </div>
 
@@ -835,6 +934,18 @@ function handleUser(user) {
       showScreen("profile");
     } else {
       S.userData = snap.data();
+      // Check ban
+      if (S.userData.banned) {
+        console.warn("[PyZap] Banned user attempted login");
+        auth.signOut();
+        _userHandled = false;
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("app").style.display = "none";
+        document.getElementById("loading-screen").classList.add("hidden");
+        var note = document.getElementById("l-note");
+        if (note) { note.textContent = "Your account has been suspended. Contact support."; note.style.color = "var(--red)"; }
+        return;
+      }
       S.plan     = S.userData.plan || "free";
       console.log("[PyZap] User loaded, plan=" + S.plan);
       // Fetch admin settings
@@ -897,16 +1008,9 @@ document.getElementById("btn-google").addEventListener("click", function() {
   var btn = document.getElementById("btn-google");
   btn.disabled = true;
 
-  if (isMobile) {
-    // Mobile: use redirect (popup blocked on mobile browsers)
-    console.log("[PyZap] Mobile: using signInWithRedirect");
-    btn.textContent = "Redirecting to Google...";
-    auth.signInWithRedirect(provider).catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = "Continue with Google";
-      console.error("[PyZap] Redirect error:", e);
-      showToast("Sign in failed. Try again.", "error");
-    });
+  if (false) {
+    // Redirect disabled — popup works on both mobile and desktop
+    // (COOP warning is non-fatal, popup still completes successfully)
   } else {
     // Desktop: use popup (works on GitHub Pages, no COOP issue)
     console.log("[PyZap] Desktop: using signInWithPopup");
@@ -928,7 +1032,7 @@ document.getElementById("btn-google").addEventListener("click", function() {
 document.getElementById("logout-btn").addEventListener("click", function() {
   _userHandled = false;
   auth.signOut().then(function() {
-    S.uid = null; S.idToken = null;
+    S.uid = null; S.idToken = null; S.userData = null;
     showScreen("login");
     console.log("[PyZap] Logged out");
   });
@@ -1141,9 +1245,9 @@ document.getElementById("btn-pay").addEventListener("click", function() {
 // ═══ PLAN UI ═══
 function applyPlanUI() {
   var badge = document.getElementById("plan-badge");
-  if (S.plan==="paid") { badge.textContent="Pro"; badge.className="plan-badge paid"; }
-  else                 { badge.textContent="Free"; badge.className="plan-badge free"; }
+  if (badge) { badge.textContent = S.plan==="paid"?"Pro":"Free"; badge.className = "plan-badge " + (S.plan==="paid"?"paid":"free"); }
   applyDtypeLocks();
+  updateFreeBanner();
 }
 function applyDtypeLocks() {
   document.querySelectorAll("#dtype-group .tog").forEach(function(btn) {
@@ -1164,16 +1268,24 @@ function updateProgressUI() {
   document.getElementById("prog-count").textContent = used + " / " + total;
 }
 
-// ═══ MAIN TABS ═══
-document.querySelectorAll(".main-tab").forEach(function(tab) {
-  tab.addEventListener("click", function() {
-    document.querySelectorAll(".main-tab").forEach(function(t) { t.classList.remove("active"); });
-    document.querySelectorAll(".main-panel").forEach(function(p) { p.classList.remove("active"); });
-    tab.classList.add("active");
-    document.getElementById("panel-"+tab.dataset.tab).classList.add("active");
-    if (tab.dataset.tab==="tests")   { loadAdminTests(); loadSelfTestPanel(); }
-    if (tab.dataset.tab==="history") loadHistory();
+// ═══ NAVIGATION (sidebar + bottom nav) ═══
+function switchTab(tabName) {
+  document.querySelectorAll(".app-nav-item, .bottom-nav-item").forEach(function(n) {
+    n.classList.toggle("active", n.dataset.tab === tabName);
   });
+  document.querySelectorAll(".main-panel").forEach(function(p) { p.classList.remove("active"); });
+  var panel = document.getElementById("panel-" + tabName);
+  if (panel) panel.classList.add("active");
+  if (tabName === "tests")   { loadAdminTests(); loadSelfTestPanel(); }
+  if (tabName === "history") loadHistory();
+  if (tabName === "profile") renderProfile();
+  if (tabName === "practice") updateFreeBanner();
+}
+document.querySelectorAll(".app-nav-item").forEach(function(item) {
+  item.addEventListener("click", function() { switchTab(item.dataset.tab); });
+});
+document.querySelectorAll(".bottom-nav-item").forEach(function(item) {
+  item.addEventListener("click", function() { switchTab(item.dataset.tab); });
 });
 
 // Sub-tabs (inside Tests)
@@ -1187,16 +1299,79 @@ document.querySelectorAll(".sub-tab").forEach(function(tab) {
   });
 });
 
+// ═══ FREE BANNER ═══
+function updateFreeBanner() {
+  var banner = document.getElementById("free-banner");
+  if (!banner) return;
+  if (S.plan === "paid") { banner.style.display = "none"; return; }
+  // Show per-concept usage
+  var container = document.getElementById("free-banner-concepts");
+  if (!container) return;
+  var todayStr = getTodayStr();
+  // Load daily progress from localStorage
+  var html = "";
+  S.freeConceptsAllowed.forEach(function(concept) {
+    var key = "pyzap_free_" + concept + "_" + todayStr;
+    var cached = null;
+    try { var r = localStorage.getItem(key); cached = r ? JSON.parse(r) : null; } catch(e){}
+    var used  = cached ? Math.min(cached.lastSeen + 1, S.freeQuestionsPerConcept) : 0;
+    var total = S.freeQuestionsPerConcept;
+    var pct   = Math.min(100, Math.round((used/total)*100));
+    var done  = used >= total;
+    html += '<div class="free-concept-row">' +
+      '<div class="free-concept-name' + (done?" free-concept-done":"") + '">' + concept + '</div>' +
+      '<div class="free-concept-bar"><div class="free-concept-fill" style="width:' + pct + '%' + (done?';background:var(--muted)':'') + '"></div></div>' +
+      '<div class="free-concept-count' + (done?" free-concept-done":"") + '">' + used + '/' + total + '</div>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+  banner.style.display = "";
+}
+
+// ═══ PROFILE ═══
+function renderProfile() {
+  var d = document.getElementById("profile-details");
+  var p = document.getElementById("profile-plan");
+  var upgradeBtn = document.getElementById("profile-upgrade-btn");
+  if (!S.userData || !d) return;
+  var u = S.userData;
+  var fields = [
+    { l: "Name",    v: u.name    },
+    { l: "Email",   v: S.uid     },
+    { l: "Board",   v: u.board   },
+    { l: "Class",   v: u.grade   },
+    { l: "Country", v: u.country },
+  ];
+  d.innerHTML = fields.map(function(f) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr)">' +
+      '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">' + f.l + '</div>' +
+      '<div style="font-size:13px;font-weight:600;color:var(--text)">' + esc(f.v||"—") + '</div></div>';
+  }).join("");
+  // Plan
+  if (S.plan === "paid") {
+    var expiry = u.planExpiry ? (u.planExpiry.toDate ? u.planExpiry.toDate() : new Date(u.planExpiry)) : null;
+    p.innerHTML = '<span class="plan-badge paid" style="font-size:12px;padding:5px 12px">Pro Plan</span>' +
+      (expiry ? '<div style="font-size:11px;color:var(--muted);margin-top:6px">Valid until ' + expiry.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) + '</div>' : '');
+    if (upgradeBtn) upgradeBtn.style.display = "none";
+  } else {
+    p.innerHTML = '<span class="plan-badge free" style="font-size:12px;padding:5px 12px">Free Plan</span>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:6px">Upgrade to unlock all concepts &amp; unlimited questions</div>';
+    if (upgradeBtn) { upgradeBtn.style.display = ""; upgradeBtn.onclick = function(){ showUpgrade("Upgrade to Pro for unlimited access!"); }; }
+  }
+}
+
 // ═══ LAUNCH ═══
 function launchApp() {
   showScreen("app");
-  document.getElementById("logout-btn").style.display = "";
+  // Populate sidebar
+  var sbEmail = document.getElementById("sb-email");
+  if (sbEmail && S.userData) sbEmail.textContent = S.userData.name || S.uid;
   applyPlanUI();
   // For free students: default to first admin-allowed concept
-  // For paid: default to String or current dtype
   if (S.plan !== "paid" && S.freeConceptsAllowed.length > 0 && !S.freeConceptsAllowed.includes(S.dtype)) {
     S.dtype = S.freeConceptsAllowed[0];
   }
+  updateFreeBanner();
   loadDtype(S.dtype);
 }
 
@@ -1279,6 +1454,7 @@ function showNextQuestion() {
   S.qcount++;
   renderPracticeQuestion(filtered[0].q);
   updateProgressUI();
+  updateFreeBanner();
 }
 
 function hl(line) {

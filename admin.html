@@ -267,7 +267,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="nav-item" data-page="testbuilder"><span class="nav-icon">&#x1F4CB;</span> Test Builder</div>
     </div>
     <div class="sb-footer">
-      <div class="sb-admin" id="sb-admin-email">admin@example.com</div>
+      <div class="sb-admin" id="sb-admin-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5031343d393e103528313d203c357e333f3d">[email&#160;protected]</a></div>
       <button class="sb-logout" id="btn-logout">Sign Out</button>
     </div>
   </nav>
@@ -543,7 +543,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -636,14 +636,8 @@ document.getElementById("btn-admin-login").addEventListener("click", function() 
   btn.disabled = true;
   document.getElementById("login-err").style.display = "none";
 
-  if (isMobileAdmin) {
-    console.log("[Admin] Mobile: signInWithRedirect");
-    btn.textContent = "Redirecting...";
-    auth.signInWithRedirect(provider).catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = "Sign in with Google";
-      showToast("Sign in failed.", "error");
-    });
+  if (false) {
+    // Redirect disabled — popup works everywhere
   } else {
     console.log("[Admin] Desktop: signInWithPopup");
     btn.textContent = "Opening Google...";
@@ -789,26 +783,31 @@ function renderStudentsPage() {
   var tbody = document.getElementById("students-tbody");
   if (!page.length) { tbody.innerHTML = '<tr><td colspan="7" class="tbl-empty">No students found.</td></tr>'; return; }
   tbody.innerHTML = page.map(function(s) {
-    return '<tr>'+
-      '<td style="font-weight:600">'+esc(s.name||"—")+'</td>'+
+    var banBtn = s.banned
+      ? '<button class="tbl-btn upgrade" onclick="unbanStudent(''+s.uid+'')">Unblock</button>'
+      : '<button class="tbl-btn ban" onclick="banStudent(''+s.uid+'',''+esc(s.name||"Student")+'')">Ban</button>';
+    var planBtn = s.plan!=="paid"
+      ? '<button class="tbl-btn upgrade" onclick="upgradeStudent(''+s.uid+'')">Upgrade</button>'
+      : '<button class="tbl-btn ban" onclick="downgradeStudent(''+s.uid+'')">Downgrade</button>';
+    var bannedBadge = s.banned ? ' <span style="font-size:10px;color:var(--red);font-weight:700">BANNED</span>' : '';
+    return '<tr'+( s.banned?' style="opacity:.5"':'')+'>'+
+      '<td style="font-weight:600">'+esc(s.name||"—")+bannedBadge+'</td>'+
       '<td style="font-size:11px;color:var(--muted)">'+esc(s.uid)+'</td>'+
       '<td><span class="badge '+(s.plan==="paid"?"paid":"free")+'">'+(s.plan||"free")+'</span></td>'+
       '<td>'+esc(s.board||"—")+'</td>'+
       '<td style="font-family:var(--mono)">'+(s.loginCount||0)+'</td>'+
       '<td style="font-size:11px">'+fmtDate(s.lastLogin)+'</td>'+
-      '<td>'+
-        (s.plan!=="paid"?'<button class="tbl-btn upgrade" onclick="upgradeStudent(\''+s.uid+'\')">Upgrade</button>':
-         '<button class="tbl-btn ban" onclick="downgradeStudent(\''+s.uid+'\')">Downgrade</button>')+
-      '</td></tr>';
+      '<td style="display:flex;gap:5px;flex-wrap:wrap;padding:8px 16px">'+planBtn+banBtn+'</td>'+
+    '</tr>';
   }).join("");
-  var total = filteredStudents.length;
-  var pages = Math.ceil(total/PAGE_SIZE);
+  var total = filteredStudents.length, pages = Math.ceil(total/PAGE_SIZE);
   var pg = document.getElementById("students-pagination");
   pg.innerHTML = 'Showing '+(start+1)+'-'+Math.min(end,total)+' of '+total+' &nbsp;'+
     (currentPage>1?'<button onclick="goPage('+(currentPage-1)+')" style="padding:4px 10px;border-radius:5px;border:1px solid var(--bdr2);background:var(--s2);color:var(--text2);cursor:pointer;font-size:11px">Prev</button>':'')+
     ' Page '+currentPage+' of '+pages+' '+
     (currentPage<pages?'<button onclick="goPage('+(currentPage+1)+')" style="padding:4px 10px;border-radius:5px;border:1px solid var(--bdr2);background:var(--s2);color:var(--text2);cursor:pointer;font-size:11px">Next</button>':'');
 }
+
 function goPage(n) { currentPage = n; renderStudentsPage(); }
 function upgradeStudent(uid) {
   showModal("Upgrade Student", "Manually upgrade this student to Pro plan?", "Upgrade", function() {
@@ -824,6 +823,18 @@ function downgradeStudent(uid) {
     .then(function(){ showToast("Student downgraded","info"); loadStudents(); })
     .catch(function(e){ showToast("Error: "+e.message,"error"); });
   });
+}
+function banStudent(uid, name) {
+  showModal("Ban Student", 'Ban "'+name+'"? They will be blocked from accessing PyZap.', "Ban", function() {
+    db.collection("users").doc(uid).update({ banned: true })
+    .then(function(){ showToast("Student banned","info"); loadStudents(); })
+    .catch(function(e){ showToast("Error: "+e.message,"error"); });
+  });
+}
+function unbanStudent(uid) {
+  db.collection("users").doc(uid).update({ banned: false })
+  .then(function(){ showToast("Student unblocked","success"); loadStudents(); })
+  .catch(function(e){ showToast("Error: "+e.message,"error"); });
 }
 document.getElementById("student-search").addEventListener("input", filterStudents);
 document.getElementById("student-plan-filter").addEventListener("change", filterStudents);
@@ -1180,7 +1191,7 @@ function loadPublishedTests() {
       '</tr>');
     });
     tbody.innerHTML=rows.join("");
-  }).catch(function(e){tbody.innerHTML='<tr><td colspan="6" class="tbl-empty">Error loading.</td></tr>';});
+  }).catch(function(e){ tbody.innerHTML='<tr><td colspan="6" class="tbl-empty">No tests yet.</td></tr>'; console.warn("loadPublishedTests:",e.message); });
 }
 
 function deleteTest(id, title) {
@@ -1191,10 +1202,4 @@ function deleteTest(id, title) {
   });
 }
 function activateTest(id) {
-  db.collection("adminTests").doc(id).update({status:"active"})
-  .then(function(){ showToast("Test activated!","success"); loadPublishedTests(); })
-  .catch(function(e){ showToast("Error: "+e.message,"error"); });
-}
-</script>
-</body>
-</html>
+  db.collectio
