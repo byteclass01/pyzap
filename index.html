@@ -625,7 +625,7 @@ header.app-header-hide{display:none;}
   <aside class="app-sidebar">
     <div class="app-sb-logo">
       <div class="app-sb-name">PyZap &#x26A1;</div>
-      <div class="app-sb-email" id="sb-email">student@email.com</div>
+      <div class="app-sb-email" id="sb-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4c4b4a5b5a514b7f5a525e5653115c5052">[email&#160;protected]</a></div>
       <div class="app-sb-plan"><span class="plan-badge free" id="plan-badge">Free</span></div>
     </div>
     <div class="app-sb-nav">
@@ -777,6 +777,7 @@ header.app-header-hide{display:none;}
   </div>
 </div>
 
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -803,6 +804,9 @@ var CF_GENERATE_SELF = CF_BASE + "/generateSelfTest";
 var CF_SUBMIT_SELF   = CF_BASE + "/submitSelfTest";
 var CF_SUBMIT_ADMIN  = CF_BASE + "/submitAdminTest";
 var CF_LEADERBOARD   = CF_BASE + "/getLeaderboard";
+var CF_CREATE_ORDER  = CF_BASE + "/createOrder";
+var CF_VERIFY_PAY    = CF_BASE + "/verifyPayment";
+var CF_APPLY_PROMO   = CF_BASE + "/applyPromo";
 
 // ═══ TAGLINES ═══
 var TAGS = [
@@ -821,15 +825,13 @@ document.getElementById("l-tag").textContent = TAGS[Math.floor(Math.random() * T
 
 // ═══ STATE ═══
 var S = {
-  // Auth
   uid: null, idToken: null, plan: "free", userData: null,
-  // Practice
+  dailyProgress: {},
   score: 0, total: 0, streak: 0, best: 0, wrong: 0, qcount: 0,
   checked: false, sel: null, mode: "mcq",
-  dtype: "String", qtype: "Indexing", indexMode: "single", difficulty: "Basic",
+  dtype: "String", qtype: "Indexing",
   questions: [], lastSeen: -1,
   freeConceptsAllowed: ["String","List"], freeQuestionsPerConcept: 10,
-  // Test attempt
   testMode: null, testId: null,
   testQuestions: [], testAnswers: [], currentQ: 0,
   totalTimeSecs: 0, timerInterval: null, questionStartTime: null,
@@ -838,754 +840,568 @@ var S = {
 };
 
 // ═══ localStorage ═══
-function getTodayStr() {
-  var d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-}
-function lsKeyFree(dt) { return "pyzap_free_" + dt + "_" + getTodayStr(); }
-function lsKeyPaid(dt) { return "pyzap_paid_" + dt; }
-function saveBatch(dt) {
-  var key = S.plan === "paid" ? lsKeyPaid(dt) : lsKeyFree(dt);
-  try { localStorage.setItem(key, JSON.stringify({ questions: S.questions, lastSeen: S.lastSeen })); } catch(e) {}
-}
-function loadBatch(dt) {
-  var key = S.plan === "paid" ? lsKeyPaid(dt) : lsKeyFree(dt);
-  try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch(e) { return null; }
-}
+function getTodayStr(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function lsKeyFree(dt){return "pyzap_free_"+dt+"_"+getTodayStr();}
+function lsKeyPaid(dt){return "pyzap_paid_"+dt;}
+function saveBatch(dt){var key=S.plan==="paid"?lsKeyPaid(dt):lsKeyFree(dt);try{localStorage.setItem(key,JSON.stringify({questions:S.questions,lastSeen:S.lastSeen}));}catch(e){}}
+function loadBatch(dt){var key=S.plan==="paid"?lsKeyPaid(dt):lsKeyFree(dt);try{var r=localStorage.getItem(key);return r?JSON.parse(r):null;}catch(e){return null;}}
 
 // ═══ SCREENS ═══
-function showScreen(name) {
+function showScreen(name){
   document.getElementById("loading-screen").classList.add("hidden");
   document.getElementById("login-screen").classList.add("hidden");
   document.getElementById("profile-screen").classList.add("hidden");
   document.getElementById("upgrade-popup").classList.add("hidden");
-  document.getElementById("app").style.display = "none";
-  document.getElementById("test-attempt-screen").style.display = "none";
-  document.getElementById("result-screen").style.display = "none";
-  if (name === "loading")  document.getElementById("loading-screen").classList.remove("hidden");
-  else if (name === "login")   document.getElementById("login-screen").classList.remove("hidden");
-  else if (name === "profile") document.getElementById("profile-screen").classList.remove("hidden");
-  else if (name === "app")     document.getElementById("app").style.display = "";
-  else if (name === "attempt") document.getElementById("test-attempt-screen").style.display = "";
-  else if (name === "result")  document.getElementById("result-screen").style.display = "";
+  document.getElementById("app").style.display="none";
+  document.getElementById("test-attempt-screen").style.display="none";
+  document.getElementById("result-screen").style.display="none";
+  if(name==="loading") document.getElementById("loading-screen").classList.remove("hidden");
+  else if(name==="login")   document.getElementById("login-screen").classList.remove("hidden");
+  else if(name==="profile") document.getElementById("profile-screen").classList.remove("hidden");
+  else if(name==="app")     document.getElementById("app").style.display="";
+  else if(name==="attempt") document.getElementById("test-attempt-screen").style.display="";
+  else if(name==="result")  document.getElementById("result-screen").style.display="";
 }
-function setCardLoading(txt) {
-  document.getElementById("q-loading").style.display = "flex";
-  document.getElementById("q-content").style.display = "none";
-  document.getElementById("q-loading-txt").textContent = txt || "Loading...";
-}
-function setCardLoaded() {
-  document.getElementById("q-loading").style.display = "none";
-  document.getElementById("q-content").style.display = "";
-}
+function setCardLoading(txt){document.getElementById("q-loading").style.display="flex";document.getElementById("q-content").style.display="none";document.getElementById("q-loading-txt").textContent=txt||"Loading...";}
+function setCardLoaded(){document.getElementById("q-loading").style.display="none";document.getElementById("q-content").style.display="";}
 
 // ═══ TOAST ═══
-var _tt = null;
-function showToast(msg, type) {
-  var t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast " + (type || "success") + " show";
-  if (_tt) clearTimeout(_tt);
-  _tt = setTimeout(function() { t.classList.remove("show"); }, 2500);
-}
+var _tt=null;
+function showToast(msg,type){var t=document.getElementById("toast");t.textContent=msg;t.className="toast "+(type||"success")+" show";if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove("show");},2500);}
 
 // ═══ MODAL ═══
-var _modalFn = null;
-function showModal(title, body, confirmText, onConfirm) {
-  document.getElementById("modal-title").textContent   = title;
-  document.getElementById("modal-body").textContent    = body;
-  document.getElementById("modal-confirm").textContent = confirmText || "Confirm";
-  _modalFn = onConfirm;
+var _modalFn=null;
+function showModal(title,body,confirmText,onConfirm){
+  document.getElementById("modal-title").textContent=title;
+  document.getElementById("modal-body").textContent=body;
+  document.getElementById("modal-confirm").textContent=confirmText||"Confirm";
+  _modalFn=onConfirm;
   document.getElementById("modal").classList.remove("hidden");
 }
-document.getElementById("modal-cancel").addEventListener("click",  function() { document.getElementById("modal").classList.add("hidden"); });
-document.getElementById("modal-confirm").addEventListener("click", function() { document.getElementById("modal").classList.add("hidden"); if (_modalFn) _modalFn(); });
+document.getElementById("modal-cancel").addEventListener("click",function(){document.getElementById("modal").classList.add("hidden");});
+document.getElementById("modal-confirm").addEventListener("click",function(){document.getElementById("modal").classList.add("hidden");if(_modalFn)_modalFn();});
 
 // ═══ AUTH ═══
-// ROOT CAUSE: GitHub Pages sets COOP headers blocking signInWithRedirect.
-// FIX: Use signInWithPopup on desktop (works fine).
-//      Use signInWithRedirect on mobile but handle result correctly.
-//      Single _userHandled flag prevents race condition between
-//      getRedirectResult and onAuthStateChanged both firing.
+var _userHandled=false;
+var isMobile=/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-var _userHandled = false;
-var isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-function handleUser(user) {
-  if (_userHandled) return; // prevent double-handling race condition
-  _userHandled = true;
-
-  console.log("[PyZap] Auth: user received, uid=" + user.uid);
-  S.uid = user.uid;
+function handleUser(user){
+  if(_userHandled)return;
+  _userHandled=true;
+  console.log("[PyZap] Auth: uid="+user.uid);
+  S.uid=user.uid;
   showScreen("loading");
-  document.getElementById("load-text").textContent = "Setting up your account...";
-
-  user.getIdToken(true).then(function(token) {
-    console.log("[PyZap] Token received");
-    S.idToken = token;
-    setInterval(function() {
-      user.getIdToken(true).then(function(t) { S.idToken = t; });
-    }, 50 * 60 * 1000);
+  document.getElementById("load-text").textContent="Setting up your account...";
+  user.getIdToken(true).then(function(token){
+    S.idToken=token;
+    setInterval(function(){user.getIdToken(true).then(function(t){S.idToken=t;});},50*60*1000);
     return db.collection("users").doc(user.uid).get();
-  }).then(function(snap) {
-    if (!snap.exists || !snap.data().phone) {
-      console.log("[PyZap] New user — showing profile form");
-      document.getElementById("p-name").value = user.displayName || "";
+  }).then(function(snap){
+    if(!snap.exists||!snap.data().phone){
+      document.getElementById("p-name").value=user.displayName||"";
       showScreen("profile");
     } else {
-      S.userData = snap.data();
-      // Check ban
-      if (S.userData.banned) {
-        console.warn("[PyZap] Banned user attempted login");
-        auth.signOut();
-        _userHandled = false;
-        document.getElementById("login-screen").classList.remove("hidden");
-        document.getElementById("app").style.display = "none";
-        document.getElementById("loading-screen").classList.add("hidden");
-        var note = document.getElementById("l-note");
-        if (note) { note.textContent = "Your account has been suspended. Contact support."; note.style.color = "var(--red)"; }
+      S.userData=snap.data();
+      if(S.userData.banned){
+        console.warn("[PyZap] Banned user");
+        auth.signOut(); _userHandled=false;
+        showScreen("login");
+        var note=document.getElementById("l-note");
+        if(note){note.textContent="Your account has been suspended. Contact support.";note.style.color="var(--red)";}
         return;
       }
-      S.plan     = S.userData.plan || "free";
-      console.log("[PyZap] User loaded, plan=" + S.plan);
-      // Fetch admin settings
-      db.collection("settings").doc("config").get().then(function(cfg) {
-        if (cfg.exists) {
-          var d = cfg.data();
-          if (d.freeConceptsAllowed && d.freeConceptsAllowed.length)
-            S.freeConceptsAllowed = d.freeConceptsAllowed;
-          if (d.freeQuestionsPerConcept)
-            S.freeQuestionsPerConcept = d.freeQuestionsPerConcept;
-          if (d.paidPrice) P.basePrice = P.finalAmount = d.paidPrice;
-          console.log("[PyZap] Settings loaded, concepts=" + S.freeConceptsAllowed.join(","));
+      S.plan=S.userData.plan||"free";
+      console.log("[PyZap] User loaded, plan="+S.plan);
+      db.collection("settings").doc("config").get().then(function(cfg){
+        if(cfg.exists){
+          var d=cfg.data();
+          if(d.freeConceptsAllowed&&d.freeConceptsAllowed.length) S.freeConceptsAllowed=d.freeConceptsAllowed;
+          if(d.freeQuestionsPerConcept) S.freeQuestionsPerConcept=d.freeQuestionsPerConcept;
+          if(d.paidPrice) P.basePrice=P.finalAmount=d.paidPrice;
         }
-      }).catch(function(e) {
-        console.warn("[PyZap] Settings fetch failed (non-fatal):", e.message);
-      }).finally(function() {
+      }).catch(function(){}).finally(function(){
         updateLoginStats(user.uid);
-        console.log("[PyZap] Launching app");
         launchApp();
       });
     }
-  }).catch(function(e) {
-    console.error("[PyZap] Auth error:", e);
-    _userHandled = false; // allow retry
-    showScreen("login");
-  });
+  }).catch(function(e){console.error("[PyZap] Auth error:",e);_userHandled=false;showScreen("login");});
 }
 
-// Step 1: Handle redirect result (mobile flow — runs on page load after redirect)
-auth.getRedirectResult().then(function(result) {
-  if (result && result.user) {
-    console.log("[PyZap] Got redirect result:", result.user.email);
+auth.getRedirectResult().then(function(result){
+  if(result&&result.user){console.log("[PyZap] Redirect result:",result.user.email);handleUser(result.user);}
+}).catch(function(e){console.warn("[PyZap] getRedirectResult:",e.code);});
+
+auth.onAuthStateChanged(function(user){
+  if(user){console.log("[PyZap] onAuthStateChanged:",user.email);handleUser(user);}
+  else{if(!_userHandled){S.uid=null;S.idToken=null;showScreen("login");}}
+});
+
+document.getElementById("btn-google").addEventListener("click",function(){
+  var provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+  var btn=document.getElementById("btn-google");
+  btn.disabled=true; btn.textContent="Opening Google...";
+  console.log("[PyZap] signInWithPopup");
+  auth.signInWithPopup(provider).then(function(result){
+    console.log("[PyZap] Popup success:",result.user.email);
     handleUser(result.user);
-  } else {
-    console.log("[PyZap] No redirect result");
-  }
-}).catch(function(e) {
-  // COOP error from GitHub Pages — expected, non-fatal
-  console.warn("[PyZap] getRedirectResult error (may be COOP-related):", e.code, e.message);
-});
-
-// Step 2: Auth state observer (fires for already-logged-in users and after popup)
-auth.onAuthStateChanged(function(user) {
-  if (user) {
-    console.log("[PyZap] onAuthStateChanged: user=" + user.email);
-    handleUser(user);
-  } else {
-    if (!_userHandled) {
-      console.log("[PyZap] onAuthStateChanged: no user — showing login");
-      S.uid = null; S.idToken = null;
-      showScreen("login");
-    }
-  }
-});
-
-// Step 3: Login button — popup on desktop, redirect on mobile
-document.getElementById("btn-google").addEventListener("click", function() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
-  var btn = document.getElementById("btn-google");
-  btn.disabled = true;
-
-  if (false) {
-    // Redirect disabled — popup works on both mobile and desktop
-    // (COOP warning is non-fatal, popup still completes successfully)
-  } else {
-    // Desktop: use popup (works on GitHub Pages, no COOP issue)
-    console.log("[PyZap] Desktop: using signInWithPopup");
-    btn.textContent = "Opening Google...";
-    auth.signInWithPopup(provider).then(function(result) {
-      console.log("[PyZap] Popup success:", result.user.email);
-      handleUser(result.user);
-    }).catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = "Continue with Google";
-      if (e.code !== "auth/popup-closed-by-user") {
-        console.error("[PyZap] Popup error:", e.code, e.message);
-        showToast("Sign in failed: " + e.message, "error");
-      }
-    });
-  }
-});
-
-document.getElementById("logout-btn").addEventListener("click", function() {
-  _userHandled = false;
-  auth.signOut().then(function() {
-    S.uid = null; S.idToken = null; S.userData = null;
-    showScreen("login");
-    console.log("[PyZap] Logged out");
+  }).catch(function(e){
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google';
+    if(e.code!=="auth/popup-closed-by-user") showToast("Sign in failed. Try again.","error");
   });
+});
+
+document.getElementById("logout-btn").addEventListener("click",function(){
+  _userHandled=false;
+  auth.signOut().then(function(){S.uid=null;S.idToken=null;S.userData=null;showScreen("login");});
 });
 
 // ═══ PROFILE FORM ═══
-document.getElementById("p-country").addEventListener("change", function() {
-  var india = this.value === "India";
-  document.getElementById("p-state-grp").style.display = india ? "" : "none";
-  document.getElementById("p-city-grp").style.display  = india ? "" : "none";
+document.getElementById("p-country").addEventListener("change",function(){
+  var india=this.value==="India";
+  document.getElementById("p-state-grp").style.display=india?"":"none";
+  document.getElementById("p-city-grp").style.display=india?"":"none";
 });
-document.getElementById("btn-save-profile").addEventListener("click", function() {
-  var name=document.getElementById("p-name").value.trim(), phone=document.getElementById("p-phone").value.trim();
-  var board=document.getElementById("p-board").value, cls=document.getElementById("p-class").value;
-  var country=document.getElementById("p-country").value, state=document.getElementById("p-state").value;
+document.getElementById("btn-save-profile").addEventListener("click",function(){
+  var name=document.getElementById("p-name").value.trim(),phone=document.getElementById("p-phone").value.trim();
+  var board=document.getElementById("p-board").value,cls=document.getElementById("p-class").value;
+  var country=document.getElementById("p-country").value,state=document.getElementById("p-state").value;
   var city=document.getElementById("p-city").value.trim();
-  var errEl=document.getElementById("p-err"), errMsg=document.getElementById("p-err-msg");
-  if (!name)    { errMsg.textContent="Please enter your name."; errEl.style.display=""; return; }
-  if (!phone || !/^\d{7,15}$/.test(phone.replace(/\s/g,""))) { errMsg.textContent="Please enter a valid phone number."; errEl.style.display=""; return; }
-  if (!board)   { errMsg.textContent="Please select your board."; errEl.style.display=""; return; }
-  if (!cls)     { errMsg.textContent="Please select your class."; errEl.style.display=""; return; }
-  if (!country) { errMsg.textContent="Please select your country."; errEl.style.display=""; return; }
+  var errEl=document.getElementById("p-err"),errMsg=document.getElementById("p-err-msg");
+  if(!name){errMsg.textContent="Please enter your name.";errEl.style.display="";return;}
+  if(!phone||!/^\d{7,15}$/.test(phone.replace(/\s/g,""))){errMsg.textContent="Please enter a valid phone number.";errEl.style.display="";return;}
+  if(!board){errMsg.textContent="Please select your board.";errEl.style.display="";return;}
+  if(!cls){errMsg.textContent="Please select your class.";errEl.style.display="";return;}
+  if(!country){errMsg.textContent="Please select your country.";errEl.style.display="";return;}
   errEl.style.display="none";
   var btn=document.getElementById("btn-save-profile");
-  btn.disabled=true; btn.textContent="Saving...";
-  var data={name,phone,board,grade:cls,country,plan:"free",role:"student",
+  btn.disabled=true;btn.textContent="Saving...";
+  var data={name:name,phone:phone,board:board,grade:cls,country:country,plan:"free",role:"student",
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
     lastLogin:firebase.firestore.FieldValue.serverTimestamp(),
     loginCount:1,hitLimitCount:0,attemptedTests:[]};
-  if (country==="India") { data.state=state; data.city=city; }
-  db.collection("users").doc(S.uid).set(data,{merge:true}).then(function() {
-    S.plan="free"; S.userData=data; launchApp();
-  }).catch(function(e) {
-    btn.disabled=false; btn.textContent="Save & Start Practising →";
-    errMsg.textContent="Error saving. Please try again."; errEl.style.display="";
+  if(country==="India"){data.state=state;data.city=city;}
+  db.collection("users").doc(S.uid).set(data,{merge:true}).then(function(){
+    S.plan="free";S.userData=data;launchApp();
+  }).catch(function(e){
+    btn.disabled=false;btn.textContent="Save & Start Practising →";
+    errMsg.textContent="Error saving. Please try again.";errEl.style.display="";
   });
 });
 
-function updateLoginStats(uid) {
-  db.collection("users").doc(uid).get().then(function(snap) {
-    if (snap.exists) db.collection("users").doc(uid).update({
-      lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-      loginCount: (snap.data().loginCount||0)+1,
+function updateLoginStats(uid){
+  db.collection("users").doc(uid).get().then(function(snap){
+    if(snap.exists)db.collection("users").doc(uid).update({
+      lastLogin:firebase.firestore.FieldValue.serverTimestamp(),
+      loginCount:(snap.data().loginCount||0)+1,
     });
   }).catch(function(){});
 }
 
 // ═══ UPGRADE & PAYMENT ═══
-var CF_CREATE_ORDER  = CF_BASE + "/createOrder";
-var CF_VERIFY_PAY    = CF_BASE + "/verifyPayment";
-var CF_APPLY_PROMO   = CF_BASE + "/applyPromo";
+var P={basePrice:499,finalAmount:499,discount:0,promoCode:null,isFree:false};
 
-var P = { basePrice: 499, finalAmount: 499, discount: 0, promoCode: null, isFree: false };
-
-function showUpgrade(msg) {
-  document.getElementById("u-msg").textContent = msg || "Upgrade to unlock unlimited practice.";
-  // Reset payment state
-  P.finalAmount = P.basePrice; P.discount = 0; P.promoCode = null; P.isFree = false;
-  document.getElementById("promo-inp").value = "";
-  document.getElementById("promo-result").textContent = "";
-  document.getElementById("promo-result").style.color = "";
+function showUpgrade(msg){
+  document.getElementById("u-msg").textContent=msg||"Upgrade to unlock unlimited practice.";
+  P.finalAmount=P.basePrice;P.discount=0;P.promoCode=null;P.isFree=false;
+  document.getElementById("promo-inp").value="";
+  document.getElementById("promo-result").textContent="";
   updatePriceDisplay();
   document.getElementById("upgrade-popup").classList.remove("hidden");
 }
-
-function updatePriceDisplay() {
-  var el = document.getElementById("u-price-display");
-  var btn = document.getElementById("btn-pay");
-  if (P.isFree) {
-    el.innerHTML = '<span style="color:var(--green);font-size:20px;font-weight:800">Free Upgrade!</span>';
-    btn.textContent = "Activate Pro Now";
-  } else if (P.discount > 0) {
-    el.innerHTML = '<s style="color:var(--muted);font-size:16px">&#8377;' + P.basePrice + '</s> <strong style="color:var(--gold)">&#8377;' + P.finalAmount + '</strong> <span>/ 365 days</span>';
-    btn.textContent = "Pay ₹" + P.finalAmount;
-  } else {
-    el.innerHTML = '&#8377;' + P.basePrice + ' <span>/ 365 days</span>';
-    btn.textContent = "Pay ₹" + P.basePrice;
-  }
+function updatePriceDisplay(){
+  var el=document.getElementById("u-price-display"),btn=document.getElementById("btn-pay");
+  if(P.isFree){el.innerHTML='<span style="color:var(--green);font-size:20px;font-weight:800">Free Upgrade!</span>';btn.textContent="Activate Pro Now";}
+  else if(P.discount>0){el.innerHTML='<s style="color:var(--muted);font-size:16px">&#8377;'+P.basePrice+'</s> <strong style="color:var(--gold)">&#8377;'+P.finalAmount+'</strong> <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.finalAmount;}
+  else{el.innerHTML='&#8377;'+P.basePrice+' <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.basePrice;}
 }
-
-document.getElementById("btn-close-up").addEventListener("click", function() {
-  document.getElementById("upgrade-popup").classList.add("hidden");
-});
-
-document.getElementById("btn-apply-promo").addEventListener("click", function() {
-  var code = document.getElementById("promo-inp").value.trim();
-  if (!code) return;
-  var btn = this; btn.disabled = true; btn.textContent = "Checking...";
-  var resultEl = document.getElementById("promo-result");
-
-  fetch(CF_APPLY_PROMO, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + S.idToken },
-    body:    JSON.stringify({ promoCode: code }),
-  }).then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
-  .then(function(r) {
-    btn.disabled = false; btn.textContent = "Apply";
-    if (!r.ok) {
-      resultEl.textContent = r.data.message || "Invalid code";
-      resultEl.style.color = "var(--red)";
-      P.promoCode = null; P.discount = 0; P.finalAmount = P.basePrice; P.isFree = false;
-    } else {
-      resultEl.textContent = r.data.message;
-      resultEl.style.color = r.data.isFreeUpgrade ? "var(--green)" : "var(--gold)";
-      P.promoCode   = code.trim().toUpperCase();
-      P.discount    = r.data.discountAmount || 0;
-      P.finalAmount = r.data.finalAmount;
-      P.isFree      = !!r.data.isFreeUpgrade;
-      P.basePrice   = r.data.originalPrice || 499;
-    }
+document.getElementById("btn-close-up").addEventListener("click",function(){document.getElementById("upgrade-popup").classList.add("hidden");});
+document.getElementById("btn-apply-promo").addEventListener("click",function(){
+  var code=document.getElementById("promo-inp").value.trim();if(!code)return;
+  var btn=this;btn.disabled=true;btn.textContent="Checking...";
+  var resultEl=document.getElementById("promo-result");
+  fetch(CF_APPLY_PROMO,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({promoCode:code})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    btn.disabled=false;btn.textContent="Apply";
+    if(!r.ok){resultEl.textContent=r.data.message||"Invalid code";resultEl.style.color="var(--red)";P.promoCode=null;P.discount=0;P.finalAmount=P.basePrice;P.isFree=false;}
+    else{resultEl.textContent=r.data.message;resultEl.style.color=r.data.isFreeUpgrade?"var(--green)":"var(--gold)";P.promoCode=code.trim().toUpperCase();P.discount=r.data.discountAmount||0;P.finalAmount=r.data.finalAmount;P.isFree=!!r.data.isFreeUpgrade;P.basePrice=r.data.originalPrice||499;}
     updatePriceDisplay();
-  }).catch(function(e) {
-    btn.disabled = false; btn.textContent = "Apply";
-    resultEl.textContent = "Error checking code"; resultEl.style.color = "var(--red)";
-  });
+  }).catch(function(){btn.disabled=false;btn.textContent="Apply";resultEl.textContent="Error checking code";resultEl.style.color="var(--red)";});
 });
-
-document.getElementById("btn-pay").addEventListener("click", function() {
-  var btn = this; btn.disabled = true; btn.textContent = "Loading...";
-
-  fetch(CF_CREATE_ORDER, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + S.idToken },
-    body:    JSON.stringify({ promoCode: P.promoCode || "" }),
-  }).then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
-  .then(function(r) {
-    btn.disabled = false;
-    if (!r.ok) { showToast(r.data.message || "Payment error", "error"); updatePriceDisplay(); return; }
-
-    var data = r.data;
-
-    // Free upgrade — no Razorpay needed
-    if (data.freeUpgrade) {
-      showToast("Pro access activated! ⚡", "success");
+document.getElementById("btn-pay").addEventListener("click",function(){
+  var btn=this;btn.disabled=true;btn.textContent="Loading...";
+  fetch(CF_CREATE_ORDER,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({promoCode:P.promoCode||""})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    btn.disabled=false;
+    if(!r.ok){showToast(r.data.message||"Payment error","error");updatePriceDisplay();return;}
+    var data=r.data;
+    if(data.freeUpgrade){
+      showToast("Pro access activated! ⚡","success");
       document.getElementById("upgrade-popup").classList.add("hidden");
-      // Refresh user plan
-      db.collection("users").doc(S.uid).get().then(function(snap) {
-        if (snap.exists) { S.userData = snap.data(); S.plan = "paid"; applyPlanUI(); loadSelfTestPanel(); }
-      });
-      updatePriceDisplay();
-      return;
+      db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();loadSelfTestPanel();}});
+      updatePriceDisplay();return;
     }
-
-    // Open Razorpay checkout
-    var options = {
-      key:         data.keyId,
-      amount:      data.amountPaise,
-      currency:    "INR",
-      name:        "PyZap ⚡",
-      description: "Pro Plan — 365 Days",
-      order_id:    data.orderId,
-      theme:       { color: "#F5A623" },
-      prefill: {
-        name:  S.userData ? (S.userData.name || "") : "",
-        email: S.userData ? (S.userData.email || "") : "",
-        contact: S.userData ? (S.userData.phone || "") : "",
-      },
-      handler: function(response) {
-        // Payment success — verify on server
-        document.getElementById("btn-pay").disabled = true;
-        document.getElementById("btn-pay").textContent = "Verifying...";
-        fetch(CF_VERIFY_PAY, {
-          method:  "POST",
-          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + S.idToken },
-          body:    JSON.stringify({
-            orderId:   response.razorpay_order_id,
-            paymentId: response.razorpay_payment_id,
-            signature: response.razorpay_signature,
-            promoCode: P.promoCode || null,
-            amount:    data.amount,
-          }),
-        }).then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
-        .then(function(vr) {
-          document.getElementById("btn-pay").disabled = false;
-          updatePriceDisplay();
-          if (!vr.ok) { showToast(vr.data.message || "Verification failed", "error"); return; }
-          showToast("Payment successful! Pro access unlocked ⚡", "success");
+    var options={key:data.keyId,amount:data.amountPaise,currency:"INR",name:"PyZap ⚡",description:"Pro Plan — 365 Days",order_id:data.orderId,theme:{color:"#F5A623"},
+      prefill:{name:S.userData?(S.userData.name||""):"",email:S.userData?(S.userData.email||""):"",contact:S.userData?(S.userData.phone||""):""},
+      handler:function(response){
+        document.getElementById("btn-pay").disabled=true;document.getElementById("btn-pay").textContent="Verifying...";
+        fetch(CF_VERIFY_PAY,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+          body:JSON.stringify({orderId:response.razorpay_order_id,paymentId:response.razorpay_payment_id,signature:response.razorpay_signature,promoCode:P.promoCode||null,amount:data.amount})})
+        .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+        .then(function(vr){
+          document.getElementById("btn-pay").disabled=false;updatePriceDisplay();
+          if(!vr.ok){showToast(vr.data.message||"Verification failed","error");return;}
+          showToast("Payment successful! Pro access unlocked ⚡","success");
           document.getElementById("upgrade-popup").classList.add("hidden");
-          // Refresh user plan
-          db.collection("users").doc(S.uid).get().then(function(snap) {
-            if (snap.exists) { S.userData = snap.data(); S.plan = "paid"; applyPlanUI(); loadSelfTestPanel(); }
-          });
-        }).catch(function(e) {
-          document.getElementById("btn-pay").disabled = false;
-          updatePriceDisplay();
-          showToast("Verification error. Contact support.", "error");
-        });
+          db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();loadSelfTestPanel();}});
+        }).catch(function(){document.getElementById("btn-pay").disabled=false;updatePriceDisplay();showToast("Verification error. Contact support.","error");});
       },
-      modal: {
-        ondismiss: function() {
-          document.getElementById("btn-pay").disabled = false;
-          updatePriceDisplay();
-        },
-      },
+      modal:{ondismiss:function(){document.getElementById("btn-pay").disabled=false;updatePriceDisplay();}},
     };
-
-    var rzp = new window.Razorpay(options);
-    rzp.open();
-    rzp.on("payment.failed", function(response) {
-      showToast("Payment failed: " + (response.error.description || "Try again"), "error");
-      document.getElementById("btn-pay").disabled = false;
-      updatePriceDisplay();
-    });
-  }).catch(function(e) {
-    btn.disabled = false; updatePriceDisplay();
-    console.error(e); showToast("Payment error. Please try again.", "error");
-  });
+    var rzp=new window.Razorpay(options);rzp.open();
+    rzp.on("payment.failed",function(response){showToast("Payment failed: "+(response.error.description||"Try again"),"error");document.getElementById("btn-pay").disabled=false;updatePriceDisplay();});
+  }).catch(function(e){btn.disabled=false;updatePriceDisplay();showToast("Payment error. Please try again.","error");});
 });
 
 // ═══ PLAN UI ═══
-function applyPlanUI() {
-  var badge = document.getElementById("plan-badge");
-  if (badge) { badge.textContent = S.plan==="paid"?"Pro":"Free"; badge.className = "plan-badge " + (S.plan==="paid"?"paid":"free"); }
+function applyPlanUI(){
+  var badge=document.getElementById("plan-badge");
+  if(badge){badge.textContent=S.plan==="paid"?"Pro":"Free";badge.className="plan-badge "+(S.plan==="paid"?"paid":"free");}
   applyDtypeLocks();
   updateFreeBanner();
 }
-function applyDtypeLocks() {
-  document.querySelectorAll("#dtype-group .tog").forEach(function(btn) {
-    if (S.plan==="paid") { btn.classList.remove("locked"); return; }
-    if (!S.freeConceptsAllowed.includes(btn.dataset.dtype)) btn.classList.add("locked");
+function applyDtypeLocks(){
+  document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
+    if(S.plan==="paid"){btn.classList.remove("locked");return;}
+    if(!S.freeConceptsAllowed.includes(btn.dataset.dtype))btn.classList.add("locked");
     else btn.classList.remove("locked");
   });
 }
-function updateProgressUI() {
+function updateProgressUI(){
   var wrap=document.getElementById("prog-wrap");
-  if (S.plan==="paid") { wrap.style.display="none"; return; }
+  if(S.plan==="paid"){wrap.style.display="none";return;}
   wrap.style.display="flex";
-  // lastSeen is 0-based index of current question; +1 gives count shown so far
-  var used  = S.lastSeen + 1;
-  var total = S.freeQuestionsPerConcept || S.questions.length;
-  document.getElementById("prog-lbl").textContent  = S.dtype;
-  document.getElementById("prog-fill").style.width = Math.min(100, (used / total) * 100) + "%";
-  document.getElementById("prog-count").textContent = used + " / " + total;
+  var used=getConceptUsed(S.dtype),total=S.freeQuestionsPerConcept||10;
+  document.getElementById("prog-lbl").textContent=S.dtype;
+  document.getElementById("prog-fill").style.width=Math.min(100,(used/total)*100)+"%";
+  document.getElementById("prog-count").textContent=used+" / "+total;
 }
 
-// ═══ NAVIGATION (sidebar + bottom nav) ═══
-function switchTab(tabName) {
-  document.querySelectorAll(".app-nav-item, .bottom-nav-item").forEach(function(n) {
-    n.classList.toggle("active", n.dataset.tab === tabName);
-  });
-  document.querySelectorAll(".main-panel").forEach(function(p) { p.classList.remove("active"); });
-  var panel = document.getElementById("panel-" + tabName);
-  if (panel) panel.classList.add("active");
-  if (tabName === "tests")   { loadAdminTests(); loadSelfTestPanel(); }
-  if (tabName === "history") loadHistory();
-  if (tabName === "profile") renderProfile();
-  if (tabName === "practice") updateFreeBanner();
+// ═══ NAVIGATION ═══
+function switchTab(tabName){
+  document.querySelectorAll(".app-nav-item,.bottom-nav-item").forEach(function(n){n.classList.toggle("active",n.dataset.tab===tabName);});
+  document.querySelectorAll(".main-panel").forEach(function(p){p.classList.remove("active");});
+  var panel=document.getElementById("panel-"+tabName);
+  if(panel)panel.classList.add("active");
+  if(tabName==="tests"){loadAdminTests();loadSelfTestPanel();}
+  if(tabName==="history")loadHistory();
+  if(tabName==="profile")renderProfile();
+  if(tabName==="practice")updateFreeBanner();
 }
-document.querySelectorAll(".app-nav-item").forEach(function(item) {
-  item.addEventListener("click", function() { switchTab(item.dataset.tab); });
-});
-document.querySelectorAll(".bottom-nav-item").forEach(function(item) {
-  item.addEventListener("click", function() { switchTab(item.dataset.tab); });
-});
-
-// Sub-tabs (inside Tests)
-document.querySelectorAll(".sub-tab").forEach(function(tab) {
-  tab.addEventListener("click", function() {
-    document.querySelectorAll(".sub-tab").forEach(function(t) { t.classList.remove("active"); });
-    document.querySelectorAll(".sub-panel").forEach(function(p) { p.classList.remove("active"); });
+document.querySelectorAll(".app-nav-item").forEach(function(item){item.addEventListener("click",function(){switchTab(item.dataset.tab);});});
+document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.addEventListener("click",function(){switchTab(item.dataset.tab);});});
+document.querySelectorAll(".sub-tab").forEach(function(tab){
+  tab.addEventListener("click",function(){
+    document.querySelectorAll(".sub-tab").forEach(function(t){t.classList.remove("active");});
+    document.querySelectorAll(".sub-panel").forEach(function(p){p.classList.remove("active");});
     tab.classList.add("active");
     document.getElementById("sub-"+tab.dataset.sub).classList.add("active");
-    if (tab.dataset.sub==="mytest") loadSelfTestPanel();
+    if(tab.dataset.sub==="mytest")loadSelfTestPanel();
   });
 });
 
 // ═══ FREE BANNER ═══
-function updateFreeBanner() {
-  var banner = document.getElementById("free-banner");
-  if (!banner) return;
-  if (S.plan === "paid") { banner.style.display = "none"; return; }
-  // Show per-concept usage
-  var container = document.getElementById("free-banner-concepts");
-  if (!container) return;
-  var todayStr = getTodayStr();
-  // Load daily progress from localStorage
-  var html = "";
-  S.freeConceptsAllowed.forEach(function(concept) {
-    var key = "pyzap_free_" + concept + "_" + todayStr;
-    var cached = null;
-    try { var r = localStorage.getItem(key); cached = r ? JSON.parse(r) : null; } catch(e){}
-    var used  = cached ? Math.min(cached.lastSeen + 1, S.freeQuestionsPerConcept) : 0;
-    var total = S.freeQuestionsPerConcept;
-    var pct   = Math.min(100, Math.round((used/total)*100));
-    var done  = used >= total;
-    html += '<div class="free-concept-row">' +
-      '<div class="free-concept-name' + (done?" free-concept-done":"") + '">' + concept + '</div>' +
-      '<div class="free-concept-bar"><div class="free-concept-fill" style="width:' + pct + '%' + (done?';background:var(--muted)':'') + '"></div></div>' +
-      '<div class="free-concept-count' + (done?" free-concept-done":"") + '">' + used + '/' + total + '</div>' +
+function getConceptUsed(concept){return(S.dailyProgress[concept]&&S.dailyProgress[concept].used)||0;}
+function isConceptCompleted(concept){return !!(S.dailyProgress[concept]&&S.dailyProgress[concept].completed);}
+
+function updateFreeBanner(){
+  var banner=document.getElementById("free-banner");
+  if(!banner)return;
+  if(S.plan==="paid"){banner.style.display="none";return;}
+  var container=document.getElementById("free-banner-concepts");
+  if(!container)return;
+  var html="";
+  S.freeConceptsAllowed.forEach(function(concept){
+    var used=getConceptUsed(concept),total=S.freeQuestionsPerConcept;
+    var pct=Math.min(100,Math.round((used/total)*100));
+    var done=used>=total;
+    html+='<div class="free-concept-row">'+
+      '<div class="free-concept-name'+(done?" free-concept-done":"")+'">'+concept+'</div>'+
+      '<div class="free-concept-bar"><div class="free-concept-fill" style="width:'+pct+'%'+(done?';background:var(--muted)':'')+'"></div></div>'+
+      '<div class="free-concept-count'+(done?" free-concept-done":"")+'">'+used+'/'+total+'</div>'+
     '</div>';
   });
-  container.innerHTML = html;
-  banner.style.display = "";
+  container.innerHTML=html;
+  banner.style.display="";
+}
+
+function loadDailyProgress(uid,callback){
+  var today=getTodayStr();
+  db.collection("users").doc(uid).collection("dailyProgress").doc("progress").get()
+  .then(function(snap){
+    S.dailyProgress={};
+    if(snap.exists&&snap.data().date===today){S.dailyProgress=snap.data().concepts||{};}
+    console.log("[PyZap] Daily progress:",JSON.stringify(S.dailyProgress));
+    callback();
+  }).catch(function(e){console.warn("[PyZap] dailyProgress error:",e.message);S.dailyProgress={};callback();});
 }
 
 // ═══ PROFILE ═══
-function renderProfile() {
-  var d = document.getElementById("profile-details");
-  var p = document.getElementById("profile-plan");
-  var upgradeBtn = document.getElementById("profile-upgrade-btn");
-  if (!S.userData || !d) return;
-  var u = S.userData;
-  var fields = [
-    { l: "Name",    v: u.name    },
-    { l: "Email",   v: S.uid     },
-    { l: "Board",   v: u.board   },
-    { l: "Class",   v: u.grade   },
-    { l: "Country", v: u.country },
-  ];
-  d.innerHTML = fields.map(function(f) {
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr)">' +
-      '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">' + f.l + '</div>' +
-      '<div style="font-size:13px;font-weight:600;color:var(--text)">' + esc(f.v||"—") + '</div></div>';
+function renderProfile(){
+  var d=document.getElementById("profile-details"),p=document.getElementById("profile-plan");
+  var upgradeBtn=document.getElementById("profile-upgrade-btn");
+  if(!S.userData||!d)return;
+  var u=S.userData;
+  var fields=[{l:"Name",v:u.name},{l:"Board",v:u.board},{l:"Class",v:u.grade},{l:"Country",v:u.country}];
+  d.innerHTML=fields.map(function(f){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr)">'+
+      '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">'+f.l+'</div>'+
+      '<div style="font-size:13px;font-weight:600;color:var(--text)">'+esc(f.v||"—")+'</div></div>';
   }).join("");
-  // Plan
-  if (S.plan === "paid") {
-    var expiry = u.planExpiry ? (u.planExpiry.toDate ? u.planExpiry.toDate() : new Date(u.planExpiry)) : null;
-    p.innerHTML = '<span class="plan-badge paid" style="font-size:12px;padding:5px 12px">Pro Plan</span>' +
-      (expiry ? '<div style="font-size:11px;color:var(--muted);margin-top:6px">Valid until ' + expiry.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) + '</div>' : '');
-    if (upgradeBtn) upgradeBtn.style.display = "none";
+  if(S.plan==="paid"){
+    var expiry=u.planExpiry?(u.planExpiry.toDate?u.planExpiry.toDate():new Date(u.planExpiry)):null;
+    p.innerHTML='<span class="plan-badge paid" style="font-size:12px;padding:5px 12px">Pro Plan</span>'+
+      (expiry?'<div style="font-size:11px;color:var(--muted);margin-top:6px">Valid until '+expiry.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})+'</div>':'');
+    if(upgradeBtn)upgradeBtn.style.display="none";
   } else {
-    p.innerHTML = '<span class="plan-badge free" style="font-size:12px;padding:5px 12px">Free Plan</span>' +
-      '<div style="font-size:11px;color:var(--muted);margin-top:6px">Upgrade to unlock all concepts &amp; unlimited questions</div>';
-    if (upgradeBtn) { upgradeBtn.style.display = ""; upgradeBtn.onclick = function(){ showUpgrade("Upgrade to Pro for unlimited access!"); }; }
+    p.innerHTML='<span class="plan-badge free" style="font-size:12px;padding:5px 12px">Free Plan</span>'+
+      '<div style="font-size:11px;color:var(--muted);margin-top:6px">Upgrade to Pro for unlimited access</div>';
+    if(upgradeBtn){upgradeBtn.style.display="";upgradeBtn.onclick=function(){showUpgrade("Upgrade to Pro for unlimited access!");};}
   }
 }
 
 // ═══ LAUNCH ═══
-function launchApp() {
+function launchApp(){
   showScreen("app");
-  // Populate sidebar
-  var sbEmail = document.getElementById("sb-email");
-  if (sbEmail && S.userData) sbEmail.textContent = S.userData.name || S.uid;
+  var sbEmail=document.getElementById("sb-email");
+  if(sbEmail&&S.userData)sbEmail.textContent=S.userData.name||S.uid;
   applyPlanUI();
-  // For free students: default to first admin-allowed concept
-  if (S.plan !== "paid" && S.freeConceptsAllowed.length > 0 && !S.freeConceptsAllowed.includes(S.dtype)) {
-    S.dtype = S.freeConceptsAllowed[0];
+  if(S.plan!=="paid"&&S.freeConceptsAllowed.length>0&&!S.freeConceptsAllowed.includes(S.dtype)){
+    S.dtype=S.freeConceptsAllowed[0];
   }
-  updateFreeBanner();
-  loadDtype(S.dtype);
+  if(S.plan!=="paid"){
+    loadDailyProgress(S.uid,function(){updateFreeBanner();loadDtype(S.dtype);});
+  } else {
+    S.dailyProgress={};updateFreeBanner();loadDtype(S.dtype);
+  }
 }
 
 // ═══════════════════════════════════════════
 //  PRACTICE LOGIC
 // ═══════════════════════════════════════════
-function loadDtype(dtype) {
-  S.dtype = dtype;
-  document.querySelectorAll("#dtype-group .tog").forEach(function(b) { b.classList.toggle("active", b.dataset.dtype===dtype); });
-  if (S.plan!=="paid" && !S.freeConceptsAllowed.includes(dtype)) { showUpgrade("'"+dtype+"' is not available on the free plan."); return; }
+function loadDtype(dtype){
+  S.dtype=dtype;
+  document.querySelectorAll("#dtype-group .tog").forEach(function(b){b.classList.toggle("active",b.dataset.dtype===dtype);});
+  if(S.plan!=="paid"&&!S.freeConceptsAllowed.includes(dtype)){showUpgrade("'"+dtype+"' is not available on the free plan.");return;}
+  if(S.plan!=="paid"&&isConceptCompleted(dtype)){
+    setCardLoaded();updateProgressUI();updateFreeBanner();
+    setCardLoading("You've used all "+S.freeQuestionsPerConcept+" free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
+    return;
+  }
   var cached=loadBatch(dtype);
-  if (cached && cached.questions && cached.questions.length>0) {
-    S.questions=cached.questions; S.lastSeen=cached.lastSeen!=null?cached.lastSeen:-1;
-    if (S.plan!=="paid" && S.lastSeen>=S.questions.length-1) { showUpgrade("You've completed all free questions for '"+dtype+"' today. Come back tomorrow or upgrade!"); return; }
-    if (S.plan==="paid" && S.lastSeen>=S.questions.length-1) { fetchFromServer(dtype); return; }
-    showScreen("app"); setCardLoaded(); showNextQuestion(); return;
+  if(cached&&cached.questions&&cached.questions.length>0){
+    S.questions=cached.questions;S.lastSeen=cached.lastSeen!=null?cached.lastSeen:-1;
+    var nextIdx=S.lastSeen+1;
+    if(S.plan!=="paid"&&nextIdx>=S.freeQuestionsPerConcept){
+      setCardLoaded();updateProgressUI();updateFreeBanner();
+      setCardLoading("You've used all "+S.freeQuestionsPerConcept+" free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
+      return;
+    }
+    if(S.plan==="paid"&&nextIdx>=S.questions.length){fetchFromServer(dtype);return;}
+    showScreen("app");setCardLoaded();showNextQuestion();return;
   }
   fetchFromServer(dtype);
 }
 
-function fetchFromServer(dtype) {
-  setCardLoading("Generating questions on server...");
-  showScreen("app");
-  fetch(CF_GENERATE, {
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({dtype:dtype}),
-  }).then(function(res) { return res.json().then(function(d) { return {ok:res.ok,data:d}; }); })
-  .then(function(r) {
+function fetchFromServer(dtype){
+  setCardLoading("Generating questions...");showScreen("app");
+  fetch(CF_GENERATE,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({dtype:dtype})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
     var data=r.data;
-    if (!r.ok) {
-      if (data.error==="concept_locked"||data.error==="daily_limit_reached") { setCardLoaded(); showUpgrade(data.message); if (data.freeConceptsAllowed) { S.freeConceptsAllowed=data.freeConceptsAllowed; applyDtypeLocks(); } return; }
+    if(!r.ok){
+      if(data.error==="concept_locked"||data.error==="daily_limit_reached"){
+        if(!S.dailyProgress[dtype])S.dailyProgress[dtype]={};
+        S.dailyProgress[dtype].completed=true;S.dailyProgress[dtype].used=S.freeQuestionsPerConcept;
+        setCardLoaded();updateProgressUI();updateFreeBanner();
+        setCardLoading("You've used all free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
+        if(data.freeConceptsAllowed){S.freeConceptsAllowed=data.freeConceptsAllowed;applyDtypeLocks();}
+        return;
+      }
       throw new Error(data.message||"Server error");
     }
-    if (data.freeConceptsAllowed)     S.freeConceptsAllowed     = data.freeConceptsAllowed;
-    if (data.freeQuestionsPerConcept) S.freeQuestionsPerConcept = data.freeQuestionsPerConcept;
+    if(data.freeConceptsAllowed)S.freeConceptsAllowed=data.freeConceptsAllowed;
+    if(data.freeQuestionsPerConcept)S.freeQuestionsPerConcept=data.freeQuestionsPerConcept;
     applyDtypeLocks();
-    if (S.plan==="paid") {
+    if(S.plan==="paid"){
       var existing=loadBatch(dtype);
-      if (existing && existing.questions && existing.questions.length>0) { S.questions=existing.questions.concat(data.questions); S.lastSeen=existing.lastSeen!=null?existing.lastSeen:-1; }
-      else { S.questions=data.questions; S.lastSeen=-1; }
-    } else { S.questions=data.questions; S.lastSeen=-1; }
-    saveBatch(dtype); setCardLoaded(); showNextQuestion();
-  }).catch(function(e) { console.error(e); setCardLoading("Error loading. Tap Next to retry."); });
+      if(existing&&existing.questions&&existing.questions.length>0){S.questions=existing.questions.concat(data.questions);S.lastSeen=existing.lastSeen!=null?existing.lastSeen:-1;}
+      else{S.questions=data.questions;S.lastSeen=-1;}
+    } else{S.questions=data.questions;S.lastSeen=-1;}
+    saveBatch(dtype);setCardLoaded();showNextQuestion();
+  }).catch(function(e){console.error(e);setCardLoading("Error loading. Tap Next to retry.");});
 }
 
-function showNextQuestion() {
-  // Advance pointer — start from next unseen question
-  var nextIdx = S.lastSeen + 1;
-
-  // Batch exhausted
-  if (nextIdx >= S.questions.length) {
-    if (S.plan !== "paid") {
-      showUpgrade("You've completed all free questions for '" + S.dtype + "' today. Come back tomorrow or upgrade!");
-    } else {
-      fetchFromServer(S.dtype);
-    }
-    return;
-  }
-
-  // Filter from nextIdx onward for requested qtype
-  var filtered = [];
-  for (var i = nextIdx; i < S.questions.length; i++) {
-    if (S.qtype === "Mixed" || !S.questions[i].qtype || S.questions[i].qtype === S.qtype) {
-      filtered.push({ q: S.questions[i], idx: i });
+function showNextQuestion(){
+  var nextIdx=S.lastSeen+1;
+  if(S.plan!=="paid"){
+    var used=getConceptUsed(S.dtype);
+    if(used>=S.freeQuestionsPerConcept){
+      setCardLoading("You've used all free questions for '"+S.dtype+"' today. Come back tomorrow or upgrade!");
+      updateProgressUI();updateFreeBanner();return;
     }
   }
-
-  if (filtered.length === 0) {
-    setFB("No more " + S.qtype + " questions in this batch. Try 'Mixed' or switch type.", "wrong");
+  if(nextIdx>=S.questions.length){
+    if(S.plan!=="paid")setCardLoading("You've used all free questions for '"+S.dtype+"' today. Come back tomorrow or upgrade!");
+    else fetchFromServer(S.dtype);
     return;
   }
-
-  // Advance to the matched question
-  S.lastSeen = filtered[0].idx;
-  saveBatch(S.dtype);
-
-  S.checked = false;
-  S.sel     = null;
-  S.qcount++;
-  renderPracticeQuestion(filtered[0].q);
-  updateProgressUI();
-  updateFreeBanner();
+  var filtered=[];
+  for(var i=nextIdx;i<S.questions.length;i++){
+    if(S.qtype==="Mixed"||!S.questions[i].qtype||S.questions[i].qtype===S.qtype)filtered.push({q:S.questions[i],idx:i});
+  }
+  if(filtered.length===0){setFB("No more "+S.qtype+" questions in this batch. Try 'Mixed' or switch type.","wrong");return;}
+  S.lastSeen=filtered[0].idx;saveBatch(S.dtype);
+  S.checked=false;S.sel=null;S.qcount++;
+  renderPracticeQuestion(filtered[0].q);updateProgressUI();updateFreeBanner();
 }
 
-function hl(line) {
-  if (!line) return "";
-  function e(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  if (line.startsWith("#")) return '<span class="cmt">'+e(line)+"</span>";
-  if (line.startsWith("import ")) return '<span class="kw">import</span> <span class="plain">'+e(line.slice(7))+"</span>";
+function hl(line){
+  if(!line)return"";
+  function e(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  if(line.startsWith("#"))return'<span class="cmt">'+e(line)+"</span>";
+  if(line.startsWith("import "))return'<span class="kw">import</span> <span class="plain">'+e(line.slice(7))+"</span>";
   var am=line.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
-  if (am) {
+  if(am){
     var lhs=am[1],rhs=am[2].trim(),rh;
-    if (rhs.startsWith("'")||rhs.startsWith('"')) rh='<span class="str">'+e(rhs)+"</span>";
-    else if (rhs.startsWith("{")) rh='<span class="punc">'+e(rhs)+"</span>";
-    else if (rhs.startsWith("[")||rhs.startsWith("(")) rh='<span class="num">'+e(rhs)+"</span>";
-    else if (/^-?\d/.test(rhs)) rh='<span class="num">'+e(rhs)+"</span>";
+    if(rhs.startsWith("'")||rhs.startsWith('"'))rh='<span class="str">'+e(rhs)+"</span>";
+    else if(rhs.startsWith("{"))rh='<span class="punc">'+e(rhs)+"</span>";
+    else if(rhs.startsWith("[")||rhs.startsWith("("))rh='<span class="num">'+e(rhs)+"</span>";
+    else if(/^-?\d/.test(rhs))rh='<span class="num">'+e(rhs)+"</span>";
     else rh='<span class="plain">'+e(rhs)+"</span>";
-    return '<span class="plain">'+e(lhs)+'</span><span class="kw"> = </span>'+rh;
+    return'<span class="plain">'+e(lhs)+'</span><span class="kw"> = </span>'+rh;
   }
-  function cx(expr) {
+  function cx(expr){
     var ops=["==","!=","<=",">=","<",">"];
-    for (var oi=0;oi<ops.length;oi++) { var op=ops[oi],i=expr.indexOf(op); if (i===-1) continue; return '<span class="plain">'+e(expr.slice(0,i))+'</span><span class="punc">'+e(op)+'</span><span class="plain">'+e(expr.slice(i+op.length))+"</span>"; }
-    return '<span class="plain">'+e(expr)+"</span>";
+    for(var oi=0;oi<ops.length;oi++){var op=ops[oi],i=expr.indexOf(op);if(i===-1)continue;return'<span class="plain">'+e(expr.slice(0,i))+'</span><span class="punc">'+e(op)+'</span><span class="plain">'+e(expr.slice(i+op.length))+"</span>";}
+    return'<span class="plain">'+e(expr)+"</span>";
   }
-  if (line.startsWith("print(")&&line.endsWith(")")) return '<span class="kw">print</span><span class="punc">(</span>'+cx(line.slice(6,-1))+'<span class="punc">)</span>';
+  if(line.startsWith("print(")&&line.endsWith(")"))return'<span class="kw">print</span><span class="punc">(</span>'+cx(line.slice(6,-1))+'<span class="punc">)</span>';
   var mm=line.match(/^([a-zA-Z_]\w*)\.(\w+)\((.*)\)$/);
-  if (mm) return '<span class="plain">'+e(mm[1])+'</span><span class="punc">.</span><span class="kw">'+e(mm[2])+'</span><span class="punc">(</span><span class="str">'+e(mm[3])+'</span><span class="punc">)</span>';
-  return '<span class="plain">'+e(line)+"</span>";
+  if(mm)return'<span class="plain">'+e(mm[1])+'</span><span class="punc">.</span><span class="kw">'+e(mm[2])+'</span><span class="punc">(</span><span class="str">'+e(mm[3])+'</span><span class="punc">)</span>';
+  return'<span class="plain">'+e(line)+"</span>";
 }
 
-function renderCode(lines, gEl, cEl) {
-  gEl.innerHTML=lines.map(function(_,i){return '<div>'+(i+1)+'</div>';}).join("");
-  var cd=cEl; cd.innerHTML=lines.map(function(l){return '<div class="code-line">'+hl(l)+'</div>';}).join("");
-  cd.style.animation="none"; void cd.offsetHeight; cd.style.animation="fadeUp .2s ease";
+function renderCode(lines,gEl,cEl){
+  gEl.innerHTML=lines.map(function(_,i){return'<div>'+(i+1)+'</div>';}).join("");
+  var cd=cEl;cd.innerHTML=lines.map(function(l){return'<div class="code-line">'+hl(l)+'</div>';}).join("");
+  cd.style.animation="none";void cd.offsetHeight;cd.style.animation="fadeUp .2s ease";
 }
 
-function renderPracticeQuestion(q) {
+function renderPracticeQuestion(q){
   var lines=q.lines||[];
-  renderCode(lines, document.getElementById("gutter"), document.getElementById("code"));
+  renderCode(lines,document.getElementById("gutter"),document.getElementById("code"));
   document.getElementById("qnum").textContent="Question "+S.qcount;
-  var grid=document.getElementById("mcq-grid"); grid.innerHTML="";
-  var opts=q.options||[], ltrs=["A","B","C","D"];
-  opts.forEach(function(opt,i) {
-    var btn=document.createElement("button"); btn.className="mcq-opt"; btn.dataset.value=opt;
+  var grid=document.getElementById("mcq-grid");grid.innerHTML="";
+  var opts=q.options||[],ltrs=["A","B","C","D"];
+  opts.forEach(function(opt,i){
+    var btn=document.createElement("button");btn.className="mcq-opt";btn.dataset.value=opt;
     btn.innerHTML='<span class="opt-ltr">'+ltrs[i]+"</span>"+String(opt).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    btn.addEventListener("click",function() { if(S.checked)return; S.sel=opt; document.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");}); btn.classList.add("sel"); });
+    btn.addEventListener("click",function(){if(S.checked)return;S.sel=opt;document.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");});btn.classList.add("sel");});
     grid.appendChild(btn);
   });
-  var ti=document.getElementById("type-inp"); ti.value=""; ti.className="type-inp";
-  var mg=document.getElementById("mcq-grid"), ta=document.getElementById("type-area");
-  if (S.mode==="mcq") { mg.style.display="grid"; ta.classList.remove("show"); }
-  else               { mg.style.display="none";  ta.classList.add("show"); }
-  document.getElementById("qbadge").textContent  = S.mode==="mcq"?"Predict Output":"Type Answer";
-  document.getElementById("qprompt").textContent = S.mode==="mcq"?"What does this print?":"Type the exact output:";
-  setFB("","empty"); document.getElementById("expl").className="expl"; document.getElementById("btn-check").disabled=false;
+  var ti=document.getElementById("type-inp");ti.value="";ti.className="type-inp";
+  var mg=document.getElementById("mcq-grid"),ta=document.getElementById("type-area");
+  if(S.mode==="mcq"){mg.style.display="grid";ta.classList.remove("show");}
+  else{mg.style.display="none";ta.classList.add("show");}
+  document.getElementById("qbadge").textContent=S.mode==="mcq"?"Predict Output":"Type Answer";
+  document.getElementById("qprompt").textContent=S.mode==="mcq"?"What does this print?":"Type the exact output:";
+  setFB("","empty");document.getElementById("expl").className="expl";document.getElementById("btn-check").disabled=false;
 }
 
-function ansMatch(user, correct) {
-  user=String(user||"").trim(); correct=String(correct||"").trim();
-  if (!user) return false;
-  if (user===correct) return true;
-  if (user.toLowerCase()===correct.toLowerCase()&&["true","false","none"].includes(correct.toLowerCase())) return true;
-  var fu=parseFloat(user),fc=parseFloat(correct);
-  if (!isNaN(fu)&&!isNaN(fc)&&fu===fc) return true;
-  if (correct.startsWith("'")&&correct.endsWith("'")) { var inn=correct.slice(1,-1); if (user===inn||user==="'"+inn+"'"|user==='"'+inn+'"') return true; }
+function ansMatch(user,correct){
+  user=String(user||"").trim();correct=String(correct||"").trim();
+  if(!user)return false;if(user===correct)return true;
+  if(user.toLowerCase()===correct.toLowerCase()&&["true","false","none"].includes(correct.toLowerCase()))return true;
+  var fu=parseFloat(user),fc=parseFloat(correct);if(!isNaN(fu)&&!isNaN(fc)&&fu===fc)return true;
+  if(correct.startsWith("'")&&correct.endsWith("'")){var inn=correct.slice(1,-1);if(user===inn||user==="'"+inn+"'"|user==='"'+inn+'"')return true;}
   return false;
 }
 
-function setFB(t,c) { var fb=document.getElementById("feedback"); fb.textContent=t; fb.className="feedback "+c; }
-function showExpl(expl) { if (!expl) return; var el=document.getElementById("expl"); el.innerHTML="<strong>Why?</strong> "+String(expl).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); el.className="expl show"; }
-function lockOpts(correct) {
-  document.querySelectorAll(".mcq-opt").forEach(function(btn) { btn.disabled=true; if(btn.dataset.value===correct) btn.classList.add("correct"); else if(btn.classList.contains("sel")) btn.classList.add("wrong"); });
-  var ti=document.getElementById("type-inp"); if(ti.value.trim()) { if(ansMatch(ti.value,correct)) ti.classList.add("correct"); else ti.classList.add("wrong"); }
+function setFB(t,c){var fb=document.getElementById("feedback");fb.textContent=t;fb.className="feedback "+c;}
+function showExpl(expl){if(!expl)return;var el=document.getElementById("expl");el.innerHTML="<strong>Why?</strong> "+String(expl).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");el.className="expl show";}
+function lockOpts(correct){
+  document.querySelectorAll(".mcq-opt").forEach(function(btn){btn.disabled=true;if(btn.dataset.value===correct)btn.classList.add("correct");else if(btn.classList.contains("sel"))btn.classList.add("wrong");});
+  var ti=document.getElementById("type-inp");if(ti.value.trim()){if(ansMatch(ti.value,correct))ti.classList.add("correct");else ti.classList.add("wrong");}
 }
 
 var _toastT=null;
-function toast(msg) { var t=document.getElementById("toast"); t.textContent=msg; t.className="toast success show"; if(_toastT)clearTimeout(_toastT); _toastT=setTimeout(function(){t.classList.remove("show");},2200); }
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.className="toast success show";if(_toastT)clearTimeout(_toastT);_toastT=setTimeout(function(){t.classList.remove("show");},2200);}
 
-function updHdr() {
-  document.getElementById("hs-done").textContent    = S.total;
-  document.getElementById("hs-correct").textContent = S.score;
-  document.getElementById("hs-wrong").textContent   = S.wrong;
-  document.getElementById("hs-streak").textContent  = S.best+(S.best>0?"⚡":"");
+function updHdr(){
+  document.getElementById("hs-done").textContent=S.total;
+  document.getElementById("hs-correct").textContent=S.score;
+  document.getElementById("hs-wrong").textContent=S.wrong;
+  document.getElementById("hs-streak").textContent=S.best+(S.best>0?"⚡":"");
 }
 
-function checkAns() {
-  if (S.checked) return;
-  var q=S.questions[S.lastSeen]; if (!q) return;
+function checkAns(){
+  if(S.checked)return;
+  var q=S.questions[S.lastSeen];if(!q)return;
   var uv;
-  if (S.mode==="mcq") { uv=S.sel; if(!uv){setFB("← Select an option first","wrong");return;} }
-  else { uv=document.getElementById("type-inp").value.trim(); if(!uv){setFB("← Type your answer first","wrong");return;} }
-  var correct=q.answer, ok=ansMatch(uv,correct);
-  S.total++; S.checked=true;
-  if (ok) { S.score++; S.streak++; S.best=Math.max(S.best,S.streak); setFB("✓  Correct!","correct"); if(S.streak>=3) toast(S.streak+" in a row! ⚡"); }
-  else    { S.streak=0; S.wrong++; setFB("✗  Wrong — Answer: "+correct,"wrong"); }
-  document.getElementById("btn-check").disabled=true; lockOpts(correct); showExpl(q.explanation); updHdr(); updateProgressUI();
+  if(S.mode==="mcq"){uv=S.sel;if(!uv){setFB("← Select an option first","wrong");return;}}
+  else{uv=document.getElementById("type-inp").value.trim();if(!uv){setFB("← Type your answer first","wrong");return;}}
+  var correct=q.answer,ok=ansMatch(uv,correct);
+  S.total++;S.checked=true;
+  if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);setFB("✓  Correct!","correct");if(S.streak>=3)toast(S.streak+" in a row! ⚡");}
+  else{S.streak=0;S.wrong++;setFB("✗  Wrong — Answer: "+correct,"wrong");}
+  document.getElementById("btn-check").disabled=true;lockOpts(correct);showExpl(q.explanation);updHdr();updateProgressUI();
+  if(S.plan!=="paid"){
+    if(!S.dailyProgress[S.dtype])S.dailyProgress[S.dtype]={used:0,completed:false};
+    S.dailyProgress[S.dtype].used=Math.min((S.dailyProgress[S.dtype].used||0)+1,S.freeQuestionsPerConcept);
+    if(S.dailyProgress[S.dtype].used>=S.freeQuestionsPerConcept)S.dailyProgress[S.dtype].completed=true;
+    updateFreeBanner();
+  }
 }
 
-document.getElementById("btn-check").addEventListener("click", checkAns);
-document.getElementById("btn-next").addEventListener("click",  function() { showNextQuestion(); });
-document.getElementById("btn-reset").addEventListener("click", function() {
-  S.score=0;S.total=0;S.streak=0;S.wrong=0;S.best=0;S.qcount=0; updHdr();
-  try { localStorage.removeItem(S.plan==="paid"?lsKeyPaid(S.dtype):lsKeyFree(S.dtype)); } catch(e) {}
+document.getElementById("btn-check").addEventListener("click",checkAns);
+document.getElementById("btn-next").addEventListener("click",function(){showNextQuestion();});
+document.getElementById("btn-reset").addEventListener("click",function(){
+  S.score=0;S.total=0;S.streak=0;S.wrong=0;S.best=0;S.qcount=0;updHdr();
+  try{localStorage.removeItem(S.plan==="paid"?lsKeyPaid(S.dtype):lsKeyFree(S.dtype));}catch(e){}
   fetchFromServer(S.dtype);
 });
 
-document.addEventListener("keydown", function(e) {
-  if (document.getElementById("panel-practice").classList.contains("active")) return;
-  if (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA") return;
+document.addEventListener("keydown",function(e){
+  if(!document.getElementById("panel-practice").classList.contains("active"))return;
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;
   var m={KeyA:0,KeyB:1,KeyC:2,KeyD:3};
-  if (m[e.code]!==undefined&&!S.checked&&S.mode==="mcq") { var opts=document.querySelectorAll(".mcq-opt"); if(opts[m[e.code]])opts[m[e.code]].click(); return; }
-  if ((e.code==="Enter"||e.code==="Space")&&S.mode==="mcq") { e.preventDefault(); if(!S.checked)checkAns(); else showNextQuestion(); }
-  if (e.code==="Enter"&&S.mode==="type") { if(!S.checked)checkAns(); else showNextQuestion(); }
+  if(m[e.code]!==undefined&&!S.checked&&S.mode==="mcq"){var opts=document.querySelectorAll(".mcq-opt");if(opts[m[e.code]])opts[m[e.code]].click();return;}
+  if((e.code==="Enter"||e.code==="Space")&&S.mode==="mcq"){e.preventDefault();if(!S.checked)checkAns();else showNextQuestion();}
+  if(e.code==="Enter"&&S.mode==="type"){if(!S.checked)checkAns();else showNextQuestion();}
 });
 
-document.querySelectorAll(".mode-btn").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active"); S.mode=btn.dataset.mode;
-    var q=S.questions[S.lastSeen]; if(q)renderPracticeQuestion(q);
+document.querySelectorAll(".mode-btn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");S.mode=btn.dataset.mode;
+    var q=S.questions[S.lastSeen];if(q)renderPracticeQuestion(q);
   });
 });
 
-document.querySelectorAll("#dtype-group .tog").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    if (btn.classList.contains("locked")) { showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan."); return; }
-    if (S.questions.length>0) saveBatch(S.dtype);
+document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    if(btn.classList.contains("locked")){showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan.");return;}
+    if(S.questions.length>0)saveBatch(S.dtype);
     loadDtype(btn.dataset.dtype);
   });
 });
 
-document.querySelectorAll("#qtype-group .tog").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    document.querySelectorAll("#qtype-group .tog").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active"); S.qtype=btn.dataset.qtype;
+document.querySelectorAll("#qtype-group .tog").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    document.querySelectorAll("#qtype-group .tog").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");S.qtype=btn.dataset.qtype;
     showNextQuestion();
   });
 });
@@ -1595,19 +1411,18 @@ document.querySelectorAll("#qtype-group .tog").forEach(function(btn) {
 // ═══════════════════════════════════════════
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-function loadAdminTests() {
+function loadAdminTests(){
   var grid=document.getElementById("admin-tests-grid");
   grid.innerHTML='<div class="empty-state"><div class="spinner" style="margin:0 auto 10px"></div>Loading...</div>';
   db.collection("adminTests").where("status","in",["active","upcoming","completed"]).orderBy("scheduledAt","desc").limit(20).get()
-  .then(function(snap) {
-    if (snap.empty) { grid.innerHTML='<div class="empty-state">No tests published yet. Check back soon!</div>'; return; }
+  .then(function(snap){
+    if(snap.empty){grid.innerHTML='<div class="empty-state">No tests published yet. Check back soon!</div>';return;}
     var attemptedIds=(S.userData&&S.userData.attemptedTests||[]).map(function(t){return t.testId;});
     var html="";
-    snap.forEach(function(doc) {
-      var t=doc.data(), id=doc.id;
-      var isAttempted=attemptedIds.includes(id);
-      var isLocked=t.accessType==="paid"&&S.plan!=="paid";
-      var isActive=t.status==="active", isUpcoming=t.status==="upcoming";
+    snap.forEach(function(doc){
+      var t=doc.data(),id=doc.id;
+      var isAttempted=attemptedIds.includes(id),isLocked=t.accessType==="paid"&&S.plan!=="paid";
+      var isActive=t.status==="active",isUpcoming=t.status==="upcoming";
       var stripeClass=t.accessType==="paid"?"paid":"free";
       var badgeClass=isAttempted?"done-b":isLocked?"locked-b":t.accessType==="paid"?"paid-b":"free";
       var badgeText=isAttempted?"Done":t.accessType==="paid"?"Pro":"Free";
@@ -1615,7 +1430,7 @@ function loadAdminTests() {
       var btnText=isAttempted?"Attempted":isLocked?"🔒 Pro Only":isUpcoming?"Upcoming":"Start Test";
       var cardClass=isAttempted?"done-card":isLocked?"locked-card":"";
       var date="";
-      if (t.scheduledAt) { try { var d=t.scheduledAt.toDate?t.scheduledAt.toDate():new Date(t.scheduledAt); date=d.toLocaleDateString("en-IN",{day:"2-digit",month:"short"}); } catch(e){} }
+      if(t.scheduledAt){try{var d=t.scheduledAt.toDate?t.scheduledAt.toDate():new Date(t.scheduledAt);date=d.toLocaleDateString("en-IN",{day:"2-digit",month:"short"});}catch(e){}}
       html+='<div class="tc '+cardClass+'" data-id="'+id+'" data-attempted="'+isAttempted+'" data-locked="'+isLocked+'" data-active="'+isActive+'">'+
         '<div class="tc-stripe '+stripeClass+'"></div>'+
         '<div class="tc-body">'+
@@ -1627,40 +1442,37 @@ function loadAdminTests() {
       '</div>';
     });
     grid.innerHTML=html;
-    grid.querySelectorAll(".tc").forEach(function(card) {
-      card.addEventListener("click", function() {
-        if (card.dataset.locked==="true") { showUpgrade("This test is for Pro students only."); return; }
-        if (card.dataset.attempted==="true") { showToast("Already attempted this test","info"); return; }
-        if (card.dataset.active!=="true") { showToast("This test is not active yet","info"); return; }
+    grid.querySelectorAll(".tc").forEach(function(card){
+      card.addEventListener("click",function(){
+        if(card.dataset.locked==="true"){showUpgrade("This test is for Pro students only.");return;}
+        if(card.dataset.attempted==="true"){showToast("Already attempted this test","info");return;}
+        if(card.dataset.active!=="true"){showToast("This test is not active yet","info");return;}
         startAdminTest(card.dataset.id);
       });
     });
-  }).catch(function(e) { grid.innerHTML='<div class="empty-state">Error loading tests.</div>'; console.error(e); });
+  }).catch(function(e){grid.innerHTML='<div class="empty-state">Error loading tests.</div>';console.error(e);});
 }
 
-function startAdminTest(testId) {
-  document.getElementById("load-text").textContent="Loading test...";
-  showScreen("loading");
-  db.collection("adminTests").doc(testId).get().then(function(snap) {
-    if (!snap.exists) { showToast("Test not found","error"); showScreen("app"); return; }
+function startAdminTest(testId){
+  document.getElementById("load-text").textContent="Loading test...";showScreen("loading");
+  db.collection("adminTests").doc(testId).get().then(function(snap){
+    if(!snap.exists){showToast("Test not found","error");showScreen("app");return;}
     var testData=snap.data();
     return db.collection("adminTests").doc(testId).collection("questions").orderBy("questionNumber").get()
-    .then(function(qSnap) {
-      var questions=[]; qSnap.forEach(function(doc){questions.push(doc.data());});
-      S.testMode="admin"; S.testId=testId; S.testQuestions=questions;
-      S.testTitle=testData.title||"Mock Test";
-      S.durationSecs=testData.duration?testData.duration*60:null;
-      S.testAnswers=questions.map(function(){return {answer:null,timeTakenSecs:0,lines:[]};});
-      S.currentQ=0; S.totalTimeSecs=0; S.lastTestType="admin";
-      startTestAttempt();
+    .then(function(qSnap){
+      var questions=[];qSnap.forEach(function(doc){questions.push(doc.data());});
+      S.testMode="admin";S.testId=testId;S.testQuestions=questions;
+      S.testTitle=testData.title||"Mock Test";S.durationSecs=testData.duration?testData.duration*60:null;
+      S.testAnswers=questions.map(function(){return{answer:null,timeTakenSecs:0,lines:[]};});
+      S.currentQ=0;S.totalTimeSecs=0;S.lastTestType="admin";startTestAttempt();
     });
-  }).catch(function(e) { console.error(e); showToast("Error starting test","error"); showScreen("app"); });
+  }).catch(function(e){console.error(e);showToast("Error starting test","error");showScreen("app");});
 }
 
-function loadSelfTestPanel() {
+function loadSelfTestPanel(){
   var el=document.getElementById("self-test-content");
-  if (S.plan!=="paid") {
-    el.innerHTML='<div class="paid-wall"><div class="paid-wall-icon">🔒</div><div class="paid-wall-title">Pro Feature</div><div class="paid-wall-sub">Self-generated tests are available for Pro students. Generate unlimited custom tests, get detailed email reports, and track your weak concepts.</div><button class="btn-upgrade" onclick="showUpgrade(\'Upgrade to Pro to unlock self-generated tests.\')">Upgrade to Pro</button></div>';
+  if(S.plan!=="paid"){
+    el.innerHTML='<div class="paid-wall"><div class="paid-wall-icon">🔒</div><div class="paid-wall-title">Pro Feature</div><div class="paid-wall-sub">Self-generated tests are available for Pro students.</div><button class="btn-upgrade" onclick="showUpgrade(&quot;Upgrade to Pro to unlock self-generated tests.&quot;)">Upgrade to Pro</button></div>';
     return;
   }
   el.innerHTML='<div class="self-setup">'+
@@ -1671,70 +1483,61 @@ function loadSelfTestPanel() {
     '<div class="setup-card"><div class="setup-lbl">Number of Questions</div><div class="opt-grp" id="st-count">'+
       '<button class="opt-pill on" data-val="10">10</button><button class="opt-pill" data-val="20">20</button><button class="opt-pill" data-val="30">30</button></div></div>'+
     '<button class="btn-gen" id="btn-gen-self">Generate My Test ⚡</button></div>';
-  document.querySelectorAll("#st-dtype .opt-pill,#st-count .opt-pill").forEach(function(btn) {
-    btn.addEventListener("click",function() { var g=btn.closest(".opt-grp"); g.querySelectorAll(".opt-pill").forEach(function(b){b.classList.remove("on");}); btn.classList.add("on"); });
+  document.querySelectorAll("#st-dtype .opt-pill,#st-count .opt-pill").forEach(function(btn){
+    btn.addEventListener("click",function(){var g=btn.closest(".opt-grp");g.querySelectorAll(".opt-pill").forEach(function(b){b.classList.remove("on");});btn.classList.add("on");});
   });
-  document.getElementById("btn-gen-self").addEventListener("click", generateSelfTest);
+  document.getElementById("btn-gen-self").addEventListener("click",generateSelfTest);
 }
 
-function generateSelfTest() {
-  var dtype=document.querySelector("#st-dtype .opt-pill.on");
-  var count=document.querySelector("#st-count .opt-pill.on");
-  if (!dtype||!count) return;
-  var btn=document.getElementById("btn-gen-self"); btn.disabled=true; btn.textContent="Generating...";
-  document.getElementById("load-text").textContent="Generating your test..."; showScreen("loading");
-  fetch(CF_GENERATE_SELF, {
-    method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({dtype:dtype.dataset.val,count:parseInt(count.dataset.val)}),
-  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
-  .then(function(r) {
-    if (btn) { btn.disabled=false; btn.textContent="Generate My Test ⚡"; }
-    if (!r.ok) { showToast(r.data.message||"Error generating test","error"); showScreen("app"); return; }
-    S.testMode="self"; S.testId=r.data.testId; S.testQuestions=r.data.questions;
-    S.testTitle="My Custom Test — "+dtype.dataset.val; S.durationSecs=null;
+function generateSelfTest(){
+  var dtype=document.querySelector("#st-dtype .opt-pill.on"),count=document.querySelector("#st-count .opt-pill.on");
+  if(!dtype||!count)return;
+  var btn=document.getElementById("btn-gen-self");btn.disabled=true;btn.textContent="Generating...";
+  document.getElementById("load-text").textContent="Generating your test...";showScreen("loading");
+  fetch(CF_GENERATE_SELF,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({dtype:dtype.dataset.val,count:parseInt(count.dataset.val)})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(btn){btn.disabled=false;btn.textContent="Generate My Test ⚡";}
+    if(!r.ok){showToast(r.data.message||"Error generating test","error");showScreen("app");return;}
+    S.testMode="self";S.testId=r.data.testId;S.testQuestions=r.data.questions;
+    S.testTitle="My Custom Test — "+dtype.dataset.val;S.durationSecs=null;
     S.testAnswers=r.data.questions.map(function(){return{answer:null,timeTakenSecs:0,lines:[]};});
-    S.currentQ=0; S.totalTimeSecs=0; S.lastTestType="self";
-    startTestAttempt();
-  }).catch(function(e) {
-    if (btn) { btn.disabled=false; btn.textContent="Generate My Test ⚡"; }
-    console.error(e); showToast("Error generating test","error"); showScreen("app");
-  });
+    S.currentQ=0;S.totalTimeSecs=0;S.lastTestType="self";startTestAttempt();
+  }).catch(function(e){if(btn){btn.disabled=false;btn.textContent="Generate My Test ⚡";}console.error(e);showToast("Error generating test","error");showScreen("app");});
 }
 
-// ─── TEST ATTEMPT ───
-function startTestAttempt() {
-  S.currentQ=0; S.totalTimeSecs=0; S.questionStartTime=Date.now();
-  renderTestNav(); renderTestQuestion(); startTestTimer(); showScreen("attempt");
+function startTestAttempt(){
+  S.currentQ=0;S.totalTimeSecs=0;S.questionStartTime=Date.now();
+  renderTestNav();renderTestQuestion();startTestTimer();showScreen("attempt");
 }
 
-function renderTestNav() {
+function renderTestNav(){
   var nav=document.getElementById("q-nav");
-  nav.innerHTML=S.testQuestions.map(function(_,i) {
+  nav.innerHTML=S.testQuestions.map(function(_,i){
     var ans=S.testAnswers[i]&&S.testAnswers[i].answer!==null;
-    var cls=i===S.currentQ?"q-dot curr":ans?"q-dot ans":"q-dot";
-    return '<button class="'+cls+'" data-idx="'+i+'">'+(i+1)+'</button>';
+    return'<button class="q-dot'+(i===S.currentQ?" curr":ans?" ans":"")+'" data-idx="'+i+'">'+(i+1)+'</button>';
   }).join("");
-  nav.querySelectorAll(".q-dot").forEach(function(dot) {
-    dot.addEventListener("click",function() { saveTestAnswer(); S.currentQ=parseInt(dot.dataset.idx); S.questionStartTime=Date.now(); renderTestNav(); renderTestQuestion(); });
+  nav.querySelectorAll(".q-dot").forEach(function(dot){
+    dot.addEventListener("click",function(){saveTestAnswer();S.currentQ=parseInt(dot.dataset.idx);S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
   });
 }
 
-function renderTestQuestion() {
-  var q=S.testQuestions[S.currentQ], ans=S.testAnswers[S.currentQ], total=S.testQuestions.length;
+function renderTestQuestion(){
+  var q=S.testQuestions[S.currentQ],ans=S.testAnswers[S.currentQ],total=S.testQuestions.length;
   document.getElementById("ta-title").textContent=S.testTitle;
   document.getElementById("ta-qnum").textContent="Question "+(S.currentQ+1);
   document.getElementById("ta-qtype").textContent=q.qtype||"Predict Output";
   document.getElementById("qprog").textContent=(S.currentQ+1)+" / "+total;
-  var gEl=document.getElementById("ta-gutter"), cEl=document.getElementById("ta-code");
-  gEl.innerHTML=(q.lines||[]).map(function(_,i){return '<div>'+(i+1)+'</div>';}).join("");
-  cEl.innerHTML=(q.lines||[]).map(function(l){return '<div class="code-line">'+hl(l)+'</div>';}).join("");
-  var mcq=document.getElementById("ta-mcq"), ltrs=["A","B","C","D"];
-  mcq.innerHTML=(q.options||[]).map(function(opt,i) {
+  var gEl=document.getElementById("ta-gutter"),cEl=document.getElementById("ta-code");
+  gEl.innerHTML=(q.lines||[]).map(function(_,i){return'<div>'+(i+1)+'</div>';}).join("");
+  cEl.innerHTML=(q.lines||[]).map(function(l){return'<div class="code-line">'+hl(l)+'</div>';}).join("");
+  var mcq=document.getElementById("ta-mcq"),ltrs=["A","B","C","D"];
+  mcq.innerHTML=(q.options||[]).map(function(opt,i){
     var isSel=ans&&ans.answer===opt;
-    return '<button class="mcq-opt'+(isSel?" sel":"")+'" data-val="'+esc(opt)+'"><span class="opt-ltr">'+ltrs[i]+'</span>'+esc(opt)+'</button>';
+    return'<button class="mcq-opt'+(isSel?" sel":"")+'" data-val="'+esc(opt)+'"><span class="opt-ltr">'+ltrs[i]+'</span>'+esc(opt)+'</button>';
   }).join("");
-  mcq.querySelectorAll(".mcq-opt").forEach(function(btn) {
-    btn.addEventListener("click",function() { mcq.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");}); btn.classList.add("sel"); S.testAnswers[S.currentQ].answer=btn.dataset.val; renderTestNav(); });
+  mcq.querySelectorAll(".mcq-opt").forEach(function(btn){
+    btn.addEventListener("click",function(){mcq.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");});btn.classList.add("sel");S.testAnswers[S.currentQ].answer=btn.dataset.val;renderTestNav();});
   });
   document.getElementById("ta-prev").disabled=S.currentQ===0;
   document.getElementById("ta-next").disabled=S.currentQ===total-1;
@@ -1742,25 +1545,25 @@ function renderTestQuestion() {
   document.getElementById("unans-warn").textContent=unanswered>0?unanswered+" unanswered":"";
 }
 
-function saveTestAnswer() {
+function saveTestAnswer(){
   var elapsed=Math.round((Date.now()-(S.questionStartTime||Date.now()))/1000);
-  if (!S.testAnswers[S.currentQ]) S.testAnswers[S.currentQ]={answer:null,timeTakenSecs:0,lines:[]};
+  if(!S.testAnswers[S.currentQ])S.testAnswers[S.currentQ]={answer:null,timeTakenSecs:0,lines:[]};
   S.testAnswers[S.currentQ].timeTakenSecs=elapsed;
   S.testAnswers[S.currentQ].lines=S.testQuestions[S.currentQ].lines||[];
 }
 
-function startTestTimer() {
-  if (S.timerInterval) clearInterval(S.timerInterval);
+function startTestTimer(){
+  if(S.timerInterval)clearInterval(S.timerInterval);
   var startTime=Date.now();
-  S.timerInterval=setInterval(function() {
+  S.timerInterval=setInterval(function(){
     S.totalTimeSecs=Math.round((Date.now()-startTime)/1000);
     var badge=document.getElementById("timer-badge");
-    if (S.durationSecs!==null) {
+    if(S.durationSecs!==null){
       var rem=Math.max(0,S.durationSecs-S.totalTimeSecs);
       var mm=Math.floor(rem/60),ss=rem%60;
       badge.textContent="⏱ "+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
       badge.className=rem<=60?"timer-badge urgent":"timer-badge";
-      if (rem===0) { clearInterval(S.timerInterval); showToast("Time's up! Submitting...","info"); submitTest(true); }
+      if(rem===0){clearInterval(S.timerInterval);showToast("Time's up! Submitting...","info");submitTest(true);}
     } else {
       var mm2=Math.floor(S.totalTimeSecs/60),ss2=S.totalTimeSecs%60;
       badge.textContent="⏱ "+String(mm2).padStart(2,"0")+":"+String(ss2).padStart(2,"0");
@@ -1768,37 +1571,33 @@ function startTestTimer() {
   },1000);
 }
 
-document.getElementById("ta-prev").addEventListener("click",function(){if(S.currentQ===0)return; saveTestAnswer();S.currentQ--;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
-document.getElementById("ta-next").addEventListener("click",function(){if(S.currentQ>=S.testQuestions.length-1)return; saveTestAnswer();S.currentQ++;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
-document.getElementById("ta-submit").addEventListener("click",function() {
+document.getElementById("ta-prev").addEventListener("click",function(){if(S.currentQ===0)return;saveTestAnswer();S.currentQ--;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
+document.getElementById("ta-next").addEventListener("click",function(){if(S.currentQ>=S.testQuestions.length-1)return;saveTestAnswer();S.currentQ++;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
+document.getElementById("ta-submit").addEventListener("click",function(){
   saveTestAnswer();
   var unanswered=S.testAnswers.filter(function(a){return !a||a.answer===null;}).length;
-  if (unanswered>0) showModal("Submit Test?","You have "+unanswered+" unanswered question(s). Submit anyway?","Submit Anyway",function(){submitTest(false);});
+  if(unanswered>0)showModal("Submit Test?","You have "+unanswered+" unanswered question(s). Submit anyway?","Submit Anyway",function(){submitTest(false);});
   else showModal("Submit Test?","Are you sure? You cannot retake this test.","Submit",function(){submitTest(false);});
 });
 
-function submitTest(auto) {
-  if (S.timerInterval) { clearInterval(S.timerInterval); S.timerInterval=null; }
+function submitTest(auto){
+  if(S.timerInterval){clearInterval(S.timerInterval);S.timerInterval=null;}
   saveTestAnswer();
-  document.getElementById("load-text").textContent="Submitting..."; showScreen("loading");
+  document.getElementById("load-text").textContent="Submitting...";showScreen("loading");
   var url=S.testMode==="self"?CF_SUBMIT_SELF:CF_SUBMIT_ADMIN;
-  fetch(url, {
-    method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({testId:S.testId,studentAnswers:S.testAnswers,totalTimeSecs:S.totalTimeSecs}),
-  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
-  .then(function(r) {
-    if (!r.ok) { showToast(r.data.message||"Submission error","error"); showScreen("app"); return; }
-    S.lastResult=r.data; S.lastTestId=S.testId;
-    // Refresh userData
+  fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({testId:S.testId,studentAnswers:S.testAnswers,totalTimeSecs:S.totalTimeSecs})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(!r.ok){showToast(r.data.message||"Submission error","error");showScreen("app");return;}
+    S.lastResult=r.data;S.lastTestId=S.testId;
     db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan=snap.data().plan||"free";}});
-    renderResult(r.data); showScreen("result");
-  }).catch(function(e) { console.error(e); showToast("Submission failed.","error"); showScreen("app"); });
+    renderResult(r.data);showScreen("result");
+  }).catch(function(e){console.error(e);showToast("Submission failed.","error");showScreen("app");});
 }
 
-// ─── RESULT ───
-function renderResult(result) {
+function renderResult(result){
   var score=result.score,total=result.total,percentage=result.percentage,totalTimeSecs=result.totalTimeSecs||0;
-  var conceptBreakdown=result.conceptBreakdown||{}, weakConcepts=result.weakConcepts||[], strongConcepts=result.strongConcepts||[];
+  var conceptBreakdown=result.conceptBreakdown||{},weakConcepts=result.weakConcepts||[],strongConcepts=result.strongConcepts||[];
   var mins=Math.floor(totalTimeSecs/60),secs=totalTimeSecs%60;
   var timeStr=mins>0?mins+"m "+secs+"s":secs+"s";
   var sc=percentage>=80?"var(--green)":percentage>=50?"var(--amber)":"var(--red)";
@@ -1807,27 +1606,24 @@ function renderResult(result) {
     '<div><div class="sc-val" style="color:'+sc+'">'+score+'/'+total+'</div><div class="sc-lbl">Score</div></div>'+
     '<div><div class="sc-val" style="color:'+sc+'">'+percentage+'%</div><div class="sc-lbl">Accuracy</div></div>'+
     '<div><div class="sc-val" style="color:var(--blue)">'+timeStr+'</div><div class="sc-lbl">Time</div></div>';
-  // Concepts
   var cbHtml='<div class="rs-sec-title">Concept Breakdown</div>';
-  if (Object.keys(conceptBreakdown).length>0) {
-    Object.entries(conceptBreakdown).forEach(function(e) {
+  if(Object.keys(conceptBreakdown).length>0){
+    Object.entries(conceptBreakdown).forEach(function(e){
       var c=e[0],d=e[1],pct=d.total>0?Math.round((d.correct/d.total)*100):0;
       var fc=pct>=80?"var(--green)":pct>=50?"var(--amber)":"var(--red)";
       cbHtml+='<div class="cb-row"><div class="cb-name">'+esc(c)+'</div><div class="cb-bar"><div class="cb-fill" style="width:'+pct+'%;background:'+fc+'"></div></div><div class="cb-score">'+d.correct+'/'+d.total+'</div></div>';
     });
   } else cbHtml+='<div style="color:var(--muted);font-size:13px">No breakdown available.</div>';
   document.getElementById("rs-concepts").innerHTML=cbHtml;
-  // Analysis
   var anHtml='<div class="rs-sec-title">Analysis</div>';
-  if (weakConcepts.length>0) anHtml+='<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:5px">⚠ Practice More</div><div class="tag-row">'+weakConcepts.map(function(c){return '<span class="tag weak">'+esc(c)+'</span>';}).join("")+'</div></div>';
-  if (strongConcepts.length>0) anHtml+='<div><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px">✓ Strong Areas</div><div class="tag-row">'+strongConcepts.map(function(c){return '<span class="tag strong">'+esc(c)+'</span>';}).join("")+'</div></div>';
-  if (!weakConcepts.length&&!strongConcepts.length) anHtml+='<div style="color:var(--muted);font-size:13px">Keep practising!</div>';
+  if(weakConcepts.length>0)anHtml+='<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:5px">⚠ Practice More</div><div class="tag-row">'+weakConcepts.map(function(c){return'<span class="tag weak">'+esc(c)+'</span>';}).join("")+'</div></div>';
+  if(strongConcepts.length>0)anHtml+='<div><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px">✓ Strong Areas</div><div class="tag-row">'+strongConcepts.map(function(c){return'<span class="tag strong">'+esc(c)+'</span>';}).join("")+'</div></div>';
+  if(!weakConcepts.length&&!strongConcepts.length)anHtml+='<div style="color:var(--muted);font-size:13px">Keep practising!</div>';
   document.getElementById("rs-analysis").innerHTML=anHtml;
-  // Questions
   var qHtml='<div class="rs-sec-title">Question Detail</div>';
-  S.testAnswers.forEach(function(ans,i) {
+  S.testAnswers.forEach(function(ans,i){
     var qr=result.questions&&result.questions[i];
-    var isCorrect=qr?qr.isCorrect:null, correct=qr?qr.correctAnswer:"";
+    var isCorrect=qr?qr.isCorrect:null,correct=qr?qr.correctAnswer:"";
     var timeTaken=(ans&&ans.timeTakenSecs)||0;
     var codeStr=(ans&&ans.lines||S.testQuestions[i]&&S.testQuestions[i].lines||[]).join("\n");
     qHtml+='<div class="qd-row">'+
@@ -1841,57 +1637,46 @@ function renderResult(result) {
     '</div>';
   });
   document.getElementById("rs-questions").innerHTML=qHtml;
-  // Email notice
-  var emailEl=document.getElementById("rs-email-notice");
-  emailEl.innerHTML=result.emailSent?'✉ <span class="ok">Detailed report sent to your email</span>':'';
-  // Leaderboard btn
-  var lbBtn=document.getElementById("rs-lb-btn");
-  lbBtn.style.display=S.lastTestType==="admin"&&S.plan==="paid"?"":"none";
+  document.getElementById("rs-email-notice").innerHTML=result.emailSent?'✉ <span class="ok">Detailed report sent to your email</span>':'';
+  document.getElementById("rs-lb-btn").style.display=S.lastTestType==="admin"&&S.plan==="paid"?"":"none";
   document.getElementById("rs-lb-section").innerHTML="";
 }
 
-document.getElementById("rs-done-btn").addEventListener("click", function() {
-  showScreen("app"); loadAdminTests(); loadHistory();
-});
-document.getElementById("rs-lb-btn").addEventListener("click", function() {
-  if (!S.lastTestId) return;
-  document.getElementById("load-text").textContent="Loading leaderboard..."; showScreen("loading");
-  fetch(CF_LEADERBOARD, {
-    method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({testId:S.lastTestId}),
-  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
-  .then(function(r) {
-    if (!r.ok) { showToast(r.data.message||"Error","error"); showScreen("result"); return; }
-    var data=r.data, html='<div class="rs-sec">';
-    if (data.studentRank) html+='<div class="lb-your-rank">Your Rank: #'+data.studentRank+' of '+data.totalAttempts+' students</div>';
+document.getElementById("rs-done-btn").addEventListener("click",function(){showScreen("app");loadAdminTests();loadHistory();});
+document.getElementById("rs-lb-btn").addEventListener("click",function(){
+  if(!S.lastTestId)return;
+  document.getElementById("load-text").textContent="Loading leaderboard...";showScreen("loading");
+  fetch(CF_LEADERBOARD,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({testId:S.lastTestId})})
+  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(!r.ok){showToast(r.data.message||"Error","error");showScreen("result");return;}
+    var data=r.data,html='<div class="rs-sec">';
+    if(data.studentRank)html+='<div class="lb-your-rank">Your Rank: #'+data.studentRank+' of '+data.totalAttempts+' students</div>';
     html+='<div style="background:var(--card);border:1px solid var(--bdr2);border-radius:10px;overflow:hidden">';
-    (data.leaderboard||[]).forEach(function(e) {
+    (data.leaderboard||[]).forEach(function(e){
       var rankIcon=e.rank===1?"🥇":e.rank===2?"🥈":e.rank===3?"🥉":"#"+e.rank;
       var mm=Math.floor((e.totalTimeSecs||0)/60),ss=(e.totalTimeSecs||0)%60;
       html+='<div class="lb-row'+(e.isYou?" you":"")+'"><div class="lb-rank'+(e.rank<=3?" top":"")+'">'+rankIcon+'</div><div class="lb-name'+(e.isYou?" you":"")+'">'+esc(e.name)+'</div><div class="lb-score">'+e.score+'/'+e.total+'</div><div class="lb-time">'+mm+"m "+ss+"s</div></div>";
     });
     html+='</div></div>';
-    document.getElementById("rs-lb-section").innerHTML=html;
-    showScreen("result");
-  }).catch(function(e) { console.error(e); showToast("Error loading leaderboard","error"); showScreen("result"); });
+    document.getElementById("rs-lb-section").innerHTML=html;showScreen("result");
+  }).catch(function(e){console.error(e);showToast("Error loading leaderboard","error");showScreen("result");});
 });
 
-// ─── HISTORY ───
-function loadHistory() {
+function loadHistory(){
   var attempted=(S.userData&&S.userData.attemptedTests)||[];
   var el=document.getElementById("history-content");
-  if (!attempted.length) { el.innerHTML='<div class="empty-state" style="margin-top:20px">No tests attempted yet.</div>'; return; }
+  if(!attempted.length){el.innerHTML='<div class="empty-state" style="margin-top:20px">No tests attempted yet.</div>';return;}
   var sorted=attempted.slice().sort(function(a,b){return new Date(b.submittedAt)-new Date(a.submittedAt);});
   var html='<div class="hist-list">';
-  sorted.forEach(function(t) {
+  sorted.forEach(function(t){
     var pct=t.percentage||Math.round((t.score/t.total)*100)||0;
     var color=pct>=80?"var(--green)":pct>=50?"var(--amber)":"var(--red)";
     var date=t.submittedAt?new Date(t.submittedAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
     var title=t.title||(t.testType==="self_generated"?"My Test — "+(t.dtype||"Mixed"):"Mock Test");
     html+='<div class="hist-item"><div class="hist-left"><div class="hist-title">'+esc(title)+'</div><div class="hist-meta">'+date+' · '+(t.testType==="self_generated"?"Self Generated":"Mock Test")+'</div></div><div class="hist-right"><div class="hist-score" style="color:'+color+'">'+t.score+'/'+t.total+'</div><div class="hist-pct">'+pct+'%</div></div></div>';
   });
-  html+='</div>';
-  el.innerHTML=html;
+  html+='</div>';el.innerHTML=html;
 }
 </script>
 </body>
