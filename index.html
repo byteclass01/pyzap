@@ -38,8 +38,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
 /* ─── LOGIN ─── */
 .lcard{position:relative;z-index:1;width:100%;max-width:400px;background:var(--surf);border:1px solid var(--bdr2);border-radius:24px;padding:48px 40px 40px;display:flex;flex-direction:column;align-items:center;gap:22px;box-shadow:0 0 0 1px rgba(245,166,35,.07),0 40px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.04);}
 .lcard::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.l-logo{font-family:'Playfair Display',serif;font-size:50px;font-weight:900;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 55%,var(--gold3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-2px;line-height:1;}
-.l-tag{font-size:13px;font-weight:500;color:var(--text2);font-style:italic;text-align:center;line-height:1.5;margin-top:-10px;}
+.l-logo{font-family:'Playfair Display',serif;font-size:44px;font-weight:900;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 55%,var(--gold3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-2px;line-height:1.15;padding-bottom:4px;}
+.l-tag{font-size:13px;font-weight:600;color:var(--gold2);font-style:italic;text-align:center;line-height:1.5;margin-top:-6px;}
 .l-sep{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--bdr2),transparent);}
 .l-google{width:100%;padding:14px 20px;background:var(--card);border:1.5px solid var(--bdr2);border-radius:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all .15s;}
 .l-google:hover{border-color:var(--gold);background:var(--gdim);}
@@ -174,16 +174,30 @@ header{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
 header.app-header-hide{display:none;}
 
 /* Responsive */
+/* Mobile stats bar */
+.mobile-stats{display:none;flex-shrink:0;padding:8px 0 4px;gap:6px;}
+.mobile-stat{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:5px 10px;text-align:center;flex:1;}
+.mobile-stat-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--text2);}
+.mobile-stat-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.mobile-stat.sc .mobile-stat-val{color:var(--green);}
+.mobile-stat.sw .mobile-stat-val{color:var(--red);}
+.mobile-stat.ss .mobile-stat-val{color:var(--gold);}
+.mobile-stats-header{display:none;}
+.mobile-only-btn{display:none;}
+@media(max-width:767px){.mobile-stats-header{display:flex;}.mobile-only-btn{display:block;}}
+
 @media(max-width:767px){
   #app{flex-direction:column;}
   .app-sidebar{display:none;}
   .bottom-nav{display:block;}
   .app-main{padding-bottom:72px;}
   .main-panel{padding:14px 14px 24px;}
+  .mobile-stats{display:flex;}
 }
 @media(min-width:768px){
   .bottom-nav{display:none;}
   header{display:none;}
+  .mobile-stats{display:none;}
 }
 
 /* ═══════════════════════════════
@@ -648,54 +662,76 @@ header.app-header-hide{display:none;}
 
   <!-- MAIN CONTENT -->
   <div class="app-main">
+    <!-- Mobile only: stats bar + sign out -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 0;flex-shrink:0;" class="mobile-stats-header">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--gold)">PyZap &#x26A1;</div>
+      <button onclick="document.getElementById('logout-btn').click()" style="background:transparent;border:1px solid var(--bdr);border-radius:7px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;cursor:pointer;" class="mobile-only-btn">Sign Out</button>
+    </div>
+    <div class="mobile-stats">
+      <div class="mobile-stat"><div class="mobile-stat-val" id="ms-done">0</div><div class="mobile-stat-lbl">Done</div></div>
+      <div class="mobile-stat sc"><div class="mobile-stat-val" id="ms-correct">0</div><div class="mobile-stat-lbl">Correct</div></div>
+      <div class="mobile-stat sw"><div class="mobile-stat-val" id="ms-wrong">0</div><div class="mobile-stat-lbl">Wrong</div></div>
+      <div class="mobile-stat ss"><div class="mobile-stat-val" id="ms-streak">0</div><div class="mobile-stat-lbl">Best</div></div>
+    </div>
 
   <!-- ═══ PRACTICE PANEL ═══ -->
   <div class="main-panel active" id="panel-practice">
-    <!-- Free daily limit banner -->
-    <div class="free-banner" id="free-banner" style="display:none">
-      <div class="free-banner-title">&#x1F4CA; Today's Practice Limit</div>
-      <div id="free-banner-concepts"></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px">Resets daily at midnight &nbsp;&#x2022;&nbsp; <button onclick="showUpgrade('Upgrade to Pro for unlimited practice!')" style="background:none;border:none;color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Upgrade for unlimited &#x2192;</button></div>
+    <!-- Announcement banner -->
+    <div id="ann-banner" style="display:none;margin-bottom:12px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;flex-shrink:0;align-items:center;gap:10px;justify-content:space-between;">
+      <span id="ann-banner-msg"></span>
+      <button onclick="document.getElementById('ann-banner').style.display='none'" style="background:none;border:none;color:inherit;font-size:16px;cursor:pointer;padding:0 4px;opacity:.7;flex-shrink:0">&#x2715;</button>
     </div>
     <div class="sbar">
-      <div class="srow" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;">
-        <div class="sg">
-          <div class="sg-lbl">Data Type</div>
-          <div class="bgrp" id="dtype-group">
-            <button class="tog dt-String active" data-dtype="String">String</button>
-            <button class="tog dt-List"          data-dtype="List">List</button>
-            <button class="tog dt-Tuple"         data-dtype="Tuple">Tuple</button>
-            <button class="tog dt-Dict"          data-dtype="Dictionary">Dict</button>
-            <button class="tog dt-Mixed"         data-dtype="Mixed">Mixed</button>
+      <!-- Row 1: Free banner + Mode toggle side by side -->
+      <div class="srow" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
+        <div class="free-banner" id="free-banner" style="display:none;flex:1;min-width:180px;">
+          <div class="free-banner-title">&#x1F4CA; Today's Practice Limit</div>
+          <div id="free-banner-concepts"></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px">Resets daily at midnight &nbsp;&#x2022;&nbsp; <button onclick="showUpgrade('Upgrade to Pro for unlimited practice!')" style="background:none;border:none;color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Upgrade &#x2192;</button></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);">Mode</div>
+          <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="mcq">&#x229E; MCQ</button>
+            <button class="mode-btn"        data-mode="type">&#x270E; Type</button>
           </div>
         </div>
-        <div class="mode-toggle">
-          <button class="mode-btn active" data-mode="mcq">&#x229E; MCQ</button>
-          <button class="mode-btn"        data-mode="type">&#x270E; Type</button>
+      </div>
+      <!-- Row 2: Data Type -->
+      <div class="srow">
+        <div class="sg">
+          <div class="sg-lbl">Topic</div>
+          <div class="bgrp" id="dtype-group">
+            <button class="tog dt-String active" data-dtype="String">String</button>
+            <button class="tog dt-List"           data-dtype="List">List</button>
+            <button class="tog dt-Tuple"          data-dtype="Tuple">Tuple</button>
+            <button class="tog dt-Dict"           data-dtype="Dictionary">Dict</button>
+            <button class="tog dt-Mixed"          data-dtype="Mixed">Mixed</button>
+            <button class="tog dt-Functions locked" data-dtype="Functions">Functions &#x1F512;</button>
+            <button class="tog dt-Modules locked"   data-dtype="Modules">Modules &#x1F512;</button>
+            <button class="tog dt-Exception locked" data-dtype="Exception">Exception &#x1F512;</button>
+          </div>
         </div>
       </div>
+      <!-- Row 3: Question Type -->
       <div class="srow">
         <div class="sg">
           <div class="sg-lbl">Question Type</div>
           <div class="bgrp" id="qtype-group">
-            <button class="tog qt-Indexing active"  data-qtype="Indexing">Indexing</button>
-            <button class="tog qt-Slicing"           data-qtype="Slicing">Slicing</button>
-            <button class="tog qt-SliceIdx"          data-qtype="SliceIdx">Slice+Index</button>
-            <button class="tog qt-Functions"         data-qtype="Functions">Functions</button>
-            <button class="tog qt-Membership"        data-qtype="Membership">Membership</button>
-            <button class="tog qt-Comparison"        data-qtype="Comparison">Comparison</button>
-            <button class="tog qt-Expressions"       data-qtype="Expressions">Expressions</button>
-            <button class="tog qt-BuiltinMath"       data-qtype="BuiltinMath">Built-in</button>
-            <button class="tog qt-Mixed"             data-qtype="Mixed">Mixed</button>
+            <button class="tog qt-Indexing"      data-qtype="Indexing">Indexing</button>
+            <button class="tog qt-Slicing"       data-qtype="Slicing">Slicing</button>
+            <button class="tog qt-SliceIdx"      data-qtype="SliceIdx">Slice+Index</button>
+            <button class="tog qt-Functions"     data-qtype="Functions">Functions</button>
+            <button class="tog qt-Membership"    data-qtype="Membership">Membership</button>
+            <button class="tog qt-Comparison"    data-qtype="Comparison">Comparison</button>
+            <button class="tog qt-Expressions"   data-qtype="Expressions">Expressions</button>
+            <button class="tog qt-BuiltinMath"   data-qtype="BuiltinMath">Built-in</button>
+            <button class="tog qt-Mixed active"  data-qtype="Mixed">Mixed</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="prog-wrap" id="prog-wrap" style="display:none">
-      <span class="prog-lbl" id="prog-lbl">String</span>
-      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-      <span class="prog-count" id="prog-count">0 / 10</span>
-    </div>
+
     <div class="qcard">
       <div class="q-loading" id="q-loading"><div class="spinner"></div><div class="q-loading-txt" id="q-loading-txt">Loading...</div></div>
       <div id="q-content" style="display:none">
@@ -755,10 +791,15 @@ header.app-header-hide{display:none;}
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:16px">My Profile</div>
         <div id="profile-details" style="display:flex;flex-direction:column;gap:10px"></div>
       </div>
-      <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px">
+      <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px;margin-bottom:14px">
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:4px">My Plan</div>
         <div id="profile-plan" style="margin-bottom:14px"></div>
         <button class="btn-save" id="profile-upgrade-btn" style="display:none">Upgrade to Pro &#x26A1;</button>
+      </div>
+      <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:20px">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:12px">My Stats</div>
+        <div id="profile-stats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"></div>
+        <button id="logout-btn-profile" onclick="document.getElementById('logout-btn').click()" style="width:100%;padding:11px;background:transparent;border:1.5px solid var(--red);border-radius:9px;color:var(--red);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Sign Out</button>
       </div>
     </div>
   </div>
@@ -782,8 +823,7 @@ header.app-header-hide{display:none;}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-'use strict';
+<script>'use strict';
 
 // ═══ FIREBASE ═══
 firebase.initializeApp({
@@ -797,7 +837,6 @@ firebase.initializeApp({
 var auth = firebase.auth();
 var db   = firebase.firestore();
 
-// ═══ CLOUD FUNCTION URLS ═══
 var CF_BASE          = "https://asia-south1-pyzap-297ad.cloudfunctions.net";
 var CF_GENERATE      = CF_BASE + "/generateQuestions";
 var CF_GENERATE_SELF = CF_BASE + "/generateSelfTest";
@@ -808,30 +847,32 @@ var CF_CREATE_ORDER  = CF_BASE + "/createOrder";
 var CF_VERIFY_PAY    = CF_BASE + "/verifyPayment";
 var CF_APPLY_PROMO   = CF_BASE + "/applyPromo";
 
-// ═══ TAGLINES ═══
 var TAGS = [
-  "Master Python. Ace your boards.",
-  "Debug your fear. Print your score.",
-  "No semicolons. No excuses.",
-  "Born to index. Forced to slice.",
-  "Predict the output. Steal the marks.",
-  "String methods = free marks.",
-  "while True: keep_improving()",
-  "Champions practice. Toppers practice more.",
-  "Your rank is being decided right now.",
-  "Hard questions now. Easy paper later.",
+  "Master Python. Ace your boards.","Debug your fear. Print your score.",
+  "No semicolons. No excuses.","Born to index. Forced to slice.",
+  "Predict the output. Steal the marks.","String methods = free marks.",
+  "while True: keep_improving()","Champions practice. Toppers practice more.",
+  "Your rank is being decided right now.","Hard questions now. Easy paper later.",
 ];
-document.getElementById("l-tag").textContent = TAGS[Math.floor(Math.random() * TAGS.length)];
+document.getElementById("l-tag").textContent = TAGS[Math.floor(Math.random()*TAGS.length)];
 
 // ═══ STATE ═══
 var S = {
   uid: null, idToken: null, plan: "free", userData: null,
+  // allQuestions: { String:[...], List:[...], Tuple:[...], Dictionary:[...] }
+  allQuestions: {},
+  // Progress per concept: { String:{used:3,completed:false}, ... }
   dailyProgress: {},
-  score: 0, total: 0, streak: 0, best: 0, wrong: 0, qcount: 0,
-  checked: false, sel: null, mode: "mcq",
-  dtype: "String", qtype: "Indexing",
-  questions: [], lastSeen: -1,
   freeConceptsAllowed: ["String","List"], freeQuestionsPerConcept: 10,
+  // Per-concept resume tracking
+  conceptIdx: {},
+  // Current practice state
+  dtype: "String", qtype: "Mixed",
+  currentQuestions: [],   // filtered list for current dtype+qtype
+  currentIdx: 0,          // index within currentQuestions
+  score: 0, total: 0, streak: 0, best: 0, wrong: 0, qcount: 0, // loaded from localStorage below
+  checked: false, sel: null, mode: "mcq",
+  // Test state
   testMode: null, testId: null,
   testQuestions: [], testAnswers: [], currentQ: 0,
   totalTimeSecs: 0, timerInterval: null, questionStartTime: null,
@@ -841,10 +882,15 @@ var S = {
 
 // ═══ localStorage ═══
 function getTodayStr(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function lsKeyFree(dt){return "pyzap_free_"+dt+"_"+getTodayStr();}
-function lsKeyPaid(dt){return "pyzap_paid_"+dt;}
-function saveBatch(dt){var key=S.plan==="paid"?lsKeyPaid(dt):lsKeyFree(dt);try{localStorage.setItem(key,JSON.stringify({questions:S.questions,lastSeen:S.lastSeen}));}catch(e){}}
-function loadBatch(dt){var key=S.plan==="paid"?lsKeyPaid(dt):lsKeyFree(dt);try{var r=localStorage.getItem(key);return r?JSON.parse(r):null;}catch(e){return null;}}
+
+// Lifetime stats in localStorage
+var LS_STATS_KEY = "pyzap_stats";
+function loadStats(){
+  try{var r=localStorage.getItem(LS_STATS_KEY);return r?JSON.parse(r):{total:0,correct:0,wrong:0,best:0};}catch(e){return{total:0,correct:0,wrong:0,best:0};}
+}
+function saveStats(){
+  try{localStorage.setItem(LS_STATS_KEY,JSON.stringify({total:S.total,correct:S.score,wrong:S.wrong,best:S.best}));}catch(e){}
+}
 
 // ═══ SCREENS ═══
 function showScreen(name){
@@ -862,12 +908,24 @@ function showScreen(name){
   else if(name==="attempt") document.getElementById("test-attempt-screen").style.display="";
   else if(name==="result")  document.getElementById("result-screen").style.display="";
 }
-function setCardLoading(txt){document.getElementById("q-loading").style.display="flex";document.getElementById("q-content").style.display="none";document.getElementById("q-loading-txt").textContent=txt||"Loading...";}
-function setCardLoaded(){document.getElementById("q-loading").style.display="none";document.getElementById("q-content").style.display="";}
+function setCardLoading(txt){
+  document.getElementById("q-loading").style.display="flex";
+  document.getElementById("q-content").style.display="none";
+  document.getElementById("q-loading-txt").textContent=txt||"Loading...";
+}
+function setCardLoaded(){
+  document.getElementById("q-loading").style.display="none";
+  document.getElementById("q-content").style.display="";
+}
 
 // ═══ TOAST ═══
 var _tt=null;
-function showToast(msg,type){var t=document.getElementById("toast");t.textContent=msg;t.className="toast "+(type||"success")+" show";if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove("show");},2500);}
+function showToast(msg,type){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.className="toast "+(type||"success")+" show";
+  if(_tt)clearTimeout(_tt);
+  _tt=setTimeout(function(){t.classList.remove("show");},2500);
+}
 
 // ═══ MODAL ═══
 var _modalFn=null;
@@ -883,12 +941,9 @@ document.getElementById("modal-confirm").addEventListener("click",function(){doc
 
 // ═══ AUTH ═══
 var _userHandled=false;
-var isMobile=/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
 function handleUser(user){
   if(_userHandled)return;
   _userHandled=true;
-  console.log("[PyZap] Auth: uid="+user.uid);
   S.uid=user.uid;
   showScreen("loading");
   document.getElementById("load-text").textContent="Setting up your account...";
@@ -899,62 +954,55 @@ function handleUser(user){
   }).then(function(snap){
     if(!snap.exists||!snap.data().phone){
       document.getElementById("p-name").value=user.displayName||"";
-      showScreen("profile");
-    } else {
-      S.userData=snap.data();
-      if(S.userData.banned){
-        console.warn("[PyZap] Banned user");
-        auth.signOut(); _userHandled=false;
-        showScreen("login");
-        var note=document.getElementById("l-note");
-        if(note){note.textContent="Your account has been suspended. Contact support.";note.style.color="var(--red)";}
-        return;
-      }
-      S.plan=S.userData.plan||"free";
-      console.log("[PyZap] User loaded, plan="+S.plan);
-      db.collection("settings").doc("config").get().then(function(cfg){
-        if(cfg.exists){
-          var d=cfg.data();
-          if(d.freeConceptsAllowed&&d.freeConceptsAllowed.length) S.freeConceptsAllowed=d.freeConceptsAllowed;
-          if(d.freeQuestionsPerConcept) S.freeQuestionsPerConcept=d.freeQuestionsPerConcept;
-          if(d.paidPrice) P.basePrice=P.finalAmount=d.paidPrice;
-        }
-      }).catch(function(){}).finally(function(){
-        updateLoginStats(user.uid);
-        launchApp();
-      });
+      showScreen("profile"); return;
     }
-  }).catch(function(e){console.error("[PyZap] Auth error:",e);_userHandled=false;showScreen("login");});
+    S.userData=snap.data();
+    if(S.userData.banned){
+      auth.signOut(); _userHandled=false; showScreen("login");
+      var note=document.getElementById("l-note");
+      if(note){note.textContent="Your account has been suspended.";note.style.color="var(--red)";}
+      return;
+    }
+    S.plan=S.userData.plan||"free";
+    db.collection("settings").doc("config").get().then(function(cfg){
+      if(cfg.exists){
+        var d=cfg.data();
+        if(d.freeConceptsAllowed&&d.freeConceptsAllowed.length)S.freeConceptsAllowed=d.freeConceptsAllowed;
+        if(d.freeQuestionsPerConcept)S.freeQuestionsPerConcept=d.freeQuestionsPerConcept;
+        if(d.paidPrice)P.basePrice=P.finalAmount=d.paidPrice;
+      }
+    }).catch(function(){}).finally(function(){
+      updateLoginStats(user.uid);
+      launchApp();
+    });
+  }).catch(function(e){console.error(e);_userHandled=false;showScreen("login");});
 }
 
 auth.getRedirectResult().then(function(result){
-  if(result&&result.user){console.log("[PyZap] Redirect result:",result.user.email);handleUser(result.user);}
-}).catch(function(e){console.warn("[PyZap] getRedirectResult:",e.code);});
+  if(result&&result.user)handleUser(result.user);
+}).catch(function(e){console.warn("[PyZap] redirect:",e.code);});
 
 auth.onAuthStateChanged(function(user){
-  if(user){console.log("[PyZap] onAuthStateChanged:",user.email);handleUser(user);}
-  else{if(!_userHandled){S.uid=null;S.idToken=null;showScreen("login");}}
+  if(user)handleUser(user);
+  else{_userHandled=false;S.uid=null;S.idToken=null;showScreen("login");}
 });
 
 document.getElementById("btn-google").addEventListener("click",function(){
   var provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:"select_account"});
-  var btn=document.getElementById("btn-google");
-  btn.disabled=true; btn.textContent="Opening Google...";
-  console.log("[PyZap] signInWithPopup");
+  var btn=this; btn.disabled=true; btn.textContent="Opening Google...";
   auth.signInWithPopup(provider).then(function(result){
-    console.log("[PyZap] Popup success:",result.user.email);
     handleUser(result.user);
   }).catch(function(e){
     btn.disabled=false;
     btn.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google';
-    if(e.code!=="auth/popup-closed-by-user") showToast("Sign in failed. Try again.","error");
+    if(e.code!=="auth/popup-closed-by-user")showToast("Sign in failed. Try again.","error");
   });
 });
 
 document.getElementById("logout-btn").addEventListener("click",function(){
   _userHandled=false;
-  auth.signOut().then(function(){S.uid=null;S.idToken=null;S.userData=null;showScreen("login");});
+  auth.signOut().then(function(){S.uid=null;S.idToken=null;S.userData=null;S.allQuestions={};showScreen("login");});
 });
 
 // ═══ PROFILE FORM ═══
@@ -964,9 +1012,12 @@ document.getElementById("p-country").addEventListener("change",function(){
   document.getElementById("p-city-grp").style.display=india?"":"none";
 });
 document.getElementById("btn-save-profile").addEventListener("click",function(){
-  var name=document.getElementById("p-name").value.trim(),phone=document.getElementById("p-phone").value.trim();
-  var board=document.getElementById("p-board").value,cls=document.getElementById("p-class").value;
-  var country=document.getElementById("p-country").value,state=document.getElementById("p-state").value;
+  var name=document.getElementById("p-name").value.trim();
+  var phone=document.getElementById("p-phone").value.trim();
+  var board=document.getElementById("p-board").value;
+  var cls=document.getElementById("p-class").value;
+  var country=document.getElementById("p-country").value;
+  var state=document.getElementById("p-state").value;
   var city=document.getElementById("p-city").value.trim();
   var errEl=document.getElementById("p-err"),errMsg=document.getElementById("p-err-msg");
   if(!name){errMsg.textContent="Please enter your name.";errEl.style.display="";return;}
@@ -1001,7 +1052,6 @@ function updateLoginStats(uid){
 
 // ═══ UPGRADE & PAYMENT ═══
 var P={basePrice:499,finalAmount:499,discount:0,promoCode:null,isFree:false};
-
 function showUpgrade(msg){
   document.getElementById("u-msg").textContent=msg||"Upgrade to unlock unlimited practice.";
   P.finalAmount=P.basePrice;P.discount=0;P.promoCode=null;P.isFree=false;
@@ -1013,8 +1063,8 @@ function showUpgrade(msg){
 function updatePriceDisplay(){
   var el=document.getElementById("u-price-display"),btn=document.getElementById("btn-pay");
   if(P.isFree){el.innerHTML='<span style="color:var(--green);font-size:20px;font-weight:800">Free Upgrade!</span>';btn.textContent="Activate Pro Now";}
-  else if(P.discount>0){el.innerHTML='<s style="color:var(--muted);font-size:16px">&#8377;'+P.basePrice+'</s> <strong style="color:var(--gold)">&#8377;'+P.finalAmount+'</strong> <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.finalAmount;}
-  else{el.innerHTML='&#8377;'+P.basePrice+' <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.basePrice;}
+  else if(P.discount>0){el.innerHTML='<s style="color:var(--muted);font-size:16px">₹'+P.basePrice+'</s> <strong style="color:var(--gold)">₹'+P.finalAmount+'</strong> <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.finalAmount;}
+  else{el.innerHTML='₹'+P.basePrice+' <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.basePrice;}
 }
 document.getElementById("btn-close-up").addEventListener("click",function(){document.getElementById("upgrade-popup").classList.add("hidden");});
 document.getElementById("btn-apply-promo").addEventListener("click",function(){
@@ -1041,28 +1091,30 @@ document.getElementById("btn-pay").addEventListener("click",function(){
     if(data.freeUpgrade){
       showToast("Pro access activated! ⚡","success");
       document.getElementById("upgrade-popup").classList.add("hidden");
-      db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();loadSelfTestPanel();}});
+      db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();}});
       updatePriceDisplay();return;
     }
-    var options={key:data.keyId,amount:data.amountPaise,currency:"INR",name:"PyZap ⚡",description:"Pro Plan — 365 Days",order_id:data.orderId,theme:{color:"#F5A623"},
+    var options={
+      key:data.keyId,amount:data.amountPaise,currency:"INR",name:"PyZap ⚡",
+      description:"Pro Plan — 365 Days",order_id:data.orderId,theme:{color:"#F5A623"},
       prefill:{name:S.userData?(S.userData.name||""):"",email:S.userData?(S.userData.email||""):"",contact:S.userData?(S.userData.phone||""):""},
       handler:function(response){
-        document.getElementById("btn-pay").disabled=true;document.getElementById("btn-pay").textContent="Verifying...";
+        btn.disabled=true;btn.textContent="Verifying...";
         fetch(CF_VERIFY_PAY,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
           body:JSON.stringify({orderId:response.razorpay_order_id,paymentId:response.razorpay_payment_id,signature:response.razorpay_signature,promoCode:P.promoCode||null,amount:data.amount})})
         .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
         .then(function(vr){
-          document.getElementById("btn-pay").disabled=false;updatePriceDisplay();
+          btn.disabled=false;updatePriceDisplay();
           if(!vr.ok){showToast(vr.data.message||"Verification failed","error");return;}
           showToast("Payment successful! Pro access unlocked ⚡","success");
           document.getElementById("upgrade-popup").classList.add("hidden");
-          db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();loadSelfTestPanel();}});
-        }).catch(function(){document.getElementById("btn-pay").disabled=false;updatePriceDisplay();showToast("Verification error. Contact support.","error");});
+          db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();}});
+        }).catch(function(){btn.disabled=false;updatePriceDisplay();showToast("Verification error. Contact support.","error");});
       },
-      modal:{ondismiss:function(){document.getElementById("btn-pay").disabled=false;updatePriceDisplay();}},
+      modal:{ondismiss:function(){btn.disabled=false;updatePriceDisplay();}},
     };
     var rzp=new window.Razorpay(options);rzp.open();
-    rzp.on("payment.failed",function(response){showToast("Payment failed: "+(response.error.description||"Try again"),"error");document.getElementById("btn-pay").disabled=false;updatePriceDisplay();});
+    rzp.on("payment.failed",function(response){showToast("Payment failed: "+(response.error.description||"Try again"),"error");btn.disabled=false;updatePriceDisplay();});
   }).catch(function(e){btn.disabled=false;updatePriceDisplay();showToast("Payment error. Please try again.","error");});
 });
 
@@ -1073,21 +1125,58 @@ function applyPlanUI(){
   applyDtypeLocks();
   updateFreeBanner();
 }
+var PYTHON_DTYPES = ["Functions","Modules","Exception"];
+
 function applyDtypeLocks(){
   document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
+    var dt = btn.dataset.dtype;
+    // Python sub-topics: paid only
+    if(PYTHON_DTYPES.indexOf(dt) >= 0){
+      if(S.plan==="paid") btn.classList.remove("locked");
+      else btn.classList.add("locked");
+      return;
+    }
     if(S.plan==="paid"){btn.classList.remove("locked");return;}
-    if(!S.freeConceptsAllowed.includes(btn.dataset.dtype))btn.classList.add("locked");
+    if(!S.freeConceptsAllowed.includes(dt)){btn.classList.add("locked");return;}
+    if(isConceptCompleted(dt))btn.classList.add("locked");
     else btn.classList.remove("locked");
   });
+  applyQtypeLocks();
 }
-function updateProgressUI(){
-  var wrap=document.getElementById("prog-wrap");
-  if(S.plan==="paid"){wrap.style.display="none";return;}
-  wrap.style.display="flex";
-  var used=getConceptUsed(S.dtype),total=S.freeQuestionsPerConcept||10;
-  document.getElementById("prog-lbl").textContent=S.dtype;
-  document.getElementById("prog-fill").style.width=Math.min(100,(used/total)*100)+"%";
-  document.getElementById("prog-count").textContent=used+" / "+total;
+function isPythonDtype(dt){
+  return PYTHON_DTYPES.indexOf(dt||S.dtype) >= 0;
+}
+
+function applyQtypeLocks(){
+  var pyDtype = isPythonDtype();
+  // Show/hide the entire qtype section
+  var qtypeSection = document.querySelector("#qtype-group").closest(".srow");
+  if(qtypeSection) qtypeSection.style.display = pyDtype ? "none" : "";
+  // Show/hide mode toggle — Python dtypes: MCQ only
+  var modeSection = document.querySelector(".mode-toggle");
+  if(modeSection){
+    if(pyDtype){
+      // Force MCQ, hide Type button
+      document.querySelectorAll(".mode-btn").forEach(function(b){
+        if(b.dataset.mode==="mcq"){b.classList.add("active");}
+        else{b.classList.remove("active");b.style.display="none";}
+      });
+      S.mode = "mcq";
+    } else {
+      document.querySelectorAll(".mode-btn").forEach(function(b){b.style.display="";});
+    }
+  }
+  if(pyDtype) return;
+  // Regular dtype qtype locking
+  document.querySelectorAll("#qtype-group .tog").forEach(function(btn){
+    var qt = btn.dataset.qtype;
+    btn.style.display = "";
+    if(S.plan==="paid"){btn.classList.remove("locked");return;}
+    var conceptQs = S.allQuestions[S.dtype]||[];
+    var qtypeQs = conceptQs.filter(function(q){return q.qtype===qt;});
+    if(qtypeQs.length===0) btn.classList.add("locked");
+    else btn.classList.remove("locked");
+  });
 }
 
 // ═══ NAVIGATION ═══
@@ -1115,7 +1204,11 @@ document.querySelectorAll(".sub-tab").forEach(function(tab){
 
 // ═══ FREE BANNER ═══
 function getConceptUsed(concept){return(S.dailyProgress[concept]&&S.dailyProgress[concept].used)||0;}
-function isConceptCompleted(concept){return !!(S.dailyProgress[concept]&&S.dailyProgress[concept].completed);}
+function isConceptCompleted(concept){return!!(S.dailyProgress[concept]&&S.dailyProgress[concept].completed);}
+function allConceptsDone(){
+  if(S.plan==="paid")return false;
+  return S.freeConceptsAllowed.every(function(c){return isConceptCompleted(c);});
+}
 
 function updateFreeBanner(){
   var banner=document.getElementById("free-banner");
@@ -1128,9 +1221,10 @@ function updateFreeBanner(){
     var used=getConceptUsed(concept),total=S.freeQuestionsPerConcept;
     var pct=Math.min(100,Math.round((used/total)*100));
     var done=used>=total;
+    var color=done?"var(--muted)":pct>=80?"var(--green)":pct>=50?"var(--amber)":"var(--gold)";
     html+='<div class="free-concept-row">'+
       '<div class="free-concept-name'+(done?" free-concept-done":"")+'">'+concept+'</div>'+
-      '<div class="free-concept-bar"><div class="free-concept-fill" style="width:'+pct+'%'+(done?';background:var(--muted)':'')+'"></div></div>'+
+      '<div class="free-concept-bar"><div class="free-concept-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
       '<div class="free-concept-count'+(done?" free-concept-done":"")+'">'+used+'/'+total+'</div>'+
     '</div>';
   });
@@ -1138,135 +1232,349 @@ function updateFreeBanner(){
   banner.style.display="";
 }
 
-function loadDailyProgress(uid,callback){
-  var today=getTodayStr();
-  db.collection("users").doc(uid).collection("dailyProgress").doc("progress").get()
-  .then(function(snap){
-    S.dailyProgress={};
-    if(snap.exists&&snap.data().date===today){S.dailyProgress=snap.data().concepts||{};}
-    console.log("[PyZap] Daily progress:",JSON.stringify(S.dailyProgress));
-    callback();
-  }).catch(function(e){console.warn("[PyZap] dailyProgress error:",e.message);S.dailyProgress={};callback();});
-}
-
 // ═══ PROFILE ═══
 function renderProfile(){
   var d=document.getElementById("profile-details"),p=document.getElementById("profile-plan");
   var upgradeBtn=document.getElementById("profile-upgrade-btn");
+  var statsEl=document.getElementById("profile-stats");
   if(!S.userData||!d)return;
+  d.innerHTML=""; // clear before re-render
   var u=S.userData;
-  var fields=[{l:"Name",v:u.name},{l:"Board",v:u.board},{l:"Class",v:u.grade},{l:"Country",v:u.country}];
-  d.innerHTML=fields.map(function(f){
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr)">'+
+  var email = (firebase.auth().currentUser && firebase.auth().currentUser.email) || "";
+  [{l:"Name",v:u.name},{l:"Email",v:email},{l:"Board",v:u.board},{l:"Class",v:u.grade},{l:"Country",v:u.country}].forEach(function(f){
+    d.innerHTML+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)">'+
       '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">'+f.l+'</div>'+
       '<div style="font-size:13px;font-weight:600;color:var(--text)">'+esc(f.v||"—")+'</div></div>';
-  }).join("");
+  });
+  // Lifetime stats
+  if(statsEl){
+    var acc = S.total>0 ? Math.round((S.score/S.total)*100) : 0;
+    [{v:S.total,l:"Answered"},{v:S.score,l:"Correct",c:"var(--green)"},{v:S.wrong,l:"Wrong",c:"var(--red)"},{v:S.best+"⚡",l:"Best Streak",c:"var(--gold)"}].forEach(function(st){
+      statsEl.innerHTML+='<div style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;text-align:center;flex:1;min-width:70px">'+
+        '<div style="font-family:JetBrains Mono,monospace;font-size:20px;font-weight:700;color:'+(st.c||"var(--text2)")+'">'+st.v+'</div>'+
+        '<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:3px">'+st.l+'</div></div>';
+    });
+    statsEl.innerHTML+='<div style="background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;text-align:center;flex:1;min-width:70px">'+
+      '<div style="font-family:JetBrains Mono,monospace;font-size:20px;font-weight:700;color:var(--amber)">'+acc+'%</div>'+
+      '<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:3px">Accuracy</div></div>';
+  }
   if(S.plan==="paid"){
     var expiry=u.planExpiry?(u.planExpiry.toDate?u.planExpiry.toDate():new Date(u.planExpiry)):null;
     p.innerHTML='<span class="plan-badge paid" style="font-size:12px;padding:5px 12px">Pro Plan</span>'+
       (expiry?'<div style="font-size:11px;color:var(--muted);margin-top:6px">Valid until '+expiry.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})+'</div>':'');
     if(upgradeBtn)upgradeBtn.style.display="none";
-  } else {
+  }else{
     p.innerHTML='<span class="plan-badge free" style="font-size:12px;padding:5px 12px">Free Plan</span>'+
-      '<div style="font-size:11px;color:var(--muted);margin-top:6px">Upgrade to Pro for unlimited access</div>';
+      '<div style="font-size:11px;color:var(--muted);margin-top:6px">Upgrade for unlimited access</div>';
     if(upgradeBtn){upgradeBtn.style.display="";upgradeBtn.onclick=function(){showUpgrade("Upgrade to Pro for unlimited access!");};}
   }
 }
 
 // ═══ LAUNCH ═══
+function loadAnnouncements(){
+  db.collection("announcements").where("active","==",true).orderBy("createdAt","desc").limit(1).get()
+  .then(function(snap){
+    if(snap.empty)return;
+    var a=snap.docs[0].data();
+    // Check expiry
+    if(a.expiresAt){
+      var exp=a.expiresAt.toDate?a.expiresAt.toDate():new Date(a.expiresAt);
+      if(exp<new Date())return;
+    }
+    var banner=document.getElementById("ann-banner");
+    var msg=document.getElementById("ann-banner-msg");
+    if(!banner||!msg)return;
+    msg.textContent=a.message||"";
+    // Style by type
+    var styles={
+      info:    {bg:"var(--bldim)",  border:"rgba(94,174,255,.3)",  color:"var(--blue)"},
+      warning: {bg:"var(--ambdim)", border:"rgba(255,184,48,.3)",  color:"var(--amber)"},
+      success: {bg:"var(--gndim)",  border:"rgba(34,211,160,.3)",  color:"var(--green)"},
+    };
+    var s=styles[a.type]||styles.info;
+    banner.style.background=s.bg;
+    banner.style.border="1px solid "+s.border;
+    banner.style.color=s.color;
+    banner.style.display="flex";
+  }).catch(function(e){console.warn("announcements:",e.message);});
+}
+
 function launchApp(){
   showScreen("app");
   var sbEmail=document.getElementById("sb-email");
   if(sbEmail&&S.userData)sbEmail.textContent=S.userData.name||S.uid;
+  // Load lifetime stats from localStorage
+  var st=loadStats();
+  S.total=st.total||0; S.score=st.correct||0; S.wrong=st.wrong||0; S.best=st.best||0;
+  updHdr();
   applyPlanUI();
   if(S.plan!=="paid"&&S.freeConceptsAllowed.length>0&&!S.freeConceptsAllowed.includes(S.dtype)){
     S.dtype=S.freeConceptsAllowed[0];
   }
-  if(S.plan!=="paid"){
-    loadDailyProgress(S.uid,function(){updateFreeBanner();loadDtype(S.dtype);});
-  } else {
-    S.dailyProgress={};updateFreeBanner();loadDtype(S.dtype);
-  }
+  loadAnnouncements();
+  fetchAllQuestions();
 }
 
 // ═══════════════════════════════════════════
 //  PRACTICE LOGIC
 // ═══════════════════════════════════════════
-function loadDtype(dtype){
-  S.dtype=dtype;
-  document.querySelectorAll("#dtype-group .tog").forEach(function(b){b.classList.toggle("active",b.dataset.dtype===dtype);});
-  if(S.plan!=="paid"&&!S.freeConceptsAllowed.includes(dtype)){showUpgrade("'"+dtype+"' is not available on the free plan.");return;}
-  if(S.plan!=="paid"&&isConceptCompleted(dtype)){
-    setCardLoaded();updateProgressUI();updateFreeBanner();
-    setCardLoading("You've used all "+S.freeQuestionsPerConcept+" free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
-    return;
+
+// ─── localStorage helpers (per-concept for paid, per-day for free) ───
+function lsKeyPaidConcept(dtype){ return "pyzap_paid_" + dtype; }
+function lsKeyFreeConcept(dtype){ return "pyzap_free_" + dtype + "_" + getTodayStr(); }
+
+function saveConcept(dtype){
+  if(S.plan === "paid"){
+    try{ localStorage.setItem(lsKeyPaidConcept(dtype), JSON.stringify({
+      questions: S.allQuestions[dtype] || [],
+      idx: S.conceptIdx[dtype] || 0,
+    })); } catch(e){}
+  } else {
+    try{ localStorage.setItem(lsKeyFreeConcept(dtype), JSON.stringify({
+      questions: S.allQuestions[dtype] || [],
+      idx: S.conceptIdx[dtype] || 0,
+    })); } catch(e){}
   }
-  var cached=loadBatch(dtype);
-  if(cached&&cached.questions&&cached.questions.length>0){
-    S.questions=cached.questions;S.lastSeen=cached.lastSeen!=null?cached.lastSeen:-1;
-    var nextIdx=S.lastSeen+1;
-    if(S.plan!=="paid"&&nextIdx>=S.freeQuestionsPerConcept){
-      setCardLoaded();updateProgressUI();updateFreeBanner();
-      setCardLoading("You've used all "+S.freeQuestionsPerConcept+" free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
-      return;
-    }
-    if(S.plan==="paid"&&nextIdx>=S.questions.length){fetchFromServer(dtype);return;}
-    showScreen("app");setCardLoaded();showNextQuestion();return;
-  }
-  fetchFromServer(dtype);
 }
 
-function fetchFromServer(dtype){
-  setCardLoading("Generating questions...");showScreen("app");
-  fetch(CF_GENERATE,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({dtype:dtype})})
-  .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+function loadConceptCache(dtype){
+  var key = S.plan === "paid" ? lsKeyPaidConcept(dtype) : lsKeyFreeConcept(dtype);
+  try{ var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+}
+
+function clearConceptCache(dtype){
+  try{ localStorage.removeItem(lsKeyPaidConcept(dtype)); } catch(e){}
+  try{ localStorage.removeItem(lsKeyFreeConcept(dtype)); } catch(e){}
+}
+
+// ─── Fetch questions for one specific concept (paid refetch on exhaustion) ───
+function fetchConceptFromServer(dtype, onDone){
+  // Map client dtype to server dtype
+  var serverDtype = (dtype==="Functions"||dtype==="Modules"||dtype==="Exception") ? "Python" : dtype;
+  fetch(CF_GENERATE,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+    body:JSON.stringify({dtypes:[serverDtype]}),
+  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
   .then(function(r){
-    var data=r.data;
-    if(!r.ok){
-      if(data.error==="concept_locked"||data.error==="daily_limit_reached"){
-        if(!S.dailyProgress[dtype])S.dailyProgress[dtype]={};
-        S.dailyProgress[dtype].completed=true;S.dailyProgress[dtype].used=S.freeQuestionsPerConcept;
-        setCardLoaded();updateProgressUI();updateFreeBanner();
-        setCardLoading("You've used all free questions for '"+dtype+"' today. Come back tomorrow or upgrade!");
-        if(data.freeConceptsAllowed){S.freeConceptsAllowed=data.freeConceptsAllowed;applyDtypeLocks();}
-        return;
+    if(!r.ok){ setCardLoading("Error loading '"+dtype+"' questions. Please try again."); return; }
+    var allQs = r.data.allQuestions || {};
+    var newQs;
+    if(serverDtype === "Python"){
+      var pythonQs = allQs["Python"] || [];
+      var fnQs  = pythonQs.filter(function(q){return q.qtype==="Functions";});
+      var modQs = pythonQs.filter(function(q){return q.qtype==="Modules";});
+      var exQs  = pythonQs.filter(function(q){return q.qtype==="ExceptionHandling";});
+      if(!fnQs.length && !modQs.length && !exQs.length){
+        var third = Math.floor(pythonQs.length/3);
+        fnQs  = pythonQs.slice(0, third);
+        modQs = pythonQs.slice(third, third*2);
+        exQs  = pythonQs.slice(third*2);
       }
-      throw new Error(data.message||"Server error");
+      if(dtype==="Functions")  newQs = fnQs;
+      else if(dtype==="Modules")  newQs = modQs;
+      else                        newQs = exQs;
+    } else {
+      newQs = allQs[dtype] || [];
     }
-    if(data.freeConceptsAllowed)S.freeConceptsAllowed=data.freeConceptsAllowed;
-    if(data.freeQuestionsPerConcept)S.freeQuestionsPerConcept=data.freeQuestionsPerConcept;
-    applyDtypeLocks();
-    if(S.plan==="paid"){
-      var existing=loadBatch(dtype);
-      if(existing&&existing.questions&&existing.questions.length>0){S.questions=existing.questions.concat(data.questions);S.lastSeen=existing.lastSeen!=null?existing.lastSeen:-1;}
-      else{S.questions=data.questions;S.lastSeen=-1;}
-    } else{S.questions=data.questions;S.lastSeen=-1;}
-    saveBatch(dtype);setCardLoaded();showNextQuestion();
-  }).catch(function(e){console.error(e);setCardLoading("Error loading. Tap Next to retry.");});
+    S.allQuestions[dtype] = newQs;
+    S.conceptIdx[dtype]   = 0;
+    saveConcept(dtype);
+    if(onDone) onDone();
+  }).catch(function(e){ console.error(e); setCardLoading("Error loading. Please refresh."); });
 }
 
-function showNextQuestion(){
-  var nextIdx=S.lastSeen+1;
-  if(S.plan!=="paid"){
-    var used=getConceptUsed(S.dtype);
-    if(used>=S.freeQuestionsPerConcept){
-      setCardLoading("You've used all free questions for '"+S.dtype+"' today. Come back tomorrow or upgrade!");
-      updateProgressUI();updateFreeBanner();return;
+// ─── Initial load: fetch all concepts in one call ───
+function fetchAllQuestions(){
+  setCardLoading("Loading your questions...");
+
+  // Try loading each concept from cache
+  var dtypes = S.plan === "paid"
+    ? ["String","List","Tuple","Dictionary","Functions","Modules","Exception"]
+    : S.freeConceptsAllowed.slice();
+
+  var allCached = true;
+  dtypes.forEach(function(d){
+    var cached = loadConceptCache(d);
+    if(cached && cached.questions && cached.questions.length > 0){
+      S.allQuestions[d] = cached.questions;
+      S.conceptIdx[d]   = cached.idx || 0;
+    } else {
+      allCached = false;
     }
-  }
-  if(nextIdx>=S.questions.length){
-    if(S.plan!=="paid")setCardLoading("You've used all free questions for '"+S.dtype+"' today. Come back tomorrow or upgrade!");
-    else fetchFromServer(S.dtype);
+  });
+
+  if(allCached){
+    // All concepts loaded from cache
+    if(S.plan !== "paid"){
+      loadDailyProgressFromFirestore(function(){ applyPlanUI(); startPractice(); });
+    } else {
+      startPractice();
+    }
     return;
   }
-  var filtered=[];
-  for(var i=nextIdx;i<S.questions.length;i++){
-    if(S.qtype==="Mixed"||!S.questions[i].qtype||S.questions[i].qtype===S.qtype)filtered.push({q:S.questions[i],idx:i});
+
+  // Fetch from server — one call for all dtypes
+  fetch(CF_GENERATE,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+    body:JSON.stringify({dtypes: dtypes.map(function(d){
+      // Map client dtypes to server dtypes
+      if(d==="Functions"||d==="Modules"||d==="Exception") return "Python";
+      return d;
+    }).filter(function(d,i,arr){return arr.indexOf(d)===i;})}),
+  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(!r.ok){ setCardLoading("Error loading questions. Please refresh."); return; }
+    var data = r.data;
+    var allQs = data.allQuestions || {};
+
+    // Split Python questions into Functions/Modules/Exception sub-topics
+    if(allQs["Python"] && allQs["Python"].length > 0){
+      var pythonQs = allQs["Python"];
+      var fnQs = pythonQs.filter(function(q){return q.qtype==="Functions";});
+      var modQs = pythonQs.filter(function(q){return q.qtype==="Modules";});
+      var exQs = pythonQs.filter(function(q){return q.qtype==="ExceptionHandling";});
+      // If server mixed them, distribute evenly
+      if(!fnQs.length && !modQs.length && !exQs.length){
+        var third = Math.floor(pythonQs.length/3);
+        fnQs  = pythonQs.slice(0, third);
+        modQs = pythonQs.slice(third, third*2);
+        exQs  = pythonQs.slice(third*2);
+      }
+      allQs["Functions"]  = fnQs;
+      allQs["Modules"]    = modQs;
+      allQs["Exception"]  = exQs;
+    }
+
+    // Merge: only set concepts not already in cache
+    dtypes.forEach(function(d){
+      if(!S.allQuestions[d] || S.allQuestions[d].length === 0){
+        S.allQuestions[d] = allQs[d] || [];
+        S.conceptIdx[d]   = 0;
+        saveConcept(d);
+      }
+    });
+    if(data.freeConceptsAllowed)  S.freeConceptsAllowed  = data.freeConceptsAllowed;
+    if(data.freeQuestionsPerConcept) S.freeQuestionsPerConcept = data.freeQuestionsPerConcept;
+    if(data.dailyProgress) S.dailyProgress = data.dailyProgress;
+    applyPlanUI();
+    startPractice();
+  }).catch(function(e){ console.error(e); setCardLoading("Error loading. Please refresh."); });
+}
+
+function loadDailyProgressFromFirestore(callback){
+  var today = getTodayStr();
+  db.collection("users").doc(S.uid).collection("dailyProgress").doc("progress").get()
+  .then(function(snap){
+    if(snap.exists && snap.data().date === today) S.dailyProgress = snap.data().concepts || {};
+    else S.dailyProgress = {};
+    callback();
+  }).catch(function(){ S.dailyProgress = {}; callback(); });
+}
+
+function startPractice(){
+  setCardLoaded();
+  S.qtype = "Mixed";
+  document.querySelectorAll("#qtype-group .tog").forEach(function(b){ b.classList.toggle("active", b.dataset.qtype==="Mixed"); });
+  applyDtypeLocks();
+  loadConceptQuestions(S.dtype);
+}
+
+// ─── Switch concept ───
+function loadConceptQuestions(dtype){
+  S.dtype = dtype;
+  document.querySelectorAll("#dtype-group .tog").forEach(function(b){ b.classList.toggle("active", b.dataset.dtype===dtype); });
+  applyQtypeLocks();
+
+  // Free: concept completed?
+  if(S.plan !== "paid" && isConceptCompleted(dtype)){
+    var avail = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
+    setCardLoading(avail.length > 0
+      ? "You've completed all '" + dtype + "' questions today. Switch to " + avail.join(" or ") + "!"
+      : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
+    updateFreeBanner(); applyDtypeLocks(); return;
   }
-  if(filtered.length===0){setFB("No more "+S.qtype+" questions in this batch. Try 'Mixed' or switch type.","wrong");return;}
-  S.lastSeen=filtered[0].idx;saveBatch(S.dtype);
-  S.checked=false;S.sel=null;S.qcount++;
-  renderPracticeQuestion(filtered[0].q);updateProgressUI();updateFreeBanner();
+
+  // Build filtered list using per-concept idx
+  S.currentQuestions = buildFilteredList(dtype, S.qtype);
+  // Restore resume index: find position in filtered list matching conceptIdx
+  var globalIdx = S.conceptIdx[dtype] || 0;
+  // Find first question in filtered list at or after globalIdx
+  var resumePos = 0;
+  for(var i = 0; i < S.currentQuestions.length; i++){
+    var origIdx = (S.allQuestions[dtype]||[]).indexOf(S.currentQuestions[i]);
+    if(origIdx >= globalIdx){ resumePos = i; break; }
+    resumePos = i + 1; // past all filtered questions
+  }
+  S.currentIdx = Math.min(resumePos, S.currentQuestions.length);
+
+  if(S.currentQuestions.length === 0){
+    setCardLoading("No questions available for '" + dtype + "'. Try another data type.");
+    return;
+  }
+  showCurrentQuestion();
+}
+
+// ─── Filter questions by qtype within current concept ───
+function buildFilteredList(dtype, qtype){
+  var pool = S.allQuestions[dtype] || [];
+  if(qtype === "Mixed" || !qtype) return pool.slice();
+  return pool.filter(function(q){ return q.qtype === qtype; });
+}
+
+// ─── Show current question ───
+function showCurrentQuestion(){
+  // Free limit check
+  if(S.plan !== "paid"){
+    var used = getConceptUsed(S.dtype);
+    if(used >= S.freeQuestionsPerConcept){
+      var avail = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
+      setCardLoading(avail.length > 0
+        ? "You've completed all '" + S.dtype + "' questions today. Switch to " + avail.join(" or ") + "!"
+        : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
+      updateFreeBanner(); applyDtypeLocks(); return;
+    }
+  }
+
+  // Batch exhausted for this concept
+  if(S.currentIdx >= S.currentQuestions.length){
+    if(S.plan !== "paid"){
+      // Mark completed
+      if(!S.dailyProgress[S.dtype]) S.dailyProgress[S.dtype] = {used:0,completed:false};
+      S.dailyProgress[S.dtype].completed = true;
+      S.dailyProgress[S.dtype].used = S.freeQuestionsPerConcept;
+      var avail2 = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
+      setCardLoading(avail2.length > 0
+        ? "You've completed all '" + S.dtype + "' questions today. Switch to " + avail2.join(" or ") + "!"
+        : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
+      updateFreeBanner(); applyDtypeLocks();
+    } else {
+      // Paid: fetch more for THIS concept only
+      setCardLoading("Loading more '" + S.dtype + "' questions...");
+      var dtype = S.dtype;
+      fetchConceptFromServer(dtype, function(){
+        // Rebuild filtered list with new questions appended, resume from where we left off
+        S.currentQuestions = buildFilteredList(dtype, S.qtype);
+        // currentIdx stays — new questions appended, so currentIdx now points to first new one
+        showCurrentQuestion();
+      });
+    }
+    return;
+  }
+
+  setCardLoaded();
+  S.qcount++;
+  S.checked = false; S.sel = null;
+  renderPracticeQuestion(S.currentQuestions[S.currentIdx]);
+  // Update globalIdx for this concept
+  var q = S.currentQuestions[S.currentIdx];
+  var pool = S.allQuestions[S.dtype] || [];
+  var globalPos = pool.indexOf(q);
+  if(globalPos >= 0) S.conceptIdx[S.dtype] = globalPos;
+  saveConcept(S.dtype);
+  updateFreeBanner();
+  applyQtypeLocks();
 }
 
 function hl(line){
@@ -1286,7 +1594,7 @@ function hl(line){
   }
   function cx(expr){
     var ops=["==","!=","<=",">=","<",">"];
-    for(var oi=0;oi<ops.length;oi++){var op=ops[oi],i=expr.indexOf(op);if(i===-1)continue;return'<span class="plain">'+e(expr.slice(0,i))+'</span><span class="punc">'+e(op)+'</span><span class="plain">'+e(expr.slice(i+op.length))+"</span>";}
+    for(var oi=0;oi<ops.length;oi++){var op=ops[oi],ix=expr.indexOf(op);if(ix===-1)continue;return'<span class="plain">'+e(expr.slice(0,ix))+'</span><span class="punc">'+e(op)+'</span><span class="plain">'+e(expr.slice(ix+op.length))+"</span>";}
     return'<span class="plain">'+e(expr)+"</span>";
   }
   if(line.startsWith("print(")&&line.endsWith(")"))return'<span class="kw">print</span><span class="punc">(</span>'+cx(line.slice(6,-1))+'<span class="punc">)</span>';
@@ -1302,9 +1610,10 @@ function renderCode(lines,gEl,cEl){
 }
 
 function renderPracticeQuestion(q){
-  var lines=q.lines||[];
-  renderCode(lines,document.getElementById("gutter"),document.getElementById("code"));
+  renderCode(q.lines||[],document.getElementById("gutter"),document.getElementById("code"));
   document.getElementById("qnum").textContent="Question "+S.qcount;
+  document.getElementById("qbadge").textContent=q.qtype||"Predict Output";
+  document.getElementById("qprompt").textContent=S.mode==="mcq"?"What does this print?":"Type the exact output:";
   var grid=document.getElementById("mcq-grid");grid.innerHTML="";
   var opts=q.options||[],ltrs=["A","B","C","D"];
   opts.forEach(function(opt,i){
@@ -1317,8 +1626,6 @@ function renderPracticeQuestion(q){
   var mg=document.getElementById("mcq-grid"),ta=document.getElementById("type-area");
   if(S.mode==="mcq"){mg.style.display="grid";ta.classList.remove("show");}
   else{mg.style.display="none";ta.classList.add("show");}
-  document.getElementById("qbadge").textContent=S.mode==="mcq"?"Predict Output":"Type Answer";
-  document.getElementById("qprompt").textContent=S.mode==="mcq"?"What does this print?":"Type the exact output:";
   setFB("","empty");document.getElementById("expl").className="expl";document.getElementById("btn-check").disabled=false;
 }
 
@@ -1342,37 +1649,57 @@ var _toastT=null;
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.className="toast success show";if(_toastT)clearTimeout(_toastT);_toastT=setTimeout(function(){t.classList.remove("show");},2200);}
 
 function updHdr(){
-  document.getElementById("hs-done").textContent=S.total;
-  document.getElementById("hs-correct").textContent=S.score;
-  document.getElementById("hs-wrong").textContent=S.wrong;
-  document.getElementById("hs-streak").textContent=S.best+(S.best>0?"⚡":"");
+  // Sidebar stats (desktop)
+  var hsDone=document.getElementById("hs-done");
+  var hsCorrect=document.getElementById("hs-correct");
+  var hsWrong=document.getElementById("hs-wrong");
+  var hsStreak=document.getElementById("hs-streak");
+  if(hsDone)hsDone.textContent=S.total;
+  if(hsCorrect)hsCorrect.textContent=S.score;
+  if(hsWrong)hsWrong.textContent=S.wrong;
+  if(hsStreak)hsStreak.textContent=S.best+(S.best>0?"⚡":"");
+  // Mobile stats
+  var msDone=document.getElementById("ms-done");
+  var msCorrect=document.getElementById("ms-correct");
+  var msWrong=document.getElementById("ms-wrong");
+  var msStreak=document.getElementById("ms-streak");
+  if(msDone)msDone.textContent=S.total;
+  if(msCorrect)msCorrect.textContent=S.score;
+  if(msWrong)msWrong.textContent=S.wrong;
+  if(msStreak)msStreak.textContent=S.best+(S.best>0?"⚡":"");
+  // Save to localStorage
+  saveStats();
 }
 
 function checkAns(){
   if(S.checked)return;
-  var q=S.questions[S.lastSeen];if(!q)return;
+  var q=S.currentQuestions[S.currentIdx];if(!q)return;
   var uv;
-  if(S.mode==="mcq"){uv=S.sel;if(!uv){setFB("← Select an option first","wrong");return;}}
-  else{uv=document.getElementById("type-inp").value.trim();if(!uv){setFB("← Type your answer first","wrong");return;}}
+  if(S.mode==="mcq"){uv=S.sel;if(!uv){setFB("\u2190 Select an option first","wrong");return;}}
+  else{uv=document.getElementById("type-inp").value.trim();if(!uv){setFB("\u2190 Type your answer first","wrong");return;}}
   var correct=q.answer,ok=ansMatch(uv,correct);
   S.total++;S.checked=true;
-  if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);setFB("✓  Correct!","correct");if(S.streak>=3)toast(S.streak+" in a row! ⚡");}
-  else{S.streak=0;S.wrong++;setFB("✗  Wrong — Answer: "+correct,"wrong");}
-  document.getElementById("btn-check").disabled=true;lockOpts(correct);showExpl(q.explanation);updHdr();updateProgressUI();
+  if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);setFB("\u2713  Correct!","correct");if(S.streak>=3)toast(S.streak+" in a row! \u26a1");}
+  else{S.streak=0;S.wrong++;setFB("\u2717  Wrong \u2014 Answer: "+correct,"wrong");}
+  document.getElementById("btn-check").disabled=true;lockOpts(correct);showExpl(q.explanation);updHdr();
   if(S.plan!=="paid"){
     if(!S.dailyProgress[S.dtype])S.dailyProgress[S.dtype]={used:0,completed:false};
     S.dailyProgress[S.dtype].used=Math.min((S.dailyProgress[S.dtype].used||0)+1,S.freeQuestionsPerConcept);
     if(S.dailyProgress[S.dtype].used>=S.freeQuestionsPerConcept)S.dailyProgress[S.dtype].completed=true;
-    updateFreeBanner();
+    updateFreeBanner();applyDtypeLocks();
   }
 }
 
 document.getElementById("btn-check").addEventListener("click",checkAns);
-document.getElementById("btn-next").addEventListener("click",function(){showNextQuestion();});
+document.getElementById("btn-next").addEventListener("click",function(){
+  if(!S.checked){showToast("Check your answer first!","info");return;}
+  S.currentIdx++;
+  showCurrentQuestion();
+});
 document.getElementById("btn-reset").addEventListener("click",function(){
   S.score=0;S.total=0;S.streak=0;S.wrong=0;S.best=0;S.qcount=0;updHdr();
-  try{localStorage.removeItem(S.plan==="paid"?lsKeyPaid(S.dtype):lsKeyFree(S.dtype));}catch(e){}
-  fetchFromServer(S.dtype);
+  ["String","List","Tuple","Dictionary"].forEach(function(d){clearConceptCache(d);});
+  S.allQuestions={};S.conceptIdx={};fetchAllQuestions();
 });
 
 document.addEventListener("keydown",function(e){
@@ -1380,29 +1707,48 @@ document.addEventListener("keydown",function(e){
   if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;
   var m={KeyA:0,KeyB:1,KeyC:2,KeyD:3};
   if(m[e.code]!==undefined&&!S.checked&&S.mode==="mcq"){var opts=document.querySelectorAll(".mcq-opt");if(opts[m[e.code]])opts[m[e.code]].click();return;}
-  if((e.code==="Enter"||e.code==="Space")&&S.mode==="mcq"){e.preventDefault();if(!S.checked)checkAns();else showNextQuestion();}
-  if(e.code==="Enter"&&S.mode==="type"){if(!S.checked)checkAns();else showNextQuestion();}
+  if((e.code==="Enter"||e.code==="Space")&&S.mode==="mcq"){e.preventDefault();if(!S.checked)checkAns();else document.getElementById("btn-next").click();}
+  if(e.code==="Enter"&&S.mode==="type"){if(!S.checked)checkAns();else document.getElementById("btn-next").click();}
 });
 
 document.querySelectorAll(".mode-btn").forEach(function(btn){
   btn.addEventListener("click",function(){
     document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");S.mode=btn.dataset.mode;
-    var q=S.questions[S.lastSeen];if(q)renderPracticeQuestion(q);
+    var q=S.currentQuestions[S.currentIdx];if(q)renderPracticeQuestion(q);
   });
 });
 
 document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
   btn.addEventListener("click",function(){
-    if(btn.classList.contains("locked")){showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan.");return;}
-    if(S.questions.length>0)saveBatch(S.dtype);
-    loadDtype(btn.dataset.dtype);
+    if(btn.classList.contains("locked")){
+      if(S.plan!=="paid"&&isConceptCompleted(btn.dataset.dtype)){
+        showToast("You've completed all '"+btn.dataset.dtype+"' questions today.","info");
+      }else{
+        showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan.");
+      }
+      return;
+    }
+    loadConceptQuestions(btn.dataset.dtype);
   });
 });
 
 document.querySelectorAll("#qtype-group .tog").forEach(function(btn){
   btn.addEventListener("click",function(){
-    document.querySelectorAll("#qtype-group .tog").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");S.qtype=btn.dataset.qtype;
-    showNextQuestion();
+    if(btn.classList.contains("locked")){showToast("No '"+btn.dataset.qtype+"' questions in this concept.","info");return;}
+    document.querySelectorAll("#qtype-group .tog").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");
+    S.qtype=btn.dataset.qtype;
+    S.currentQuestions=buildFilteredList(S.dtype,S.qtype);
+    // Find resume position in new filtered list
+    var globalIdx=S.conceptIdx[S.dtype]||0;
+    var resumePos=0;
+    for(var i=0;i<S.currentQuestions.length;i++){
+      var origIdx=(S.allQuestions[S.dtype]||[]).indexOf(S.currentQuestions[i]);
+      if(origIdx>=globalIdx){resumePos=i;break;}
+      resumePos=i+1;
+    }
+    S.currentIdx=Math.min(resumePos,S.currentQuestions.length);
+    if(S.currentQuestions.length===0){setCardLoading("No '"+S.qtype+"' questions available. Try Mixed.");return;}
+    showCurrentQuestion();
   });
 });
 
