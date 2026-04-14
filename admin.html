@@ -277,11 +277,10 @@ tr:hover td{background:rgba(245,166,35,.02);}
       <div class="sb-section">Overview</div>
       <div class="nav-item active" data-page="dashboard"><span class="nav-icon">&#x25A6;</span> Dashboard</div>
       <div class="sb-section">Students</div>
-      <div class="nav-item" data-page="students"><span class="nav-icon">&#x1F465;</span> All Students</div>
-      <div class="nav-item" data-page="frequent"><span class="nav-icon">&#x26A1;</span> Frequent Users</div>
+      <div class="nav-item" data-page="students"><span class="nav-icon">&#x1F465;</span> Students</div>
       <div class="sb-section">Tools</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">&#x2699;</span> Settings</div>
-      <div class="nav-item" data-page="email"><span class="nav-icon">&#x2709;</span> Email Marketing</div>
+
       <div class="nav-item" data-page="promos"><span class="nav-icon">&#x1F3F7;</span> Promo Codes</div>
       
       <div class="nav-item" data-page="testbuilder"><span class="nav-icon">&#x1F4CB;</span> Test Builder</div>
@@ -304,58 +303,91 @@ tr:hover td{background:rgba(245,166,35,.02);}
 
       <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-val" id="st-total">—</div><div class="stat-lbl">Total Students</div></div>
-          <div class="stat-card"><div class="stat-val" id="st-paid">—</div><div class="stat-lbl">Pro Students</div></div>
-          <div class="stat-card"><div class="stat-val" id="st-free">—</div><div class="stat-lbl">Free Students</div></div>
-          <div class="stat-card"><div class="stat-val" id="st-today">—</div><div class="stat-lbl">Logged In Today</div></div>
+        <!-- N days config -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">New in last</span>
+            <input type="number" id="dash-new-days" value="7" min="1" max="365" style="width:50px;padding:4px 8px;background:var(--s3);border:1.5px solid var(--bdr2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;" oninput="recalcDashboard()">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">days</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">Inactive for</span>
+            <input type="number" id="dash-inactive-days" value="7" min="1" max="365" style="width:50px;padding:4px 8px;background:var(--s3);border:1.5px solid var(--bdr2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;" oninput="recalcDashboard()">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">+ days</span>
+          </div>
         </div>
-        <div class="setting-card">
-          <div class="setting-title">Recent Signups</div>
-          <div id="recent-signups"><div class="loading-row"><div class="spinner"></div></div></div>
+        <!-- Row 1 stats -->
+        <div class="stats-grid" style="margin-bottom:12px;">
+          <div class="stat-card"><div class="stat-val" id="st-total">—</div><div class="stat-lbl">Total Students</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-paid">—</div><div class="stat-lbl">Pro (Active)</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-free">—</div><div class="stat-lbl">Free</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-expired">—</div><div class="stat-lbl">Pro Expired</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-banned">—</div><div class="stat-lbl">Banned</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-today">—</div><div class="stat-lbl">Active Today</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-conv">—</div><div class="stat-lbl">Conversion %</div></div>
+        </div>
+        <!-- Row 2 stats -->
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" id="st-new">—</div><div class="stat-lbl">New (N days)</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-inactive">—</div><div class="stat-lbl">Inactive (N+ days)</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-hitlimit">—</div><div class="stat-lbl">Hit Limit Today</div></div>
         </div>
       </div>
 
-      <!-- STUDENTS -->
+            <!-- STUDENTS (merged: All Students + Frequent + Email) -->
       <div class="page" id="page-students">
-        <div class="filter-bar">
-          <input class="filter-inp" id="student-search" placeholder="Search by name or email...">
+        <!-- Filter bar -->
+        <div class="filter-bar" style="margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <input class="filter-inp" id="student-search" placeholder="Search name or email..." style="flex:1;min-width:180px;">
           <select class="filter-sel" id="student-plan-filter">
             <option value="all">All Plans</option>
-            <option value="free">Free</option>
-            <option value="paid">Pro</option>
+            <option value="paid">Pro Only</option>
+            <option value="free">Free Only</option>
+            <option value="expired">Expired Only</option>
+            <option value="banned">Banned Only</option>
           </select>
           <select class="filter-sel" id="student-sort">
-            <option value="newest">Newest First</option>
-            <option value="logins">Most Logins</option>
+            <option value="name">Sort: Name</option>
+            <option value="logins">Sort: Most Logins</option>
+            <option value="recent">Sort: Last Active</option>
+            <option value="joined">Sort: Newest</option>
           </select>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">Logins ≥</span>
+            <input type="number" id="student-min-logins" placeholder="0" min="0" style="width:60px;padding:6px 8px;background:var(--s3);border:1.5px solid var(--bdr2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;" oninput="filterStudents()">
+          </div>
+          <button class="btn-save-settings" onclick="filterStudents()" style="padding:7px 16px;">Filter</button>
+          <button class="btn-save-settings" style="padding:7px 16px;background:var(--rddim);color:var(--red);border:1.5px solid rgba(255,77,109,.3);" onclick="downgradeAllExpired()">Downgrade Expired</button>
         </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;" id="student-count">Loading...</div>
         <div class="tbl-wrap">
           <table>
-            <thead><tr>
-              <th>Name</th><th>Email</th><th>Plan</th><th>Board</th><th>Logins</th><th>Last Login</th><th></th>
-            </tr></thead>
-            <tbody id="students-tbody"><tr><td colspan="7" class="loading-row"><div class="spinner"></div></td></tr></tbody>
+            <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Logins</th><th>Last Active</th><th>Actions</th></tr></thead>
+            <tbody id="students-tbody"><tr><td colspan="6" class="tbl-empty"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
           </table>
         </div>
-        <div id="students-pagination" style="margin-top:12px;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)"></div>
+        <div id="students-pagination" style="font-size:12px;color:var(--text2);padding:10px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"></div>
+
+        <!-- Email section -->
+        <div class="setting-card" style="margin-top:20px;">
+          <div class="setting-title">Email Students</div>
+          <div class="setting-desc" id="email-target-desc">Select filters above, then compose email below.</div>
+          <div class="form-row" style="margin-top:12px;">
+            <div class="form-lbl">Subject</div>
+            <input class="form-inp" id="email-subject" placeholder="Your PyZap Pro has expired — Renew now!">
+          </div>
+          <div class="form-row">
+            <div class="form-lbl">Message</div>
+            <textarea class="form-ta" id="email-body" rows="4" placeholder="Hi {name}, ..."></textarea>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text2);">Will send to: <strong id="email-count" style="color:var(--acc);">0</strong> students</span>
+            <button class="btn-save-settings" id="btn-send-email">Send Email Campaign</button>
+          </div>
+        </div>
       </div>
 
-      <!-- FREQUENT -->
-      <div class="page" id="page-frequent">
-        <div class="setting-card" style="margin-bottom:14px">
-          <div class="setting-title">Top 20 Most Active Students</div>
-          <div class="setting-desc">Students with highest login counts — best upgrade targets.</div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Rank</th><th>Name</th><th>Email</th><th>Plan</th><th>Logins</th><th>Hit Limit</th><th></th></tr></thead>
-            <tbody id="frequent-tbody"><tr><td colspan="7" class="loading-row"><div class="spinner"></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
+<!-- SETTINGS -->
       <div class="page" id="page-settings">
         <div class="setting-card">
           <div class="setting-title">Free Plan Limits</div>
@@ -425,12 +457,12 @@ tr:hover td{background:rgba(245,166,35,.02);}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="form-row"><div class="form-lbl">Code</div><input class="form-inp" id="promo-code" placeholder="LAUNCH50" style="text-transform:uppercase"></div>
             <div class="form-row"><div class="form-lbl">Type</div>
-              <select class="form-sel" id="promo-type">
+              <select class="form-sel" id="promo-type" onchange="document.getElementById('promo-discount-row').style.display=this.value==='free'?'none':''">
                 <option value="discount">Discount %</option>
                 <option value="free">Free Upgrade</option>
               </select>
             </div>
-            <div class="form-row"><div class="form-lbl">Discount %</div><input class="form-inp" id="promo-discount" type="number" min="1" max="100" placeholder="50"></div>
+            <div class="form-row" id="promo-discount-row"><div class="form-lbl">Discount %</div><input class="form-inp" id="promo-discount" type="number" min="1" max="100" placeholder="50"></div>
             <div class="form-row"><div class="form-lbl">Usage Limit</div><input class="form-inp" id="promo-limit" type="number" min="1" placeholder="100"></div>
             <div class="form-row"><div class="form-lbl">Expiry Date</div><input class="form-inp" id="promo-expiry" type="date"></div>
           </div>
@@ -450,20 +482,35 @@ tr:hover td{background:rgba(245,166,35,.02);}
         <div class="tb-panel active" id="tb-panel-1">
           <div class="tb-gen-card">
             <div class="setting-title" style="margin-bottom:4px">Generate Questions</div>
-            <div class="setting-desc" style="margin-bottom:14px">Pick concept and count. Engine generates questions — you review one by one in Step 2.</div>
-            <div class="setting-lbl">Data Type</div>
+            <div class="setting-desc" style="margin-bottom:14px">Pick topic and question type — same as the student practice tool. Engine generates questions for you to review.</div>
+            <div class="setting-lbl">Topic</div>
             <div class="tb-opt-row" id="tb-dtype">
               <button class="tb-opt on" data-val="String">String</button>
               <button class="tb-opt" data-val="List">List</button>
               <button class="tb-opt" data-val="Tuple">Tuple</button>
               <button class="tb-opt" data-val="Dictionary">Dictionary</button>
               <button class="tb-opt" data-val="Mixed">Mixed</button>
+              <button class="tb-opt" data-val="Python">Python</button>
             </div>
-            <div class="setting-lbl" style="margin-bottom:6px">Number of Questions</div>
+            <div class="setting-lbl" style="margin-bottom:6px;margin-top:12px">Question Type</div>
+            <div class="tb-opt-row" id="tb-qtype">
+              <button class="tb-opt on" data-val="Mixed">Mixed</button>
+              <button class="tb-opt" data-val="Indexing">Indexing</button>
+              <button class="tb-opt" data-val="Slicing">Slicing</button>
+              <button class="tb-opt" data-val="SliceIdx">Slice+Index</button>
+              <button class="tb-opt" data-val="Functions">Functions</button>
+              <button class="tb-opt" data-val="Membership">Membership</button>
+              <button class="tb-opt" data-val="Comparison">Comparison</button>
+              <button class="tb-opt" data-val="Expressions">Expressions</button>
+              <button class="tb-opt" data-val="BuiltinMath">Built-in</button>
+              <button class="tb-opt" data-val="ExceptionHandling" id="tb-qtype-exception" style="display:none">Exception Handling</button>
+            </div>
+            <div class="setting-lbl" style="margin-bottom:6px;margin-top:12px">Number of Questions</div>
             <div class="tb-opt-row" id="tb-count">
               <button class="tb-opt" data-val="10">10</button>
               <button class="tb-opt on" data-val="20">20</button>
               <button class="tb-opt" data-val="30">30</button>
+              <button class="tb-opt" data-val="50">50</button>
             </div>
             <button class="btn-tb primary" id="btn-tb-generate">Generate Questions &#x26A1;</button>
           </div>
@@ -522,6 +569,10 @@ tr:hover td{background:rgba(245,166,35,.02);}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 'use strict';
+
+// Test builder state
+var TB = { step:1, dtype:"String", qtype:"Mixed", count:20, generated:[], approved:[], rejected:0 };
+
 
 // CONFIG
 firebase.initializeApp({
@@ -636,8 +687,7 @@ document.getElementById("btn-logout").addEventListener("click", function() {
 
 // INIT
 function initAdmin() {
-  loadDashboard();
-  loadStudents();
+  loadDashboard(); // loads allUsersCache, populates students too
   loadSettings();
   loadPromos();
   loadTestBuilder();
@@ -645,14 +695,11 @@ function initAdmin() {
 
 // NAVIGATION
 var pageMeta = {
-  dashboard:   { title: "Dashboard",        sub: "Overview of PyZap platform" },
-  students:    { title: "All Students",     sub: "Manage student accounts" },
-  frequent:    { title: "Frequent Users",   sub: "Most engaged students — best upgrade targets" },
-  settings:    { title: "Settings",         sub: "Control free plan limits, weights, pricing" },
-  email:       { title: "Email Marketing",  sub: "Send campaigns to your students" },
-  promos:      { title: "Promo Codes",      sub: "Create and manage discount codes" },
-  announce:    { title: "Announcements",    sub: "Broadcast in-app banners to all students" },
-  testbuilder: { title: "Test Builder",     sub: "Generate, review and publish mock tests" },
+  dashboard:   { title: "Dashboard",     sub: "Platform overview and key metrics" },
+  students:    { title: "Students",      sub: "Manage students, filter, and send emails" },
+  settings:    { title: "Settings",      sub: "Control free plan limits and pricing" },
+  promos:      { title: "Promo Codes",   sub: "Create and manage discount codes" },
+  testbuilder: { title: "Test Builder",  sub: "Generate and publish mock tests" },
 };
 document.querySelectorAll(".nav-item").forEach(function(item) {
   item.addEventListener("click", function() {
@@ -664,7 +711,8 @@ document.querySelectorAll(".nav-item").forEach(function(item) {
     var meta = pageMeta[page] || { title: page, sub: "" };
     document.getElementById("page-title").textContent = meta.title;
     document.getElementById("page-sub").textContent   = meta.sub;
-    if (page === "frequent") loadFrequent();
+    if (page === "students")    loadStudents();
+    if (page === "settings")    loadSettings();
     if (page === "testbuilder") loadPublishedTests();
   });
 });
@@ -703,138 +751,195 @@ function fmtDate(ts) {
 }
 
 // DASHBOARD
+// Cache all users for dashboard + students page
+var allUsersCache = [];
+
 function loadDashboard() {
   db.collection("users").get().then(function(snap) {
-    var total=snap.size, paid=0, free=0, today=0;
-    var now = new Date(), todayStr = now.toDateString();
-    var recent = [];
-    snap.forEach(function(doc) {
-      var d = doc.data();
-      if (d.plan === "paid") paid++; else free++;
-      if (d.lastLogin && new Date(d.lastLogin.toDate ? d.lastLogin.toDate() : d.lastLogin).toDateString() === todayStr) today++;
-      recent.push({ name: d.name||"—", email: doc.id, plan: d.plan||"free", createdAt: d.createdAt });
-    });
-    document.getElementById("st-total").textContent = total;
-    document.getElementById("st-paid").textContent  = paid;
-    document.getElementById("st-free").textContent  = free;
-    document.getElementById("st-today").textContent = today;
-    recent.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
-    recent = recent.slice(0,5);
-    var html = recent.length ? recent.map(function(s){
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)">'+
-        '<div><div style="font-size:13px;font-weight:600">'+esc(s.name)+'</div><div style="font-size:11px;color:var(--muted)">'+esc(s.email)+'</div></div>'+
-        '<span class="badge '+(s.plan==="paid"?"paid":"free")+'">'+(s.plan||"free")+'</span></div>';
-    }).join("") : '<div style="color:var(--muted);font-size:13px">No students yet.</div>';
-    document.getElementById("recent-signups").innerHTML = html;
-  }).catch(function(e) { console.error(e); });
-}
-
-// STUDENTS
-function loadStudents() {
-  db.collection("users").orderBy("createdAt","desc").limit(200).get().then(function(snap) {
-    allStudents = [];
-    snap.forEach(function(doc) { allStudents.push(Object.assign({ uid: doc.id }, doc.data())); });
+    allUsersCache = [];
+    snap.forEach(function(doc){ allUsersCache.push({id:doc.id, ...doc.data()}); });
+    recalcDashboard();
+    // Also populate students table
+    filteredStudents = allUsersCache.slice();
     filterStudents();
   }).catch(function(e){ console.error(e); });
 }
-function filterStudents() {
-  var search = (document.getElementById("student-search").value||"").toLowerCase();
-  var plan   = document.getElementById("student-plan-filter").value;
-  var sort   = document.getElementById("student-sort").value;
-  filteredStudents = allStudents.filter(function(s) {
-    if (plan !== "all" && s.plan !== plan) return false;
-    if (search && !(s.name||"").toLowerCase().includes(search) && !(s.uid||"").toLowerCase().includes(search)) return false;
+
+function recalcDashboard() {
+  var now       = new Date();
+  var todayStr  = now.toDateString();
+  var newDays   = parseInt(document.getElementById("dash-new-days").value) || 7;
+  var inactDays = parseInt(document.getElementById("dash-inactive-days").value) || 7;
+  var total=0,pro=0,free=0,expired=0,banned=0,activeToday=0,newCount=0,inactive=0,hitToday=0;
+
+  allUsersCache.forEach(function(d) {
+    total++;
+    var expiry = null;
+    if(d.planExpiry) expiry = d.planExpiry.toDate ? d.planExpiry.toDate() : new Date(d.planExpiry);
+    var isActivePro = d.plan==="paid" && expiry && expiry >= now;
+    var isExpired   = d.plan==="paid" && expiry && expiry < now;
+    if(isActivePro)   pro++;
+    else if(isExpired) expired++;
+    else              free++;
+    if(d.banned) banned++;
+    var lastLogin = d.lastLogin ? (d.lastLogin.toDate ? d.lastLogin.toDate() : new Date(d.lastLogin)) : null;
+    if(lastLogin && lastLogin.toDateString()===todayStr) activeToday++;
+    var created = d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt)) : null;
+    if(created && (now-created)/86400000 <= newDays) newCount++;
+    if(lastLogin && (now-lastLogin)/86400000 >= inactDays) inactive++;
+    if(d.hitLimitCount > 0 && lastLogin && lastLogin.toDateString()===todayStr) hitToday++;
+  });
+  var conv = total > 0 ? Math.round((pro/total)*100) : 0;
+  document.getElementById("st-total").textContent    = total;
+  document.getElementById("st-paid").textContent     = pro;
+  document.getElementById("st-free").textContent     = free;
+  document.getElementById("st-expired").textContent  = expired;
+  document.getElementById("st-banned").textContent   = banned;
+  document.getElementById("st-today").textContent    = activeToday;
+  document.getElementById("st-conv").textContent     = conv + "%";
+  document.getElementById("st-new").textContent      = newCount;
+  document.getElementById("st-inactive").textContent = inactive;
+  document.getElementById("st-hitlimit").textContent = hitToday;
+}
+
+// STUDENTS
+var filteredStudents = [];
+var currentPage = 1;
+var PAGE_SIZE = 20;
+
+function loadStudents(){
+  // Data already loaded by loadDashboard via allUsersCache
+  // Just re-filter
+  if(allUsersCache.length > 0){ filteredStudents=allUsersCache.slice(); filterStudents(); return; }
+  db.collection("users").get().then(function(snap){
+    allUsersCache=[];
+    snap.forEach(function(doc){ allUsersCache.push({id:doc.id, ...doc.data()}); });
+    filteredStudents=allUsersCache.slice();
+    filterStudents();
+  }).catch(function(e){console.error(e);});
+}
+
+function filterStudents(){
+  var search  = (document.getElementById("student-search").value||"").toLowerCase();
+  var plan    = document.getElementById("student-plan-filter").value;
+  var sort    = document.getElementById("student-sort").value;
+  var minLog  = parseInt(document.getElementById("student-min-logins").value)||0;
+  var now     = new Date();
+
+  filteredStudents = allUsersCache.filter(function(d){
+    // Plan filter
+    var expiry = d.planExpiry ? (d.planExpiry.toDate?d.planExpiry.toDate():new Date(d.planExpiry)) : null;
+    var isActivePro = d.plan==="paid" && expiry && expiry>=now;
+    var isExpired   = d.plan==="paid" && expiry && expiry<now;
+    if(plan==="paid"    && !isActivePro) return false;
+    if(plan==="free"    && (isActivePro||isExpired)) return false;
+    if(plan==="expired" && !isExpired) return false;
+    if(plan==="banned"  && !d.banned) return false;
+    // Login threshold
+    if((d.loginCount||0) < minLog) return false;
+    // Search
+    if(search){
+      var name=(d.name||"").toLowerCase();
+      var email=(d.email||d.id||"").toLowerCase();
+      if(!name.includes(search)&&!email.includes(search)) return false;
+    }
     return true;
   });
-  if (sort === "logins") filteredStudents.sort(function(a,b){ return (b.loginCount||0)-(a.loginCount||0); });
+
+  // Sort
+  filteredStudents.sort(function(a,b){
+    if(sort==="logins") return (b.loginCount||0)-(a.loginCount||0);
+    if(sort==="recent"){
+      var al=a.lastLogin?(a.lastLogin.toDate?a.lastLogin.toDate():new Date(a.lastLogin)):new Date(0);
+      var bl=b.lastLogin?(b.lastLogin.toDate?b.lastLogin.toDate():new Date(b.lastLogin)):new Date(0);
+      return bl-al;
+    }
+    if(sort==="joined"){
+      var ac=a.createdAt?(a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)):new Date(0);
+      var bc=b.createdAt?(b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)):new Date(0);
+      return bc-ac;
+    }
+    return (a.name||"").localeCompare(b.name||"");
+  });
+
   currentPage = 1;
+  updateEmailCount();
   renderStudentsPage();
 }
-function renderStudentsPage() {
-  var start = (currentPage-1)*PAGE_SIZE, end = start+PAGE_SIZE;
-  var page = filteredStudents.slice(start, end);
-  var tbody = document.getElementById("students-tbody");
-  if (!page.length) { tbody.innerHTML = '<tr><td colspan="7" class="tbl-empty">No students found.</td></tr>'; return; }
-  tbody.innerHTML = page.map(function(s) {
-    var banBtn = s.banned
-      ? '<button class="tbl-btn upgrade" onclick="unbanStudent(\"'+s.uid+'\")">Unblock</button>'
-      : '<button class="tbl-btn ban" onclick="banStudent(\"'+s.uid+'\",\"'+esc(s.name||'Student')+'\")">Ban</button>';
-    var planBtn = s.plan!=="paid"
-      ? '<button class="tbl-btn upgrade" onclick="upgradeStudent(\"'+s.uid+'\")">Upgrade</button>'
-      : '<button class="tbl-btn ban" onclick="downgradeStudent(\"'+s.uid+'\")">Downgrade</button>';
-    var bannedBadge = s.banned ? ' <span style="font-size:10px;color:var(--red);font-weight:700">BANNED</span>' : '';
-    return '<tr'+( s.banned?' style="opacity:.5"':'')+'>'+
-      '<td style="font-weight:600">'+esc(s.name||"—")+bannedBadge+'</td>'+
-      '<td style="font-size:11px;color:var(--muted)">'+esc(s.uid)+'</td>'+
-      '<td><span class="badge '+(s.plan==="paid"?"paid":"free")+'">'+(s.plan||"free")+'</span></td>'+
-      '<td>'+esc(s.board||"—")+'</td>'+
-      '<td style="font-family:var(--mono)">'+(s.loginCount||0)+'</td>'+
-      '<td style="font-size:11px">'+fmtDate(s.lastLogin)+'</td>'+
-      '<td style="display:flex;gap:5px;flex-wrap:wrap;padding:8px 16px">'+planBtn+banBtn+'</td>'+
+
+function fmtDate(ts){
+  if(!ts) return "—";
+  try{ var d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }catch(e){return "—";}
+}
+
+function renderStudentsPage(){
+  var start=(currentPage-1)*PAGE_SIZE, end=start+PAGE_SIZE;
+  var page=filteredStudents.slice(start,end);
+  var tbody=document.getElementById("students-tbody");
+  var countEl=document.getElementById("student-count");
+  if(countEl) countEl.textContent = filteredStudents.length + " students found";
+  if(!page.length){tbody.innerHTML='<tr><td colspan="6" class="tbl-empty">No students found.</td></tr>';return;}
+  var now=new Date();
+  tbody.innerHTML=page.map(function(d){
+    var expiry=d.planExpiry?(d.planExpiry.toDate?d.planExpiry.toDate():new Date(d.planExpiry)):null;
+    var isActivePro=d.plan==="paid"&&expiry&&expiry>=now;
+    var isExpired=d.plan==="paid"&&expiry&&expiry<now;
+    var planLabel=isActivePro?"paid":isExpired?"expired":"free";
+    var planBadge=isActivePro?'<span class="badge paid">Pro</span>':isExpired?'<span class="badge" style="background:var(--rddim);color:var(--red)">Expired</span>':'<span class="badge free">Free</span>';
+    var bannedBadge=d.banned?'<span style="font-size:9px;color:var(--red);font-weight:700;margin-left:4px">BANNED</span>':'';
+    var planBtn=isActivePro
+      ?'<button class="tbl-btn ban" data-uid="'+d.id+'" onclick="downgradeStudent(this.dataset.uid)">Downgrade</button>'
+      :'<button class="tbl-btn upgrade" data-uid="'+d.id+'" onclick="upgradeStudent(this.dataset.uid)">Upgrade</button>';
+    var banBtn=d.banned
+      ?'<button class="tbl-btn upgrade" data-uid="'+d.id+'" onclick="unbanStudent(this.dataset.uid)">Unblock</button>'
+      :'<button class="tbl-btn ban" data-uid="'+d.id+'" data-name="'+esc(d.name||'Student')+'" onclick="banStudent(this.dataset.uid,this.dataset.name)">Ban</button>';
+    return '<tr'+(d.banned?' style="opacity:.55"':'')+'>'+
+      '<td style="font-weight:600">'+esc(d.name||"—")+bannedBadge+'</td>'+
+      '<td style="font-size:11px;color:var(--text2)">'+esc(d.email||d.id)+'</td>'+
+      '<td>'+planBadge+'</td>'+
+      '<td style="font-family:var(--mono)">'+(d.loginCount||0)+'</td>'+
+      '<td style="font-size:11px">'+fmtDate(d.lastLogin)+'</td>'+
+      '<td style="display:flex;gap:5px;padding:8px 16px;flex-wrap:wrap">'+planBtn+banBtn+'</td>'+
     '</tr>';
   }).join("");
-  var total = filteredStudents.length, pages = Math.ceil(total/PAGE_SIZE);
-  var pg = document.getElementById("students-pagination");
-  pg.innerHTML = 'Showing '+(start+1)+'-'+Math.min(end,total)+' of '+total+' &nbsp;'+
-    (currentPage>1?'<button onclick="goPage('+(currentPage-1)+')" style="padding:4px 10px;border-radius:5px;border:1px solid var(--bdr2);background:var(--s2);color:var(--text2);cursor:pointer;font-size:11px">Prev</button>':'')+
+  var total=filteredStudents.length, pages=Math.ceil(total/PAGE_SIZE);
+  var pg=document.getElementById("students-pagination");
+  if(pg) pg.innerHTML='Showing '+(start+1)+'-'+Math.min(end,total)+' of '+total+
+    ' &nbsp;'+(currentPage>1?'<button onclick="goPage('+(currentPage-1)+')" style="padding:4px 10px;border-radius:5px;border:1px solid var(--bdr2);background:var(--s2);color:var(--text2);cursor:pointer;font-size:11px">Prev</button>':'')+
     ' Page '+currentPage+' of '+pages+' '+
     (currentPage<pages?'<button onclick="goPage('+(currentPage+1)+')" style="padding:4px 10px;border-radius:5px;border:1px solid var(--bdr2);background:var(--s2);color:var(--text2);cursor:pointer;font-size:11px">Next</button>':'');
 }
 
-function goPage(n) { currentPage = n; renderStudentsPage(); }
-function upgradeStudent(uid) {
-  showModal("Upgrade Student", "Manually upgrade this student to Pro plan?", "Upgrade", function() {
-    var expiry = new Date(); expiry.setFullYear(expiry.getFullYear()+1);
-    db.collection("users").doc(uid).update({ plan:"paid", planExpiry: firebase.firestore.Timestamp.fromDate(expiry) })
-    .then(function(){ showToast("Student upgraded to Pro","success"); loadStudents(); })
-    .catch(function(e){ showToast("Error: "+e.message,"error"); });
-  });
-}
-function downgradeStudent(uid) {
-  showModal("Downgrade Student", "Downgrade this student to Free plan?", "Downgrade", function() {
-    db.collection("users").doc(uid).update({ plan:"free", planExpiry:null })
-    .then(function(){ showToast("Student downgraded","info"); loadStudents(); })
-    .catch(function(e){ showToast("Error: "+e.message,"error"); });
-  });
-}
-function banStudent(uid, name) {
-  showModal("Ban Student", 'Ban "'+name+'"? They will be blocked from accessing PyZap.', "Ban", function() {
-    db.collection("users").doc(uid).update({ banned: true })
-    .then(function(){ showToast("Student banned","info"); loadStudents(); })
-    .catch(function(e){ showToast("Error: "+e.message,"error"); });
-  });
-}
-function unbanStudent(uid) {
-  db.collection("users").doc(uid).update({ banned: false })
-  .then(function(){ showToast("Student unblocked","success"); loadStudents(); })
-  .catch(function(e){ showToast("Error: "+e.message,"error"); });
-}
-document.getElementById("student-search").addEventListener("input", filterStudents);
-document.getElementById("student-plan-filter").addEventListener("change", filterStudents);
-document.getElementById("student-sort").addEventListener("change", filterStudents);
+function goPage(n){ currentPage=n; renderStudentsPage(); }
 
-// FREQUENT
-function loadFrequent() {
-  db.collection("users").orderBy("loginCount","desc").limit(20).get().then(function(snap) {
-    var tbody = document.getElementById("frequent-tbody");
-    if (snap.empty) { tbody.innerHTML='<tr><td colspan="7" class="tbl-empty">No data.</td></tr>'; return; }
-    var rows=[], rank=1;
-    snap.forEach(function(doc) {
-      var s=doc.data();
-      rows.push('<tr>'+
-        '<td style="font-family:var(--mono);color:var(--acc)">'+rank+'</td>'+
-        '<td style="font-weight:600">'+esc(s.name||"—")+'</td>'+
-        '<td style="font-size:11px;color:var(--muted)">'+esc(doc.id)+'</td>'+
-        '<td><span class="badge '+(s.plan==="paid"?"paid":"free")+'">'+(s.plan||"free")+'</span></td>'+
-        '<td style="font-family:var(--mono)">'+(s.loginCount||0)+'</td>'+
-        '<td style="font-family:var(--mono)">'+(s.hitLimitCount||0)+'</td>'+
-        '<td>'+(s.plan!=="paid"?'<button class="tbl-btn upgrade" onclick="upgradeStudent(\''+doc.id+'\')">Upgrade</button>':'Pro')+'</td>'+
-      '</tr>');
-      rank++;
-    });
-    tbody.innerHTML = rows.join("");
-  }).catch(function(e){ console.error(e); });
+function updateEmailCount(){
+  var el=document.getElementById("email-count");
+  if(el) el.textContent=filteredStudents.length;
 }
+
+function downgradeAllExpired(){
+  var now=new Date();
+  var expired=allUsersCache.filter(function(d){
+    if(d.plan!=="paid"||!d.planExpiry) return false;
+    var exp=d.planExpiry.toDate?d.planExpiry.toDate():new Date(d.planExpiry);
+    return exp<now;
+  });
+  if(!expired.length){showToast("No expired Pro students found","info");return;}
+  showModal("Downgrade "+expired.length+" Expired Students","This will set their plan to Free. Cannot be undone.","Downgrade All",function(){
+    var promises=expired.map(function(d){
+      return db.collection("users").doc(d.id).update({plan:"free"});
+    });
+    Promise.all(promises).then(function(){
+      showToast(expired.length+" students downgraded","success");
+      loadDashboard();
+    }).catch(function(e){showToast("Error: "+e.message,"error");});
+  });
+}
+
+document.getElementById("student-search").addEventListener("input",filterStudents);
+document.getElementById("student-plan-filter").addEventListener("change",filterStudents);
+document.getElementById("student-sort").addEventListener("change",filterStudents);
+
 
 // SETTINGS
 function loadSettings() {
@@ -953,13 +1058,35 @@ function tbGoStep(n) {
   if (n === 3) loadPublishedTests();
 }
 
-document.querySelectorAll("#tb-dtype .tb-opt, #tb-count .tb-opt").forEach(function(btn) {
+document.querySelectorAll("#tb-dtype .tb-opt, #tb-qtype .tb-opt, #tb-count .tb-opt").forEach(function(btn) {
   btn.addEventListener("click", function() {
     var grp = btn.closest(".tb-opt-row");
     grp.querySelectorAll(".tb-opt").forEach(function(b) { b.classList.remove("on"); });
     btn.classList.add("on");
-    if (grp.id === "tb-dtype") TB.dtype = btn.dataset.val;
-    else TB.count = parseInt(btn.dataset.val);
+    if (grp.id === "tb-dtype") {
+      TB.dtype = btn.dataset.val;
+      // Show/hide qtype buttons based on dtype
+      var isPython = TB.dtype === "Python";
+      document.querySelectorAll("#tb-qtype .tb-opt").forEach(function(b) {
+        var isException = b.dataset.val === "ExceptionHandling";
+        b.style.display = isPython ? (isException ? "" : "none") : (isException ? "none" : "");
+      });
+      if(isPython) {
+        // Auto-select Exception Handling for Python
+        document.querySelectorAll("#tb-qtype .tb-opt").forEach(function(b){b.classList.remove("on");});
+        var ehBtn = document.querySelector("#tb-qtype .tb-opt[data-val='ExceptionHandling']");
+        if(ehBtn){ehBtn.classList.add("on"); TB.qtype="ExceptionHandling";}
+      } else {
+        // Auto-select Mixed for other dtypes
+        document.querySelectorAll("#tb-qtype .tb-opt").forEach(function(b){b.classList.remove("on");});
+        var mixBtn = document.querySelector("#tb-qtype .tb-opt[data-val='Mixed']");
+        if(mixBtn){mixBtn.classList.add("on"); TB.qtype="Mixed";}
+      }
+    } else if (grp.id === "tb-qtype") {
+      TB.qtype = btn.dataset.val;
+    } else {
+      TB.count = parseInt(btn.dataset.val);
+    }
   });
 });
 
@@ -970,7 +1097,7 @@ document.getElementById("btn-tb-generate").addEventListener("click", function() 
     return fetch(CF_GENERATE_TB, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-      body: JSON.stringify({ dtype: TB.dtype, plan: "paid" }),
+      body: JSON.stringify({ dtypes: [TB.dtype === "Python" ? "Python" : TB.dtype], plan: "paid", qtype: TB.qtype }),
     });
   }).then(function(res) { return res.json().then(function(d) { return { ok:res.ok, data:d }; }); })
   .then(function(r) {
@@ -1118,6 +1245,38 @@ function activateTest(id) {
   .then(function(){ showToast("Test activated!","success"); loadPublishedTests(); })
   .catch(function(e){ showToast("Error: "+e.message,"error"); });
 }
+
+// EMAIL SEND
+document.getElementById("btn-send-email").addEventListener("click", function() {
+  var subject = document.getElementById("email-subject").value.trim();
+  var body    = document.getElementById("email-body").value.trim();
+  if(!subject){ showToast("Enter email subject","error"); return; }
+  if(!body)   { showToast("Enter email message","error"); return; }
+  if(!filteredStudents.length){ showToast("No students match filter","error"); return; }
+  var recipients = filteredStudents.map(function(d){ return { email: d.email||"", name: d.name||"Student" }; }).filter(function(r){ return r.email; });
+  if(!recipients.length){ showToast("No students have email addresses","error"); return; }
+  showModal("Send Email?","Send to "+recipients.length+" students: \""+subject+"\"","Send",function(){
+    var btn=document.getElementById("btn-send-email");
+    btn.disabled=true; btn.textContent="Sending...";
+    auth.currentUser.getIdToken().then(function(token){
+      return fetch(CF_BASE+"/sendEmail",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+        body:JSON.stringify({subject:subject,body:body,recipients:recipients}),
+      });
+    }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+    .then(function(r){
+      btn.disabled=false; btn.textContent="Send Email Campaign";
+      if(!r.ok){showToast(r.data.message||"Error sending","error");return;}
+      showToast("Email sent to "+recipients.length+" students","success");
+      document.getElementById("email-subject").value="";
+      document.getElementById("email-body").value="";
+    }).catch(function(e){
+      btn.disabled=false; btn.textContent="Send Email Campaign";
+      showToast("Email requires Brevo API key configured in CF","error");
+    });
+  });
+});
 </script>
 </body>
 </html>

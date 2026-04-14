@@ -1007,6 +1007,15 @@ function handleUser(user){
       showScreen("profile"); return;
     }
     S.userData=snap.data();
+    // Auto-downgrade expired Pro on login
+    if(S.userData.plan==="paid" && S.userData.planExpiry){
+      var expiry=S.userData.planExpiry.toDate?S.userData.planExpiry.toDate():new Date(S.userData.planExpiry);
+      if(expiry<new Date()){
+        db.collection("users").doc(S.uid).update({plan:"free"}).catch(function(){});
+        S.userData.plan="free";
+        console.log("[PyZap] Pro expired — auto-downgraded to free");
+      }
+    }
     if(S.userData.banned){
       auth.signOut(); _userHandled=false; showScreen("login");
       var note=document.getElementById("l-note");
@@ -1078,7 +1087,8 @@ document.getElementById("btn-save-profile").addEventListener("click",function(){
   errEl.style.display="none";
   var btn=document.getElementById("btn-save-profile");
   btn.disabled=true;btn.textContent="Saving...";
-  var data={name:name,phone:phone,board:board,grade:cls,country:country,plan:"free",role:"student",
+  var email = (firebase.auth().currentUser && firebase.auth().currentUser.email) || "";
+  var data={name:name,phone:phone,email:email,board:board,grade:cls,country:country,plan:"free",role:"student",
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
     lastLogin:firebase.firestore.FieldValue.serverTimestamp(),
     loginCount:1,hitLimitCount:0,attemptedTests:[]};
