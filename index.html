@@ -462,27 +462,39 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 
 
 /* ─── 3-COLUMN CONTROL BOX ─── */
-.ctrl-box{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:10px;flex-shrink:0;display:flex;}
-.ctrl-col{flex:1;padding:12px 14px;border-right:1px solid var(--bdr);}
+.ctrl-box{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:10px;flex-shrink:0;display:flex;align-items:stretch;}
+.ctrl-col{flex:1;padding:12px 14px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;}
 .ctrl-col:last-child{border-right:none;}
-.ctrl-col-title{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:10px;}
-/* Progress col */
-.prog-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.prog-stat-icon{font-size:12px;width:16px;text-align:center;flex-shrink:0;}
-.prog-stat-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text2);min-width:22px;}
-.prog-stat-lbl{font-size:11px;color:var(--muted);}
-.prog-stat-row.sc .prog-stat-val{color:var(--green);}
-.prog-stat-row.sw .prog-stat-val{color:var(--red);}
-.prog-stat-row.ss .prog-stat-val{color:var(--gold);}
+.ctrl-col-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:10px;}
+/* Mode col */
+.mode-toggle-v{display:flex;gap:6px;flex-wrap:wrap;}
+.mode-btn-v{padding:6px 14px;border-radius:7px;background:var(--card);border:1.5px solid var(--bdr2);color:var(--text2);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.mode-btn-v.active{background:var(--gdim);border-color:var(--gold);color:var(--gold);font-weight:700;}
+.mode-btn-v:hover:not(.active){border-color:var(--gold);color:var(--gold);}
+/* Progress col - 2x2 grid */
+.prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.prog-cell{background:var(--card);border:1px solid var(--bdr);border-radius:8px;padding:7px 10px;text-align:center;}
+.prog-cell-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--text2);line-height:1;}
+.prog-cell-lbl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.prog-cell.sc .prog-cell-val{color:var(--green);}
+.prog-cell.sw .prog-cell-val{color:var(--red);}
+.prog-cell.ss .prog-cell-val{color:var(--gold);}
 /* Free limit col */
-.limit-concept-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
-.limit-concept-name{font-size:11px;font-weight:700;color:var(--text2);min-width:38px;}
-.limit-concept-bar{flex:1;height:4px;background:var(--bdr2);border-radius:999px;overflow:hidden;}
+.limit-concept-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.limit-concept-name{font-size:12px;font-weight:700;color:var(--text2);min-width:38px;}
+.limit-concept-bar{flex:1;height:5px;background:var(--bdr2);border-radius:999px;overflow:hidden;}
 .limit-concept-fill{height:100%;border-radius:999px;transition:width .3s;}
-.limit-concept-count{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);min-width:32px;text-align:right;}
+.limit-concept-count{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);min-width:36px;text-align:right;}
 .limit-concept-done .limit-concept-name,.limit-concept-done .limit-concept-count{color:var(--muted);}
-.limit-footer{font-size:9px;color:var(--muted);margin-top:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
-.limit-upgrade-btn{background:none;border:none;color:var(--gold);font-size:9px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;padding:0;}
+.limit-footer{font-size:10px;color:var(--muted);margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.limit-upgrade-btn{background:none;border:none;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;padding:0;}
+@media(max-width:767px){
+  .ctrl-col{padding:10px 10px;}
+  .ctrl-col-title{font-size:9px;margin-bottom:8px;}
+  .prog-cell-val{font-size:15px;}
+  .limit-concept-name{font-size:11px;}
+  .limit-concept-count{font-size:11px;}
+}
 </style>
 </head>
 <body>
@@ -711,18 +723,23 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
       <!-- Col 2: Mode -->
       <div class="ctrl-col">
         <div class="ctrl-col-title">Mode</div>
-        <div class="mode-toggle" style="flex-direction:column;gap:6px;">
-          <button class="mode-btn active" data-mode="mcq">&#x229E; MCQ</button>
-          <button class="mode-btn"        data-mode="type">&#x270E; Type</button>
+        <div class="mode-toggle-v">
+          <button class="mode-btn mode-btn-v active" data-mode="mcq">&#x229E; MCQ</button>
+          <button class="mode-btn mode-btn-v"        data-mode="type">&#x270E; Type</button>
         </div>
       </div>
       <!-- Col 3: My Progress -->
       <div class="ctrl-col">
-        <div class="ctrl-col-title">My Progress</div>
-        <div class="prog-stat-row"><span class="prog-stat-icon">&#x1F4DD;</span><span class="prog-stat-val" id="hs-done">0</span><span class="prog-stat-lbl">Done</span></div>
-        <div class="prog-stat-row sc"><span class="prog-stat-icon">&#x2713;</span><span class="prog-stat-val" id="hs-correct">0</span><span class="prog-stat-lbl">Correct</span></div>
-        <div class="prog-stat-row sw"><span class="prog-stat-icon">&#x2717;</span><span class="prog-stat-val" id="hs-wrong">0</span><span class="prog-stat-lbl">Wrong</span></div>
-        <div class="prog-stat-row ss"><span class="prog-stat-icon">&#x1F525;</span><span class="prog-stat-val" id="hs-streak">0</span><span class="prog-stat-lbl">Streak</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="ctrl-col-title" style="margin-bottom:0;">My Progress</div>
+          <span class="plan-badge free" id="plan-badge">Free</span>
+        </div>
+        <div class="prog-grid">
+          <div class="prog-cell"><div class="prog-cell-val" id="hs-done">0</div><div class="prog-cell-lbl">Done</div></div>
+          <div class="prog-cell sc"><div class="prog-cell-val" id="hs-correct">0</div><div class="prog-cell-lbl">Correct</div></div>
+          <div class="prog-cell sw"><div class="prog-cell-val" id="hs-wrong">0</div><div class="prog-cell-lbl">Wrong</div></div>
+          <div class="prog-cell ss"><div class="prog-cell-val" id="hs-streak">0</div><div class="prog-cell-lbl">Streak</div></div>
+        </div>
       </div>
     </div>
     <!-- hidden free-banner div for JS compatibility -->
@@ -884,15 +901,21 @@ document.getElementById("l-tag").textContent = TAGS[Math.floor(Math.random()*TAG
 // ═══ STATE ═══
 var S = {
   uid: null, idToken: null, plan: "free", userData: null,
-  // allQuestions: { String:[...], List:[...], Tuple:[...], Dictionary:[...] }
+  // FREE nested: { String:{ Indexing:[10q], Slicing:[10q],... }, List:{...} }
+  // PAID flat:   { String:[50q], List:[50q], ... }
   allQuestions: {},
-  // Progress per concept: { String:{used:3,completed:false}, ... }
-  dailyProgress: {},
-  // Actual answers given this session per concept (source of truth for free limit UI)
-  answeredToday: {},  // { String:3, List:0 }
-  freeConceptsAllowed: ["String","List"], freeQuestionsPerConcept: 10,
-  // Per-concept resume tracking
+  // Free progress per dtype+qtype: { String:{ Indexing:{seen:0,done:false}, ... } }
+  progress: {},
+  // Today's free concepts: ["String","List"] (from Firestore)
+  todaysConcepts: [],
+  freeQuestionsPerQtype: 10,
+  // Per-concept resume tracking (paid)
   conceptIdx: {},
+  // Free: today's concepts (String + 1 random)
+  todaysConcepts: [],
+  freeQuestionsPerQtype: 10,
+  // Progress: { String:{ Indexing:{seen:0,done:false}, ... }, List:{...} }
+  progress: {},
   // Current practice state
   dtype: "String", qtype: "Mixed",
   currentQuestions: [],   // filtered list for current dtype+qtype
@@ -1232,17 +1255,9 @@ document.querySelectorAll(".sub-tab").forEach(function(tab){
 });
 
 // ═══ FREE BANNER ═══
-function getConceptUsed(concept){
-  // Use answeredToday — actual answers given, NOT server-side progress
-  return S.answeredToday[concept] || 0;
-}
-function isConceptCompleted(concept){
-  return getConceptUsed(concept) >= S.freeQuestionsPerConcept;
-}
-function allConceptsDone(){
-  if(S.plan==="paid")return false;
-  return S.freeConceptsAllowed.every(function(c){return isConceptCompleted(c);});
-}
+
+
+
 
 function updateFreeBanner(){
   var limitCol = document.getElementById("ctrl-limit-col");
@@ -1307,8 +1322,18 @@ function launchApp(){
   S.total=st.total||0; S.score=st.correct||0; S.wrong=st.wrong||0; S.best=st.best||0;
   updHdr();
   applyPlanUI();
-  if(S.plan!=="paid"&&S.freeConceptsAllowed.length>0&&!S.freeConceptsAllowed.includes(S.dtype)){
-    S.dtype=S.freeConceptsAllowed[0];
+  // For free: load today's concepts from localStorage if available
+  if(S.plan!=="paid"){
+    var tc = loadTodaysConcepts ? loadTodaysConcepts() : null;
+    if(tc && tc.length>0){
+      S.todaysConcepts = tc;
+      S.dtype = tc[0];
+    } else {
+      S.dtype = "String";
+    }
+    // Load saved progress
+    var sp = loadProgress ? loadProgress() : {};
+    if(Object.keys(sp).length>0) S.progress = sp;
   }
   fetchAllQuestions();
 }
@@ -1317,172 +1342,198 @@ function launchApp(){
 //  PRACTICE LOGIC
 // ═══════════════════════════════════════════
 
-// ─── localStorage helpers (per-concept for paid, per-day for free) ───
-function lsKeyPaidConcept(dtype){ return "pyzap_paid_" + dtype; }
-function lsKeyFreeConcept(dtype){ return "pyzap_free_" + dtype + "_" + getTodayStr(); }
+var FREE_QTYPES = ["Indexing","Slicing","SliceIdx","Functions","Membership","Comparison","Expressions","BuiltinMath","Mixed"];
+var FREE_QTYPES_TRACKED = FREE_QTYPES; // all 9 tracked separately
 
+// ─── localStorage ───
+function lsKeyFreeNested(dtype){ return "pyzap_free2_" + dtype + "_" + getTodayStr(); }
+function lsKeyPaidConcept(dtype){ return "pyzap_paid_" + dtype; }
+
+function saveFreeConcept(dtype){
+  try{ localStorage.setItem(lsKeyFreeNested(dtype), JSON.stringify({
+    questions: S.allQuestions[dtype] || {},
+    progress:  S.progress[dtype]     || {},
+  })); }catch(e){}
+}
+function loadFreeConcept(dtype){
+  try{ var r=localStorage.getItem(lsKeyFreeNested(dtype)); return r?JSON.parse(r):null; }catch(e){ return null; }
+}
 function saveConcept(dtype){
-  if(S.plan === "paid"){
+  if(S.plan==="paid"){
     try{ localStorage.setItem(lsKeyPaidConcept(dtype), JSON.stringify({
-      questions: S.allQuestions[dtype] || [],
-      idx: S.conceptIdx[dtype] || 0,
-    })); } catch(e){}
+      questions: S.allQuestions[dtype]||[],
+      idx: S.conceptIdx[dtype]||0,
+    }));}catch(e){}
   } else {
-    try{ localStorage.setItem(lsKeyFreeConcept(dtype), JSON.stringify({
-      questions: S.allQuestions[dtype] || [],
-      idx: S.conceptIdx[dtype] || 0,
-    })); } catch(e){}
+    saveFreeConcept(dtype);
   }
 }
-
 function loadConceptCache(dtype){
-  var key = S.plan === "paid" ? lsKeyPaidConcept(dtype) : lsKeyFreeConcept(dtype);
-  try{ var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+  if(S.plan==="paid"){
+    try{ var r=localStorage.getItem(lsKeyPaidConcept(dtype)); return r?JSON.parse(r):null; }catch(e){ return null; }
+  } else {
+    return loadFreeConcept(dtype);
+  }
 }
-
 function clearConceptCache(dtype){
-  try{ localStorage.removeItem(lsKeyPaidConcept(dtype)); } catch(e){}
-  try{ localStorage.removeItem(lsKeyFreeConcept(dtype)); } catch(e){}
+  try{ localStorage.removeItem(lsKeyPaidConcept(dtype)); }catch(e){}
+  try{ localStorage.removeItem(lsKeyFreeNested(dtype)); }catch(e){}
 }
 
-// ─── Fetch questions for one specific concept (paid refetch on exhaustion) ───
-function fetchConceptFromServer(dtype, onDone){
-  // Map client dtype to server dtype
-  var serverDtype = (dtype==="Functions"||dtype==="Modules"||dtype==="Exception") ? "Python" : dtype;
-  fetch(CF_GENERATE,{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({dtypes:[serverDtype]}),
-  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
-  .then(function(r){
-    if(!r.ok){ setCardLoading("Error loading '"+dtype+"' questions. Please try again."); return; }
-    var allQs = r.data.allQuestions || {};
-    var newQs;
-    if(serverDtype === "Python"){
-      var pythonQs = allQs["Python"] || [];
-      var fnQs  = pythonQs.filter(function(q){return q.qtype==="Functions";});
-      var modQs = pythonQs.filter(function(q){return q.qtype==="Modules";});
-      var exQs  = pythonQs.filter(function(q){return q.qtype==="ExceptionHandling";});
-      if(!fnQs.length && !modQs.length && !exQs.length){
-        var third = Math.floor(pythonQs.length/3);
-        fnQs  = pythonQs.slice(0, third);
-        modQs = pythonQs.slice(third, third*2);
-        exQs  = pythonQs.slice(third*2);
-      }
-      if(dtype==="Functions")  newQs = fnQs;
-      else if(dtype==="Modules")  newQs = modQs;
-      else                        newQs = exQs;
-    } else {
-      newQs = allQs[dtype] || [];
-    }
-    S.allQuestions[dtype] = newQs;
-    S.conceptIdx[dtype]   = 0;
-    saveConcept(dtype);
-    if(onDone) onDone();
-  }).catch(function(e){ console.error(e); setCardLoading("Error loading. Please refresh."); });
+// ─── Progress helpers ───
+function getQtypeSeen(dtype, qtype){
+  return (S.progress[dtype] && S.progress[dtype][qtype] && S.progress[dtype][qtype].seen) || 0;
+}
+function isQtypeDone(dtype, qtype){
+  return !!(S.progress[dtype] && S.progress[dtype][qtype] && S.progress[dtype][qtype].done);
+}
+function isConceptDone(dtype){
+  if(S.plan==="paid") return false;
+  return FREE_QTYPES_TRACKED.every(function(qt){ return isQtypeDone(dtype, qt); });
+}
+function getTotalAnswered(dtype){
+  if(!S.progress[dtype]) return 0;
+  return FREE_QTYPES_TRACKED.reduce(function(sum, qt){
+    return sum + (S.progress[dtype][qt] ? S.progress[dtype][qt].seen : 0);
+  }, 0);
+}
+function getTotalPossible(){
+  return FREE_QTYPES_TRACKED.length * S.freeQuestionsPerQtype; // 9 * 10 = 90
 }
 
-// ─── Initial load: fetch all concepts in one call ───
+// ─── Fetch all questions on login ───
 function fetchAllQuestions(){
   setCardLoading("Loading your questions...");
 
-  // Try loading each concept from cache
-  var dtypes = S.plan === "paid"
-    ? ["String","List","Tuple","Dictionary","Functions","Modules","Exception"]
-    : S.freeConceptsAllowed.slice();
-
-  var allCached = true;
-  dtypes.forEach(function(d){
-    var cached = loadConceptCache(d);
-    if(cached && cached.questions && cached.questions.length > 0){
-      S.allQuestions[d] = cached.questions;
-      S.conceptIdx[d]   = cached.idx || 0;
-    } else {
-      allCached = false;
-    }
-  });
-
-  // Free students: always fetch fresh on login — daily progress is source of truth
-  // Don't rely on stale cache from a previous day
-  if(S.plan !== "paid") allCached = false;
-
-  if(allCached){
-    startPractice();
+  if(S.plan === "paid"){
+    // Paid: try cache per concept
+    var dtypes = ["String","List","Tuple","Dictionary","Functions","Modules","Exception"];
+    var allCached = true;
+    dtypes.forEach(function(d){
+      var cached = loadConceptCache(d);
+      if(cached && cached.questions && (Array.isArray(cached.questions)?cached.questions.length:Object.keys(cached.questions).length) > 0){
+        S.allQuestions[d] = cached.questions;
+        S.conceptIdx[d]   = cached.idx || 0;
+      } else { allCached = false; }
+    });
+    if(allCached){ startPractice(); return; }
+    // Fetch paid
+    fetch(CF_GENERATE,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+      body:JSON.stringify({dtypes:dtypes.map(function(d){
+        if(d==="Functions"||d==="Modules"||d==="Exception") return "Python";
+        return d;
+      }).filter(function(d,i,a){return a.indexOf(d)===i;})}),
+    }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+    .then(function(r){
+      if(!r.ok){setCardLoading("Error loading. Please refresh.");return;}
+      var allQs=r.data.allQuestions||{};
+      // Split Python
+      if(allQs["Python"]){
+        var pqs=allQs["Python"];
+        var fnQs=pqs.filter(function(q){return q.qtype==="Functions";});
+        var modQs=pqs.filter(function(q){return q.qtype==="Modules";});
+        var exQs=pqs.filter(function(q){return q.qtype==="ExceptionHandling";});
+        if(!fnQs.length&&!modQs.length&&!exQs.length){
+          var t=Math.floor(pqs.length/3);
+          fnQs=pqs.slice(0,t);modQs=pqs.slice(t,t*2);exQs=pqs.slice(t*2);
+        }
+        allQs["Functions"]=fnQs;allQs["Modules"]=modQs;allQs["Exception"]=exQs;
+      }
+      dtypes.forEach(function(d){
+        if(!S.allQuestions[d]||!S.allQuestions[d].length){
+          S.allQuestions[d]=allQs[d]||[];
+          S.conceptIdx[d]=0;
+          saveConcept(d);
+        }
+      });
+      startPractice();
+    }).catch(function(e){console.error(e);setCardLoading("Error loading. Please refresh.");});
     return;
   }
 
-  // Fetch from server — one call for all dtypes
-  fetch(CF_GENERATE,{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
-    body:JSON.stringify({dtypes: dtypes.map(function(d){
-      // Map client dtypes to server dtypes
-      if(d==="Functions"||d==="Modules"||d==="Exception") return "Python";
-      return d;
-    }).filter(function(d,i,arr){return arr.indexOf(d)===i;})}),
-  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
-  .then(function(r){
-    if(!r.ok){ setCardLoading("Error loading questions. Please refresh."); return; }
-    var data = r.data;
-    var allQs = data.allQuestions || {};
-
-    // Split Python questions into Functions/Modules/Exception sub-topics
-    if(allQs["Python"] && allQs["Python"].length > 0){
-      var pythonQs = allQs["Python"];
-      var fnQs = pythonQs.filter(function(q){return q.qtype==="Functions";});
-      var modQs = pythonQs.filter(function(q){return q.qtype==="Modules";});
-      var exQs = pythonQs.filter(function(q){return q.qtype==="ExceptionHandling";});
-      // If server mixed them, distribute evenly
-      if(!fnQs.length && !modQs.length && !exQs.length){
-        var third = Math.floor(pythonQs.length/3);
-        fnQs  = pythonQs.slice(0, third);
-        modQs = pythonQs.slice(third, third*2);
-        exQs  = pythonQs.slice(third*2);
-      }
-      allQs["Functions"]  = fnQs;
-      allQs["Modules"]    = modQs;
-      allQs["Exception"]  = exQs;
-    }
-
-    // Merge: only set concepts not already in cache
-    dtypes.forEach(function(d){
-      if(!S.allQuestions[d] || S.allQuestions[d].length === 0){
-        S.allQuestions[d] = allQs[d] || [];
-        S.conceptIdx[d]   = 0;
-        saveConcept(d);
-      }
-    });
-    if(data.freeConceptsAllowed)  S.freeConceptsAllowed  = data.freeConceptsAllowed;
-    if(data.freeQuestionsPerConcept) S.freeQuestionsPerConcept = data.freeQuestionsPerConcept;
-    if(data.dailyProgress) S.dailyProgress = data.dailyProgress;
-    applyPlanUI();
-    startPractice();
-  }).catch(function(e){ console.error(e); setCardLoading("Error loading. Please refresh."); });
-}
-
-function loadDailyProgressFromFirestore(callback){
+  // FREE: check Firestore for today's concepts first
   var today = getTodayStr();
   db.collection("users").doc(S.uid).collection("dailyProgress").doc("progress").get()
   .then(function(snap){
-    if(snap.exists && snap.data().date === today){
-      S.dailyProgress = snap.data().concepts || {};
-      // Load answeredToday from Firestore progress
-      S.answeredToday = {};
-      Object.keys(S.dailyProgress).forEach(function(concept){
-        S.answeredToday[concept] = S.dailyProgress[concept].used || 0;
+    if(snap.exists && snap.data().date === today && snap.data().concepts){
+      S.todaysConcepts = snap.data().concepts;
+      // Load progress from Firestore
+      var fp = snap.data().qtypeProgress || {};
+      S.progress = {};
+      S.todaysConcepts.forEach(function(dtype){
+        S.progress[dtype] = fp[dtype] || {};
+        // Try localStorage for questions
+        var cached = loadFreeConcept(dtype);
+        if(cached && cached.questions && Object.keys(cached.questions).length > 0){
+          S.allQuestions[dtype] = cached.questions;
+          // Merge cached progress with firestore progress
+          if(cached.progress){
+            FREE_QTYPES_TRACKED.forEach(function(qt){
+              if(!S.progress[dtype][qt] && cached.progress[qt]){
+                S.progress[dtype][qt] = cached.progress[qt];
+              }
+            });
+          }
+        }
       });
-    } else {
-      S.dailyProgress = {};
-      S.answeredToday = {};
+      // If all concepts have questions cached, skip server call
+      var allCached = S.todaysConcepts.every(function(d){
+        return S.allQuestions[d] && Object.keys(S.allQuestions[d]).length > 0;
+      });
+      if(allCached){ applyPlanUI(); startPractice(); return; }
     }
-    callback();
-  }).catch(function(){ S.dailyProgress = {}; S.answeredToday = {}; callback(); });
+    // Need to fetch from server
+    fetchFreeFromServer();
+  }).catch(function(){ fetchFreeFromServer(); });
+}
+
+function fetchFreeFromServer(){
+  fetch(CF_GENERATE,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+    body:JSON.stringify({free:true}),
+  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(!r.ok){setCardLoading("Error loading questions. Please refresh.");return;}
+    var data = r.data;
+    S.todaysConcepts      = data.todaysConcepts     || ["String","List"];
+    S.freeQuestionsPerQtype = data.freeQuestionsPerQtype || 10;
+    S.allQuestions         = data.allQuestions       || {};
+    // Init progress for each concept+qtype
+    S.todaysConcepts.forEach(function(dtype){
+      if(!S.progress[dtype]) S.progress[dtype] = {};
+      FREE_QTYPES_TRACKED.forEach(function(qt){
+        if(!S.progress[dtype][qt]) S.progress[dtype][qt] = {seen:0, done:false};
+      });
+      saveFreeConcept(dtype);
+    });
+    applyPlanUI();
+    startPractice();
+  }).catch(function(e){console.error(e);setCardLoading("Error loading. Please refresh.");});
+}
+
+// ─── Save progress to Firestore (batch, not per question) ───
+var _progressSaveTimer = null;
+function scheduleProgressSave(){
+  if(_progressSaveTimer) clearTimeout(_progressSaveTimer);
+  _progressSaveTimer = setTimeout(function(){
+    if(!S.uid || S.plan==="paid") return;
+    var today = getTodayStr();
+    db.collection("users").doc(S.uid).collection("dailyProgress").doc("progress")
+    .set({ date:today, concepts:S.todaysConcepts, qtypeProgress:S.progress }, {merge:true})
+    .catch(function(e){console.warn("Progress save error:",e.message);});
+  }, 3000); // batch writes every 3 seconds
 }
 
 function startPractice(){
   setCardLoaded();
-  S.qtype = "Mixed";
-  document.querySelectorAll("#qtype-group .tog").forEach(function(b){ b.classList.toggle("active", b.dataset.qtype==="Mixed"); });
+  S.dtype  = S.plan==="paid" ? "String" : (S.todaysConcepts[0] || "String");
+  S.qtype  = "Mixed";
+  document.querySelectorAll("#qtype-group .tog").forEach(function(b){
+    b.classList.toggle("active", b.dataset.qtype==="Mixed");
+  });
   applyDtypeLocks();
   loadConceptQuestions(S.dtype);
 }
@@ -1490,97 +1541,200 @@ function startPractice(){
 // ─── Switch concept ───
 function loadConceptQuestions(dtype){
   S.dtype = dtype;
-  document.querySelectorAll("#dtype-group .tog").forEach(function(b){ b.classList.toggle("active", b.dataset.dtype===dtype); });
+  document.querySelectorAll("#dtype-group .tog").forEach(function(b){
+    b.classList.toggle("active", b.dataset.dtype===dtype);
+  });
   applyQtypeLocks();
+  updateFreeBanner();
 
-  // Free: concept completed? Only block if student has actually answered the full quota
-  if(S.plan !== "paid" && isConceptCompleted(dtype)){
-    var avail = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
+  if(S.plan !== "paid" && isConceptDone(dtype)){
+    var avail = S.todaysConcepts.filter(function(c){ return !isConceptDone(c); });
     setCardLoading(avail.length > 0
-      ? "You've completed all '" + dtype + "' questions today. Switch to " + avail.join(" or ") + "!"
-      : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
-    updateFreeBanner(); applyDtypeLocks(); return;
+      ? "You've completed all '" + dtype + "' questions today! Switch to " + avail.join(" or ") + "."
+      : "All done for today! Come back tomorrow or upgrade to Pro.");
+    return;
   }
-  // Reset currentIdx when switching concept — don't resume old position
-  // (resumePos logic below handles this correctly)
+  // Load qtype questions
+  loadQtypeQuestions(dtype, S.qtype);
+}
 
-  // Build filtered list using per-concept idx
-  S.currentQuestions = buildFilteredList(dtype, S.qtype);
-  // Restore resume index: find position in filtered list matching conceptIdx
-  var globalIdx = S.conceptIdx[dtype] || 0;
-  // Find first question in filtered list at or after globalIdx
-  var resumePos = 0;
-  for(var i = 0; i < S.currentQuestions.length; i++){
-    var origIdx = (S.allQuestions[dtype]||[]).indexOf(S.currentQuestions[i]);
-    if(origIdx >= globalIdx){ resumePos = i; break; }
-    resumePos = i + 1; // past all filtered questions
+// ─── Switch qtype ───
+function loadQtypeQuestions(dtype, qtype){
+  S.qtype = qtype;
+  document.querySelectorAll("#qtype-group .tog").forEach(function(b){
+    b.classList.toggle("active", b.dataset.qtype===qtype);
+  });
+
+  if(S.plan !== "paid" && isQtypeDone(dtype, qtype)){
+    // Stay on last question — don't clear screen
+    showQtypeCompleteMsg(dtype, qtype);
+    return;
   }
-  S.currentIdx = Math.min(resumePos, S.currentQuestions.length);
 
-  if(S.currentQuestions.length === 0){
-    setCardLoading("No questions available for '" + dtype + "'. Try another data type.");
+  // Get questions for this dtype+qtype
+  var pool;
+  if(S.plan === "paid"){
+    // Paid: filter from flat array
+    var flat = S.allQuestions[dtype] || [];
+    pool = qtype==="Mixed" ? flat : flat.filter(function(q){return q.qtype===qtype;});
+  } else {
+    // Free: direct access by qtype key
+    var nested = S.allQuestions[dtype] || {};
+    pool = nested[qtype] || [];
+  }
+
+  S.currentQuestions = pool;
+  // Resume from last seen position
+  var seen = S.plan==="paid" ? (S.conceptIdx[dtype]||0) : getQtypeSeen(dtype, qtype);
+  S.currentIdx = Math.min(seen, pool.length > 0 ? pool.length - 1 : 0);
+
+  if(pool.length === 0){
+    setCardLoading("No '" + qtype + "' questions available. Try another type.");
     return;
   }
   showCurrentQuestion();
 }
 
-// ─── Filter questions by qtype within current concept ───
-function buildFilteredList(dtype, qtype){
-  var pool = S.allQuestions[dtype] || [];
-  if(qtype === "Mixed" || !qtype) return pool.slice();
-  return pool.filter(function(q){ return q.qtype === qtype; });
-}
-
 // ─── Show current question ───
 function showCurrentQuestion(){
-  // Free limit check — only based on actual answers given
-  if(S.plan !== "paid" && isConceptCompleted(S.dtype)){
-    var avail = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
-    setCardLoading(avail.length > 0
-      ? "You've completed all '" + S.dtype + "' questions today. Switch to " + avail.join(" or ") + "!"
-      : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
-    updateFreeBanner(); applyDtypeLocks(); return;
-  }
-
-  // Batch exhausted for this concept
   if(S.currentIdx >= S.currentQuestions.length){
     if(S.plan !== "paid"){
-      // Mark completed
-      if(!S.dailyProgress[S.dtype]) S.dailyProgress[S.dtype] = {used:0,completed:false};
-      S.dailyProgress[S.dtype].completed = true;
-      S.dailyProgress[S.dtype].used = S.freeQuestionsPerConcept;
-      var avail2 = S.freeConceptsAllowed.filter(function(c){ return !isConceptCompleted(c); });
-      setCardLoading(avail2.length > 0
-        ? "You've completed all '" + S.dtype + "' questions today. Switch to " + avail2.join(" or ") + "!"
-        : "You've completed all free questions for today! Come back tomorrow or upgrade to Pro.");
-      updateFreeBanner(); applyDtypeLocks();
+      showQtypeCompleteMsg(S.dtype, S.qtype);
     } else {
-      // Paid: fetch more for THIS concept only
-      setCardLoading("Loading more '" + S.dtype + "' questions...");
-      var dtype = S.dtype;
-      fetchConceptFromServer(dtype, function(){
-        // Rebuild filtered list with new questions appended, resume from where we left off
-        S.currentQuestions = buildFilteredList(dtype, S.qtype);
-        // currentIdx stays — new questions appended, so currentIdx now points to first new one
-        showCurrentQuestion();
+      // Paid: fetch more
+      setCardLoading("Loading more questions...");
+      fetchConceptFromServer(S.dtype, function(){
+        loadQtypeQuestions(S.dtype, S.qtype);
       });
     }
     return;
   }
 
   setCardLoaded();
-  S.qcount++;
-  S.checked = false; S.sel = null;
+  S.checked = false; S.sel = null; S.qcount++;
   renderPracticeQuestion(S.currentQuestions[S.currentIdx]);
-  // Update globalIdx for this concept
-  var q = S.currentQuestions[S.currentIdx];
-  var pool = S.allQuestions[S.dtype] || [];
-  var globalPos = pool.indexOf(q);
-  if(globalPos >= 0) S.conceptIdx[S.dtype] = globalPos;
-  saveConcept(S.dtype);
   updateFreeBanner();
   applyQtypeLocks();
 }
+
+function showQtypeCompleteMsg(dtype, qtype){
+  // Stay on last question — just disable Next and show completion
+  setCardLoaded();
+  if(S.currentQuestions.length > 0){
+    // Show last question
+    renderPracticeQuestion(S.currentQuestions[S.currentQuestions.length-1]);
+    // Disable check and next
+    document.getElementById("btn-check").disabled = true;
+    document.getElementById("btn-next").disabled  = true;
+    setFB("✓ " + qtype + " complete! Select another question type.", "correct");
+  } else {
+    setCardLoading(qtype + " complete! Select another question type.");
+  }
+  applyQtypeLocks();
+  updateFreeBanner();
+}
+
+// ─── fetchConceptFromServer (paid only, for batch refetch) ───
+function fetchConceptFromServer(dtype, onDone){
+  var serverDtype = (dtype==="Functions"||dtype==="Modules"||dtype==="Exception")?"Python":dtype;
+  fetch(CF_GENERATE,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
+    body:JSON.stringify({dtypes:[serverDtype]}),
+  }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
+  .then(function(r){
+    if(!r.ok){setCardLoading("Error loading. Try again.");return;}
+    var allQs=r.data.allQuestions||{};
+    var newQs;
+    if(serverDtype==="Python"){
+      var pqs=allQs["Python"]||[];
+      var fnQs=pqs.filter(function(q){return q.qtype==="Functions";});
+      var modQs=pqs.filter(function(q){return q.qtype==="Modules";});
+      var exQs=pqs.filter(function(q){return q.qtype==="ExceptionHandling";});
+      if(!fnQs.length&&!modQs.length&&!exQs.length){var t=Math.floor(pqs.length/3);fnQs=pqs.slice(0,t);modQs=pqs.slice(t,t*2);exQs=pqs.slice(t*2);}
+      if(dtype==="Functions") newQs=fnQs;
+      else if(dtype==="Modules") newQs=modQs;
+      else newQs=exQs;
+    } else { newQs=allQs[dtype]||[]; }
+    S.allQuestions[dtype]=newQs;
+    S.conceptIdx[dtype]=0;
+    saveConcept(dtype);
+    if(onDone)onDone();
+  }).catch(function(e){console.error(e);setCardLoading("Error loading. Please refresh.");});
+}
+
+// ─── applyDtypeLocks ───
+function applyDtypeLocks(){
+  document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
+    var dt = btn.dataset.dtype;
+    if(PYTHON_DTYPES.indexOf(dt)>=0){
+      btn.classList.toggle("locked", S.plan!=="paid");
+      return;
+    }
+    if(S.plan==="paid"){btn.classList.remove("locked");return;}
+    // Free: only todaysConcepts are available
+    if(S.todaysConcepts.indexOf(dt)<0){
+      btn.classList.add("locked"); return;
+    }
+    // Lock if all qtypes done
+    btn.classList.toggle("locked", isConceptDone(dt));
+  });
+  applyQtypeLocks();
+}
+
+// ─── applyQtypeLocks ───
+function applyQtypeLocks(){
+  var pyDtype = isPythonDtype();
+  var qtypeSection = document.getElementById("qtype-sbar");
+  if(qtypeSection) qtypeSection.style.display = pyDtype ? "none" : "";
+  var modeSection = document.querySelector(".mode-toggle-v");
+  if(!modeSection) modeSection = document.querySelector(".mode-toggle");
+  if(modeSection){
+    if(pyDtype){
+      document.querySelectorAll(".mode-btn,.mode-btn-v").forEach(function(b){
+        if(b.dataset.mode==="mcq") b.classList.add("active");
+        else { b.classList.remove("active"); b.style.display="none"; }
+      });
+      S.mode="mcq";
+    } else {
+      document.querySelectorAll(".mode-btn,.mode-btn-v").forEach(function(b){b.style.display="";});
+    }
+  }
+  if(pyDtype) return;
+  // Lock/unlock qtype buttons
+  document.querySelectorAll("#qtype-group .tog").forEach(function(btn){
+    btn.style.display="";
+    if(S.plan==="paid"){btn.classList.remove("locked");return;}
+    btn.classList.toggle("locked", isQtypeDone(S.dtype, btn.dataset.qtype));
+  });
+}
+
+// ─── updateFreeBanner ───
+function updateFreeBanner(){
+  var limitCol = document.getElementById("ctrl-limit-col");
+  var container = document.getElementById("free-banner-concepts");
+  if(!container) return;
+  if(S.plan==="paid"){
+    if(limitCol) limitCol.style.display="none";
+    return;
+  }
+  if(limitCol) limitCol.style.display="";
+  var parts="";
+  S.todaysConcepts.forEach(function(dtype){
+    var total    = getTotalPossible();
+    var answered = getTotalAnswered(dtype);
+    var pct      = total > 0 ? Math.min(100, Math.round((answered/total)*100)) : 0;
+    var done     = isConceptDone(dtype);
+    var color    = done?"var(--muted)":pct>=80?"var(--green)":pct>=50?"var(--amber)":"var(--gold)";
+    parts += '<div class="limit-concept-row'+(done?" limit-concept-done":'')+'">'+
+      '<span class="limit-concept-name">'+(done?"🔒 ":"")+dtype+'</span>'+
+      '<div class="limit-concept-bar"><div class="limit-concept-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
+      '<span class="limit-concept-count">'+answered+'/'+total+'</span>'+
+    '</div>';
+  });
+  container.innerHTML = parts;
+}
+
 
 function hl(line){
   if(!line)return"";
@@ -1632,6 +1786,7 @@ function renderPracticeQuestion(q){
   if(S.mode==="mcq"){mg.style.display="grid";ta.classList.remove("show");}
   else{mg.style.display="none";ta.classList.add("show");}
   setFB("","empty");document.getElementById("expl").className="expl";document.getElementById("btn-check").disabled=false;
+  document.getElementById("btn-next").disabled=false;
 }
 
 function ansMatch(user,correct){
@@ -1654,17 +1809,10 @@ var _toastT=null;
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.className="toast success show";if(_toastT)clearTimeout(_toastT);_toastT=setTimeout(function(){t.classList.remove("show");},2200);}
 
 function updHdr(){
-  var vals = {
-    done: S.total, correct: S.score, wrong: S.wrong,
-    streak: S.best + (S.best > 0 ? "⚡" : "")
-  };
-  // Sidebar (desktop)
-  var ids = {done:"hs-done", correct:"hs-correct", wrong:"hs-wrong", streak:"hs-streak"};
-  // Topbar + mobile (same IDs: ms-done, ms-correct, ms-wrong, ms-streak)
-  var mids = {done:"ms-done", correct:"ms-correct", wrong:"ms-wrong", streak:"ms-streak"};
-  Object.keys(vals).forEach(function(k){
-    var el=document.getElementById(ids[k]); if(el) el.textContent=vals[k];
-    var mel=document.getElementById(mids[k]); if(mel) mel.textContent=vals[k];
+  var vals={done:S.total,correct:S.score,wrong:S.wrong,streak:S.best+(S.best>0?"⚡":"")};
+  ["done","correct","wrong","streak"].forEach(function(k){
+    var el=document.getElementById("hs-"+k); if(el)el.textContent=vals[k];
+    var mel=document.getElementById("ms-"+k); if(mel)mel.textContent=vals[k];
   });
   saveStats();
 }
@@ -1673,35 +1821,42 @@ function checkAns(){
   if(S.checked)return;
   var q=S.currentQuestions[S.currentIdx];if(!q)return;
   var uv;
-  if(S.mode==="mcq"){uv=S.sel;if(!uv){setFB("\u2190 Select an option first","wrong");return;}}
-  else{uv=document.getElementById("type-inp").value.trim();if(!uv){setFB("\u2190 Type your answer first","wrong");return;}}
+  if(S.mode==="mcq"){uv=S.sel;if(!uv){setFB("← Select an option first","wrong");return;}}
+  else{uv=document.getElementById("type-inp").value.trim();if(!uv){setFB("← Type your answer first","wrong");return;}}
   var correct=q.answer,ok=ansMatch(uv,correct);
   S.total++;S.checked=true;
-  if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);setFB("\u2713  Correct!","correct");if(S.streak>=3)toast(S.streak+" in a row! \u26a1");}
-  else{S.streak=0;S.wrong++;setFB("\u2717  Wrong \u2014 Answer: "+correct,"wrong");}
+  if(ok){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);setFB("✓  Correct!","correct");if(S.streak>=3)toast(S.streak+" in a row! ⚡");}
+  else{S.streak=0;S.wrong++;setFB("✗  Wrong — Answer: "+correct,"wrong");}
   document.getElementById("btn-check").disabled=true;lockOpts(correct);showExpl(q.explanation);updHdr();
   if(S.plan!=="paid"){
-    // Increment answeredToday — this is the ONLY trigger for free limit
-    if(!S.answeredToday[S.dtype]) S.answeredToday[S.dtype] = 0;
-    S.answeredToday[S.dtype]++;
-    updateFreeBanner();
-    // Lock concept button if limit reached
-    if(S.answeredToday[S.dtype] >= S.freeQuestionsPerConcept){
-      applyDtypeLocks();
+    if(!S.progress[S.dtype])S.progress[S.dtype]={};
+    if(!S.progress[S.dtype][S.qtype])S.progress[S.dtype][S.qtype]={seen:0,done:false};
+    S.progress[S.dtype][S.qtype].seen++;
+    if(S.progress[S.dtype][S.qtype].seen>=S.freeQuestionsPerQtype){
+      S.progress[S.dtype][S.qtype].done=true;
     }
+    saveFreeConcept(S.dtype);
+    scheduleProgressSave();
+    updateFreeBanner();
+    applyQtypeLocks();
   }
 }
 
 document.getElementById("btn-check").addEventListener("click",checkAns);
 document.getElementById("btn-next").addEventListener("click",function(){
   if(!S.checked){showToast("Check your answer first!","info");return;}
+  if(S.plan!=="paid"&&isQtypeDone(S.dtype,S.qtype)){
+    showQtypeCompleteMsg(S.dtype,S.qtype);return;
+  }
   S.currentIdx++;
+  if(S.plan==="paid")S.conceptIdx[S.dtype]=S.currentIdx;
   showCurrentQuestion();
 });
 document.getElementById("btn-reset").addEventListener("click",function(){
   S.score=0;S.total=0;S.streak=0;S.wrong=0;S.best=0;S.qcount=0;updHdr();
-  ["String","List","Tuple","Dictionary"].forEach(function(d){clearConceptCache(d);});
-  S.allQuestions={};S.conceptIdx={};fetchAllQuestions();
+  ["String","List","Tuple","Dictionary","Functions","Modules","Exception"].forEach(function(d){clearConceptCache(d);});
+  S.allQuestions={};S.conceptIdx={};S.progress={};S.todaysConcepts=[];
+  fetchAllQuestions();
 });
 
 document.addEventListener("keydown",function(e){
@@ -1713,9 +1868,10 @@ document.addEventListener("keydown",function(e){
   if(e.code==="Enter"&&S.mode==="type"){if(!S.checked)checkAns();else document.getElementById("btn-next").click();}
 });
 
-document.querySelectorAll(".mode-btn").forEach(function(btn){
+document.querySelectorAll(".mode-btn,.mode-btn-v").forEach(function(btn){
   btn.addEventListener("click",function(){
-    document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");S.mode=btn.dataset.mode;
+    document.querySelectorAll(".mode-btn,.mode-btn-v").forEach(function(b){b.classList.remove("active");});
+    btn.classList.add("active");S.mode=btn.dataset.mode;
     var q=S.currentQuestions[S.currentIdx];if(q)renderPracticeQuestion(q);
   });
 });
@@ -1723,10 +1879,12 @@ document.querySelectorAll(".mode-btn").forEach(function(btn){
 document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
   btn.addEventListener("click",function(){
     if(btn.classList.contains("locked")){
-      if(S.plan!=="paid"&&isConceptCompleted(btn.dataset.dtype)){
-        showToast("You've completed all '"+btn.dataset.dtype+"' questions today.","info");
-      }else{
-        showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan.");
+      if(S.plan!=="paid"&&S.todaysConcepts.indexOf(btn.dataset.dtype)<0){
+        showUpgrade("'"+btn.dataset.dtype+"' is not available on the free plan today.");
+      } else if(S.plan!=="paid"&&isConceptDone(btn.dataset.dtype)){
+        showToast("You've completed all '"+btn.dataset.dtype+"' questions today!","info");
+      } else {
+        showUpgrade("'"+btn.dataset.dtype+"' is for Pro students.");
       }
       return;
     }
@@ -1736,21 +1894,10 @@ document.querySelectorAll("#dtype-group .tog").forEach(function(btn){
 
 document.querySelectorAll("#qtype-group .tog").forEach(function(btn){
   btn.addEventListener("click",function(){
-    if(btn.classList.contains("locked")){showToast("No '"+btn.dataset.qtype+"' questions in this concept.","info");return;}
-    document.querySelectorAll("#qtype-group .tog").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");
-    S.qtype=btn.dataset.qtype;
-    S.currentQuestions=buildFilteredList(S.dtype,S.qtype);
-    // Find resume position in new filtered list
-    var globalIdx=S.conceptIdx[S.dtype]||0;
-    var resumePos=0;
-    for(var i=0;i<S.currentQuestions.length;i++){
-      var origIdx=(S.allQuestions[S.dtype]||[]).indexOf(S.currentQuestions[i]);
-      if(origIdx>=globalIdx){resumePos=i;break;}
-      resumePos=i+1;
+    if(btn.classList.contains("locked")){
+      showToast("You've completed all '"+btn.dataset.qtype+"' questions!","info");return;
     }
-    S.currentIdx=Math.min(resumePos,S.currentQuestions.length);
-    if(S.currentQuestions.length===0){setCardLoading("No '"+S.qtype+"' questions available. Try Mixed.");return;}
-    showCurrentQuestion();
+    loadQtypeQuestions(S.dtype,btn.dataset.qtype);
   });
 });
 

@@ -359,14 +359,14 @@ tr:hover td{background:rgba(245,166,35,.02);}
       <div class="page" id="page-settings">
         <div class="setting-card">
           <div class="setting-title">Free Plan Limits</div>
-          <div class="setting-desc">Control what free students can access daily.</div>
+          <div class="setting-desc">Control free student question limits. Each question type gets this many questions per concept per day.</div>
           <div class="form-row">
-            <div class="form-lbl">Free Concepts (comma-separated)</div>
-            <input class="form-inp" id="s-free-concepts" placeholder="String,List">
+            <div class="form-lbl">Rotating Concepts Pool (comma-separated — student gets String + 1 random from this list)</div>
+            <input class="form-inp" id="s-free-concepts" placeholder="List,Tuple,Dictionary">
           </div>
           <div class="form-row">
-            <div class="form-lbl">Questions per Concept per Day</div>
-            <input class="form-inp" id="s-free-q" type="number" min="5" max="50" placeholder="10">
+            <div class="form-lbl">Questions per Question Type (default: 10)</div>
+            <input class="form-inp" id="s-free-q" type="number" min="1" max="50" placeholder="10">
           </div>
           <button class="btn-save-settings" id="btn-save-limits">Save Limits</button>
         </div>
@@ -378,18 +378,6 @@ tr:hover td{background:rgba(245,166,35,.02);}
             <input class="form-inp" id="s-price" type="number" min="1" placeholder="499">
           </div>
           <button class="btn-save-settings" id="btn-save-price">Save Price</button>
-        </div>
-        <div class="setting-card">
-          <div class="setting-title">Question Type Weights</div>
-          <div class="setting-desc">Distribution percentages when generating mixed questions.</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="form-row"><div class="form-lbl">Indexing %</div><input class="form-inp" id="w-indexing" type="number" min="0" max="100" placeholder="30"></div>
-            <div class="form-row"><div class="form-lbl">Slicing %</div><input class="form-inp" id="w-slicing" type="number" min="0" max="100" placeholder="30"></div>
-            <div class="form-row"><div class="form-lbl">Functions %</div><input class="form-inp" id="w-functions" type="number" min="0" max="100" placeholder="20"></div>
-            <div class="form-row"><div class="form-lbl">Membership %</div><input class="form-inp" id="w-membership" type="number" min="0" max="100" placeholder="10"></div>
-            <div class="form-row"><div class="form-lbl">Comparison %</div><input class="form-inp" id="w-comparison" type="number" min="0" max="100" placeholder="10"></div>
-          </div>
-          <button class="btn-save-settings" id="btn-save-weights">Save Weights</button>
         </div>
       </div>
 
@@ -854,25 +842,17 @@ function loadSettings() {
     if (!snap.exists) return;
     var d = snap.data();
     currentSettings = d;
-    if (d.freeConceptsAllowed) document.getElementById("s-free-concepts").value = d.freeConceptsAllowed.join(",");
-    if (d.freeQuestionsPerConcept) document.getElementById("s-free-q").value = d.freeQuestionsPerConcept;
+    if (d.freeConceptsPool) document.getElementById("s-free-concepts").value = d.freeConceptsPool.join(",");
+    if (d.freeQuestionsPerQtype) document.getElementById("s-free-q").value = d.freeQuestionsPerQtype;
     if (d.paidPrice) document.getElementById("s-price").value = d.paidPrice;
-    if (d.qtypeWeights) {
-      var w = d.qtypeWeights;
-      if (w.Indexing)   document.getElementById("w-indexing").value   = w.Indexing;
-      if (w.Slicing)    document.getElementById("w-slicing").value    = w.Slicing;
-      if (w.Functions)  document.getElementById("w-functions").value  = w.Functions;
-      if (w.Membership) document.getElementById("w-membership").value = w.Membership;
-      if (w.Comparison) document.getElementById("w-comparison").value = w.Comparison;
-    }
   }).catch(function(e){ console.error(e); });
 }
 document.getElementById("btn-save-limits").addEventListener("click", function() {
-  var concepts = document.getElementById("s-free-concepts").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
-  var qcount   = parseInt(document.getElementById("s-free-q").value);
-  if (!concepts.length) { showToast("Enter at least one concept","error"); return; }
+  var pool   = document.getElementById("s-free-concepts").value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+  var qcount = parseInt(document.getElementById("s-free-q").value);
+  if (!pool.length) { showToast("Enter at least one concept","error"); return; }
   if (!qcount || qcount < 1) { showToast("Enter a valid question count","error"); return; }
-  db.collection("settings").doc("config").set({ freeConceptsAllowed: concepts, freeQuestionsPerConcept: qcount }, { merge: true })
+  db.collection("settings").doc("config").set({ freeConceptsPool: pool, freeQuestionsPerQtype: qcount }, { merge: true })
   .then(function(){ showToast("Limits saved","success"); })
   .catch(function(e){ showToast("Error: "+e.message,"error"); });
 });
@@ -883,19 +863,6 @@ document.getElementById("btn-save-price").addEventListener("click", function() {
   .then(function(){ showToast("Price saved","success"); })
   .catch(function(e){ showToast("Error: "+e.message,"error"); });
 });
-document.getElementById("btn-save-weights").addEventListener("click", function() {
-  var w = {
-    Indexing:   parseInt(document.getElementById("w-indexing").value)  ||0,
-    Slicing:    parseInt(document.getElementById("w-slicing").value)   ||0,
-    Functions:  parseInt(document.getElementById("w-functions").value) ||0,
-    Membership: parseInt(document.getElementById("w-membership").value)||0,
-    Comparison: parseInt(document.getElementById("w-comparison").value)||0,
-  };
-  db.collection("settings").doc("config").set({ qtypeWeights: w }, { merge: true })
-  .then(function(){ showToast("Weights saved","success"); })
-  .catch(function(e){ showToast("Error: "+e.message,"error"); });
-});
-
 // EMAIL
 document.getElementById("btn-preview-email").addEventListener("click", function() {
   var plan     = document.getElementById("email-plan-filter").value;
