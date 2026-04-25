@@ -279,6 +279,8 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .btn-pay{width:100%;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .12s;}
 .btn-pay:disabled{opacity:.5;cursor:default;}
 .btn-close-up{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;}
+.btn-maybe-later{display:block;width:100%;margin-top:10px;padding:11px 14px;background:transparent;border:1.5px solid var(--bdr2);border-radius:10px;color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.btn-maybe-later:hover{border-color:var(--text2);color:var(--text);background:var(--cbg);}
 
 /* ─── LOGIN ─── */
 #login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;}
@@ -565,6 +567,14 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .mt-sub{font-size:13px;color:var(--text2);line-height:1.55;}
 .mt-quota{background:var(--gdim);border:1px solid rgba(245,166,35,.28);border-radius:10px;padding:9px 13px;font-size:12.5px;color:var(--text);}
 .mt-quota b{color:var(--gold);font-family:'JetBrains Mono',monospace;}
+
+.mt-resume-card{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--gdim),var(--accdim));border:1.5px solid var(--gold);border-radius:12px;padding:14px 16px;}
+.mt-resume-left{flex:1;min-width:0;}
+.mt-resume-lbl{font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2);margin-bottom:3px;}
+.mt-resume-title{font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.mt-resume-meta{font-size:11.5px;color:var(--text2);line-height:1.4;}
+.mt-resume-btn{padding:10px 18px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.mt-resume-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(245,166,35,.4);}
 .mt-section-label{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2);margin-top:6px;display:flex;align-items:center;gap:8px;}
 .mt-section-label::before{content:'';width:3px;height:11px;background:var(--gold);border-radius:2px;}
 
@@ -1030,7 +1040,6 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 <!-- UPGRADE POPUP -->
 <div class="overlay hidden" id="upgrade-popup">
   <div class="ucard">
-    <button class="btn-close-up" id="btn-close-up">&#x2715;</button>
     <div class="u-title">Unlock Pro Access &#x26A1;</div>
     <div class="u-msg" id="u-msg">Practice unlimited. Ace your boards.</div>
     <div class="u-feats">
@@ -1055,6 +1064,7 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
     <div id="promo-result" style="font-size:12px;font-weight:600;min-height:16px;text-align:center;margin-top:4px;"></div>
     <button class="btn-upgrade" id="btn-pay">Pay &#8377;499</button>
     <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted);">Secure payment via Razorpay &nbsp;&#x1F512;</div>
+    <button class="btn-maybe-later" id="btn-close-up">Maybe later</button>
   </div>
 </div>
 
@@ -1768,7 +1778,28 @@ document.addEventListener("DOMContentLoaded", function(){
 
 // ═══ UPGRADE & PAYMENT ═══
 var P={basePrice:499,finalAmount:499,discount:0,promoCode:null,isFree:false};
+// ═══════════════════════════════════════════════════════════
+//   PAYMENT FUNNEL EVENT LOGGING (fire-and-forget)
+//   Collection: paymentEvents
+//   Schema: { uid, event, timestamp, metadata, userEmail, userName, plan }
+// ═══════════════════════════════════════════════════════════
+function logPaymentEvent(event, metadata){
+  if(typeof db === "undefined") return;
+  try{
+    db.collection("paymentEvents").add({
+      uid: S.uid || "anonymous",
+      event: event,
+      metadata: metadata || {},
+      userEmail: (S.userData && S.userData.email) || "",
+      userName:  (S.userData && S.userData.name)  || "",
+      plan:      S.plan || "free",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){ /* silent */ });
+  }catch(e){ /* swallow */ }
+}
+
 function showUpgrade(msg){
+  logPaymentEvent("upgrade_clicked", { reason: msg || "" });
   document.getElementById("u-msg").textContent=msg||"Practice unlimited. Ace your boards.";
   P.finalAmount=P.basePrice;P.discount=0;P.promoCode=null;P.isFree=false;
   document.getElementById("promo-inp").value="";
@@ -1801,6 +1832,7 @@ function updatePriceDisplay(){
   else{el.innerHTML='₹'+P.basePrice+' <span>/ 365 days</span>';btn.textContent="Pay ₹"+P.basePrice;}
 }
 document.getElementById("btn-close-up").addEventListener("click",function(){
+  logPaymentEvent("upgrade_dismissed", { stage: P.finalAmount === P.basePrice ? "viewed_price" : "tried_promo" });
   document.getElementById("upgrade-popup").classList.add("hidden");
   // Clear promoOffer on dismiss
   if(S.userData && S.userData.promoOffer && S.uid){
@@ -1810,26 +1842,38 @@ document.getElementById("btn-close-up").addEventListener("click",function(){
 });
 document.getElementById("btn-apply-promo").addEventListener("click",function(){
   var code=document.getElementById("promo-inp").value.trim();if(!code)return;
+  logPaymentEvent("promo_tried", { code: code.toUpperCase() });
   var btn=this;btn.disabled=true;btn.textContent="Checking...";
   var resultEl=document.getElementById("promo-result");
   fetch(CF_APPLY_PROMO,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({promoCode:code})})
   .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
   .then(function(r){
     btn.disabled=false;btn.textContent="Apply";
-    if(!r.ok){resultEl.textContent=r.data.message||"Invalid code";resultEl.style.color="var(--red)";P.promoCode=null;P.discount=0;P.finalAmount=P.basePrice;P.isFree=false;}
-    else{resultEl.textContent=r.data.message;resultEl.style.color=r.data.isFreeUpgrade?"var(--green)":"var(--gold)";P.promoCode=code.trim().toUpperCase();P.discount=r.data.discountAmount||0;P.finalAmount=r.data.finalAmount;P.isFree=!!r.data.isFreeUpgrade;P.basePrice=r.data.originalPrice||499;}
+    if(!r.ok){
+      logPaymentEvent("promo_rejected", { code: code.toUpperCase(), reason: r.data.message||"Invalid" });
+      resultEl.textContent=r.data.message||"Invalid code";resultEl.style.color="var(--red)";P.promoCode=null;P.discount=0;P.finalAmount=P.basePrice;P.isFree=false;
+    }
+    else{
+      logPaymentEvent("promo_applied", { code: code.toUpperCase(), discount: r.data.discountAmount||0, finalAmount: r.data.finalAmount, isFree: !!r.data.isFreeUpgrade });
+      resultEl.textContent=r.data.message;resultEl.style.color=r.data.isFreeUpgrade?"var(--green)":"var(--gold)";P.promoCode=code.trim().toUpperCase();P.discount=r.data.discountAmount||0;P.finalAmount=r.data.finalAmount;P.isFree=!!r.data.isFreeUpgrade;P.basePrice=r.data.originalPrice||499;
+    }
     updatePriceDisplay();
   }).catch(function(){btn.disabled=false;btn.textContent="Apply";resultEl.textContent="Error checking code";resultEl.style.color="var(--red)";});
 });
 document.getElementById("btn-pay").addEventListener("click",function(){
+  logPaymentEvent("pay_button_clicked", { amount: P.finalAmount, promo: P.promoCode||null });
   var btn=this;btn.disabled=true;btn.textContent="Loading...";
   fetch(CF_CREATE_ORDER,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},body:JSON.stringify({promoCode:P.promoCode||""})})
   .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
   .then(function(r){
     btn.disabled=false;
-    if(!r.ok){showToast(r.data.message||"Payment error","error");updatePriceDisplay();return;}
+    if(!r.ok){
+      logPaymentEvent("order_create_failed", { reason: r.data.message||"Unknown" });
+      showToast(r.data.message||"Payment error","error");updatePriceDisplay();return;
+    }
     var data=r.data;
     if(data.freeUpgrade){
+      logPaymentEvent("free_upgrade_succeeded", { promo: P.promoCode });
       showToast("Pro access activated! ⚡","success");
       document.getElementById("upgrade-popup").classList.add("hidden");
       if(S.userData && S.userData.promoOffer){
@@ -1838,18 +1882,24 @@ document.getElementById("btn-pay").addEventListener("click",function(){
       db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();}});
       updatePriceDisplay();return;
     }
+    logPaymentEvent("checkout_opened", { orderId: data.orderId, amount: data.amount });
     var options={
       key:data.keyId,amount:data.amountPaise,currency:"INR",name:"PyZap ⚡",
       description:"Pro Plan — 365 Days",order_id:data.orderId,theme:{color:"#F5A623"},
       prefill:{name:S.userData?(S.userData.name||""):"",email:S.userData?(S.userData.email||""):"",contact:S.userData?(S.userData.phone||""):""},
       handler:function(response){
+        logPaymentEvent("payment_callback_received", { orderId: response.razorpay_order_id });
         btn.disabled=true;btn.textContent="Verifying...";
         fetch(CF_VERIFY_PAY,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.idToken},
           body:JSON.stringify({orderId:response.razorpay_order_id,paymentId:response.razorpay_payment_id,signature:response.razorpay_signature,promoCode:P.promoCode||null,amount:data.amount})})
         .then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
         .then(function(vr){
           btn.disabled=false;updatePriceDisplay();
-          if(!vr.ok){showToast(vr.data.message||"Verification failed","error");return;}
+          if(!vr.ok){
+            logPaymentEvent("verification_failed", { orderId: response.razorpay_order_id, reason: vr.data.message||"" });
+            showToast(vr.data.message||"Verification failed","error");return;
+          }
+          logPaymentEvent("payment_succeeded", { orderId: response.razorpay_order_id, paymentId: response.razorpay_payment_id, amount: data.amount });
           showToast("Payment successful! Pro access unlocked ⚡","success");
           document.getElementById("upgrade-popup").classList.add("hidden");
           // Clear promoOffer after successful payment
@@ -1859,11 +1909,20 @@ document.getElementById("btn-pay").addEventListener("click",function(){
           db.collection("users").doc(S.uid).get().then(function(snap){if(snap.exists){S.userData=snap.data();S.plan="paid";applyPlanUI();}});
         }).catch(function(){btn.disabled=false;updatePriceDisplay();showToast("Verification error. Contact support.","error");});
       },
-      modal:{ondismiss:function(){btn.disabled=false;updatePriceDisplay();}},
+      modal:{ondismiss:function(){
+        logPaymentEvent("checkout_closed_no_pay", { orderId: data.orderId, amount: data.amount });
+        btn.disabled=false;updatePriceDisplay();
+      }},
     };
     var rzp=new window.Razorpay(options);rzp.open();
-    rzp.on("payment.failed",function(response){showToast("Payment failed: "+(response.error.description||"Try again"),"error");btn.disabled=false;updatePriceDisplay();});
-  }).catch(function(e){btn.disabled=false;updatePriceDisplay();showToast("Payment error. Please try again.","error");});
+    rzp.on("payment.failed",function(response){
+      logPaymentEvent("payment_failed", { orderId: data.orderId, error: response.error && response.error.description, code: response.error && response.error.code });
+      showToast("Payment failed: "+(response.error.description||"Try again"),"error");btn.disabled=false;updatePriceDisplay();
+    });
+  }).catch(function(e){
+    logPaymentEvent("order_network_error", { error: String(e) });
+    btn.disabled=false;updatePriceDisplay();showToast("Payment error. Please try again.","error");
+  });
 });
 
 // ═══ PLAN UI ═══
@@ -2180,24 +2239,31 @@ function renderNetCheckboxes(){
   var m = getChecked('Networking');
   // Default: Practice checked
   if(!m.Practice && !m.Board){ m = {Practice:true}; setChecked('Networking', m); }
+  // Force: free users cannot select Board
+  if(S.plan!=='paid' && m.Board){ m.Board = false; setChecked('Networking', m); }
   // Sync global NET state
   if(window.NET){
     NET._practiceChecked = !!m.Practice;
     NET._boardChecked = !!m.Board;
   }
 
+  var boardLocked = S.plan !== 'paid';
   qg.innerHTML =
     '<label class="net-qt-cb'+(m.Practice?' checked':'')+'" data-netmode="Practice">'+
       '<span class="net-qt-cb-box"></span>'+
       '<span class="net-qt-cb-lbl">Practice</span>'+
     '</label>'+
-    '<label class="net-qt-cb'+(m.Board?' checked':'')+'" data-netmode="Board">'+
+    '<label class="net-qt-cb'+(m.Board?' checked':'')+(boardLocked?' locked':'')+'" data-netmode="Board">'+
       '<span class="net-qt-cb-box"></span>'+
-      '<span class="net-qt-cb-lbl">Board</span>'+
+      '<span class="net-qt-cb-lbl">Board'+(boardLocked?' 🔒':'')+'</span>'+
     '</label>';
   qg.querySelectorAll('.net-qt-cb').forEach(function(lbl){
     lbl.addEventListener('click', function(e){
       e.preventDefault();
+      if(lbl.classList.contains('locked')){
+        showUpgrade("Board Networking questions are available for Pro students only.");
+        return;
+      }
       var mode = lbl.dataset.netmode;
       var m = getChecked('Networking');
       m[mode] = !m[mode];
@@ -2556,8 +2622,8 @@ function renderLimitGrid(){
       if(done) pct = 100;
     } else if(dt==="SQL" && typeof sqlGetFreeUsage==="function"){
       var u = sqlGetFreeUsage()||{};
-      var used = Object.keys(u).reduce(function(s,k){return s+(typeof u[k]==="number"?u[k]:0);},0);
-      var lim = (typeof SQL_FREE_PER_QTYPE!=="undefined"?SQL_FREE_PER_QTYPE:3)*2;
+      var used = (u.DDL||0)+(u.DML||0);
+      var lim = (typeof SQL_FREE_PER_QTYPE!=="undefined"?SQL_FREE_PER_QTYPE:5)*2;
       pct = Math.min(100, Math.round(used/lim*100));
     } else if(dt==="Networking" && typeof netGetFreeUsage==="function"){
       var nu = netGetFreeUsage();
@@ -4216,25 +4282,53 @@ function loadSQLMulti(){
   });
 }
 
+// Track cycle state: shuffled list of selected qtypes, current index
+// Rebuilds when selection changes or cycle exhausts
+var _sqlCycle = { key: "", queue: [], idx: 0 };
+var _netCycle = { key: "", queue: [], idx: 0 };
+
+function _buildCycle(selected){
+  // Shuffle copy of selected
+  var arr = selected.slice();
+  for(var i=arr.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var t=arr[i];arr[i]=arr[j];arr[j]=t;
+  }
+  return arr;
+}
+
+function _pickFromCycle(cycle, selected){
+  var key = selected.slice().sort().join(",");
+  // Rebuild cycle if selection changed OR we finished the queue
+  if(cycle.key !== key || cycle.idx >= cycle.queue.length){
+    cycle.key = key;
+    cycle.queue = _buildCycle(selected);
+    cycle.idx = 0;
+  }
+  var pick = cycle.queue[cycle.idx];
+  cycle.idx++;
+  return pick;
+}
+
 function _loadSQLMultiInner(){
   var checked = getCheckedList('SQL');
   if(!checked.length){ checked = ['DDL']; setChecked('SQL',{DDL:true}); }
   if(S.plan!=='paid'){
+    // Free: only DDL, DML allowed
     checked = checked.filter(function(qt){return SQL_FREE_QTYPES.indexOf(qt)>=0;});
     if(!checked.length){ checked = ['DDL']; setChecked('SQL',{DDL:true}); }
-  }
-  var pick = checked[Math.floor(Math.random()*checked.length)];
-  S.qtype = pick;
-  if(S.plan!=='paid' && sqlIsQtypeLimitReached(pick)){
-    var alt = checked.filter(function(qt){return !sqlIsQtypeLimitReached(qt);});
-    if(alt.length){
-      pick = alt[Math.floor(Math.random()*alt.length)];
-      S.qtype = pick;
-    } else {
+    // Filter out any qtypes already at limit
+    var available = checked.filter(function(qt){return !sqlIsQtypeLimitReached(qt);});
+    if(!available.length){
       setCardLoading("You've used all free SQL questions for today. Come back tomorrow or upgrade to Pro.");
       return;
     }
+    checked = available;
   }
+
+  // Pick next qtype from the no-repeat cycle
+  var pick = _pickFromCycle(_sqlCycle, checked);
+  S.qtype = pick;
   loadSQLQuestions(pick);
 }
 
@@ -4250,6 +4344,8 @@ function loadNetworkingFromCheckboxes(){
 function _loadNetworkingInner(){
   var m = getChecked('Networking');
   if(!m.Practice && !m.Board){ m = {Practice:true}; setChecked('Networking',m); }
+  // Free users: force Practice only, ignore any Board selection
+  if(S.plan !== 'paid'){ m = {Practice:true}; setChecked('Networking', m); }
   if(window.NET){
     NET._practiceChecked = !!m.Practice;
     NET._boardChecked    = !!m.Board;
@@ -4264,9 +4360,14 @@ function _loadNetworkingInner(){
     return;
   }
   setCardLoaded();
-  if(m.Practice && m.Board) NET.mode = "both";
-  else if(m.Board) NET.mode = "board";
-  else NET.mode = "practice";
+
+  // For paid: use no-repeat cycle across selected modes
+  var selected = [];
+  if(m.Practice) selected.push("Practice");
+  if(m.Board && S.plan==='paid') selected.push("Board");
+  if(!selected.length) selected = ["Practice"];
+  var pick = _pickFromCycle(_netCycle, selected);
+  NET.mode = pick === "Board" ? "board" : "practice";
   NET.practicePhase = true;
   NET.boardDone = false;
   NET.currentQ = 0;
@@ -4882,17 +4983,18 @@ var MYTEST_CONFIG = {
   }
 };
 
-// Qtypes available for self-test per topic
+// Qtypes available for self-test per topic — full paid practice parity
 var MYTEST_TOPIC_QTYPES = {
   String:       ["Indexing","Slicing","SliceIdx","Functions","Membership","Comparison","PredictOutput"],
   List:         ["Indexing","Slicing","SliceIdx","Functions","Membership","Comparison","PredictOutput"],
   Tuple:        ["Indexing","Slicing","Functions","Membership","Comparison","PredictOutput"],
   Dictionary:   ["Operations","Functions","PredictOutput"],
-  Expressions:  ["Mixed"],
-  Builtin:      ["Mixed"],
+  Expressions:  ["PredictOutput"],
+  Builtin:      ["PredictOutput"],
   Functions:    ["Practice","Board"],
   Modules:      ["Practice","Board"],
   Exception:    ["Practice","Board"],
+  AssertionReason: ["Mixed"],
   SQL:          ["DDL","DML","JOIN","Aggregate","Schema"],
   Networking:   ["Practice","Board"]
 };
@@ -4974,15 +5076,116 @@ function loadSelfTestPanel(){
   _MYTEST_STATE = { topics: [] };
   _mytestRenderShell(el);
 
-  // Sync Firestore quota (one read)
+  // Sync Firestore quota + check for active (unsubmitted) test (one read)
   if(S.uid){
     var today = _todayKey();
     db.collection("users").doc(S.uid).collection("testQuota").doc(today).get().then(function(snap){
-      var serverCount = snap.exists ? (snap.data().count || 0) : 0;
+      if(!snap.exists){
+        try{ localStorage.setItem(_mytestQuotaKey(), "0"); }catch(e){}
+        _mytestRefreshQuotaUI();
+        return;
+      }
+      var d = snap.data();
+      var serverCount = d.count || 0;
       try{ localStorage.setItem(_mytestQuotaKey(), String(serverCount)); }catch(e){}
-      _mytestRefreshQuotaUI();
-    }).catch(function(){});
+
+      // Check if there's an active test to resume (within 24h, not submitted)
+      if(d.activeTestId && d.activeExpiresAt){
+        var exp = d.activeExpiresAt.toDate ? d.activeExpiresAt.toDate() : new Date(d.activeExpiresAt);
+        if(exp > new Date()){
+          // Verify server-side that test hasn't been submitted
+          db.collection("selfTests").doc(d.activeTestId).get().then(function(tSnap){
+            if(tSnap.exists && !tSnap.data().submitted){
+              _mytestShowResumeCard(d.activeTestId, d.activeTitle || "My Test", exp);
+            } else {
+              // Clean up stale activeTestId
+              snap.ref.update({activeTestId: firebase.firestore.FieldValue.delete(), activeExpiresAt: firebase.firestore.FieldValue.delete(), activeTitle: firebase.firestore.FieldValue.delete()}).catch(function(){});
+            }
+            _mytestRefreshQuotaUI();
+          }).catch(function(){ _mytestRefreshQuotaUI(); });
+        } else {
+          // Expired — clear
+          snap.ref.update({activeTestId: firebase.firestore.FieldValue.delete(), activeExpiresAt: firebase.firestore.FieldValue.delete(), activeTitle: firebase.firestore.FieldValue.delete()}).catch(function(){});
+          _mytestRefreshQuotaUI();
+        }
+      } else {
+        _mytestRefreshQuotaUI();
+      }
+    }).catch(function(e){ console.warn("Quota sync failed:", e); _mytestRefreshQuotaUI(); });
   }
+}
+
+// Show a prominent "Resume active test" card at the top of the panel
+function _mytestShowResumeCard(testId, title, expiresAt){
+  var host = document.querySelector(".mt-wrap");
+  if(!host) return;
+  var hrs = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 3600000));
+  var mins = Math.max(0, Math.floor(((expiresAt.getTime() - Date.now()) % 3600000) / 60000));
+  var expText = hrs>0 ? hrs+"h "+mins+"m" : mins+"m";
+  var card = document.createElement("div");
+  card.className = "mt-resume-card";
+  card.innerHTML =
+    '<div class="mt-resume-left">'+
+      '<div class="mt-resume-lbl">Active Test</div>'+
+      '<div class="mt-resume-title">'+esc(title)+'</div>'+
+      '<div class="mt-resume-meta">Expires in '+expText+' &middot; your quota will be consumed if not attempted</div>'+
+    '</div>'+
+    '<button class="mt-resume-btn" id="mt-resume-btn">Resume \u2192</button>';
+  host.insertBefore(card, host.firstChild.nextSibling); // after head
+  document.getElementById("mt-resume-btn").addEventListener("click", function(){
+    _mytestResumeTest(testId);
+  });
+}
+
+// Resume an active self-test by fetching its questions from Firestore
+function _mytestResumeTest(testId){
+  document.getElementById("load-text").textContent = "Loading test...";
+  showScreen("loading");
+  db.collection("selfTests").doc(testId).get().then(function(snap){
+    if(!snap.exists){ showToast("Test not found","error"); showScreen("app"); return; }
+    var d = snap.data();
+    if(d.submitted){ showToast("This test was already submitted.","info"); showScreen("app"); return; }
+    // Check expiry
+    var exp = d.expiresAt && d.expiresAt.toDate ? d.expiresAt.toDate() : (d.expiresAt ? new Date(d.expiresAt) : null);
+    if(exp && exp <= new Date()){ showToast("This test has expired.","error"); showScreen("app"); return; }
+
+    var cfQuestions = d.questions || [];
+    var cfAnswers   = d.answers   || [];
+    var localTopics = (d.topics || []).filter(function(t){return t.id==="SQL" || t.id==="Networking";});
+
+    // Regenerate local SQL/Networking questions (can't persist these reliably)
+    var localQs = [], localAns = [];
+    localTopics.forEach(function(topic){
+      var split = _mytestSplit(topic.count, (topic.qtypes||[]).length || 1);
+      (topic.qtypes || ["Mixed"]).forEach(function(qt, i){
+        var n = split[i];
+        for(var k=0;k<n;k++){
+          var q = _mytestGenerateOne(topic.id, qt);
+          if(q){ localQs.push(q); localAns.push({answer:q.answer, explanation:q.explanation||""}); }
+        }
+      });
+    });
+
+    var allQ = cfQuestions.concat(localQs);
+    var allA = cfAnswers.concat(localAns);
+    if(!allQ.length){ showToast("Could not resume test.","error"); showScreen("app"); return; }
+
+    S.testMode = "self";
+    S.testId = testId;
+    S.testQuestions = allQ;
+    S.testTitle = "My Test — Resumed";
+    S.durationSecs = d.durationSec || 1800;
+    S.testAnswers = allQ.map(function(){return {answer:null, timeTakenSecs:0, lines:[]};});
+    S.currentQ = 0; S.totalTimeSecs = 0; S.lastTestType = "self";
+    S._testAnswerKey = allA;
+    S.testExpiresAt = exp;
+
+    startTestAttempt();
+  }).catch(function(e){
+    console.error(e);
+    showToast("Could not load test","error");
+    showScreen("app");
+  });
 }
 
 function _mytestRenderShell(el){
@@ -5018,6 +5221,11 @@ function _mytestRefreshQuotaUI(){
 
 // Show a topic picker modal
 function _mytestShowTopicPicker(){
+  // Hard guard: do nothing if daily limit reached
+  if(_mytestUsedToday() >= MYTEST_CONFIG.tests_per_day){
+    showToast("Daily test limit reached. Try again tomorrow.","info");
+    return;
+  }
   // Filter out already-added topics
   var added = _MYTEST_STATE.topics.map(function(t){return t.id;});
   var available = TOPIC_CATALOG.filter(function(t){return added.indexOf(t.id)===-1 && MYTEST_TOPIC_QTYPES[t.id];});
@@ -5192,12 +5400,37 @@ function _mytestUpdateGenerateBtn(){
   var btn = document.getElementById("mt-generate");
   if(!btn) return;
   var ok = _MYTEST_STATE.topics.length>0 && _MYTEST_STATE.timeSec;
-  if(_mytestUsedToday() >= MYTEST_CONFIG.tests_per_day){
+  var limitReached = _mytestUsedToday() >= MYTEST_CONFIG.tests_per_day;
+  if(limitReached){
     btn.disabled = true;
     btn.textContent = "Daily limit reached — try tomorrow";
   } else {
     btn.disabled = !ok;
     btn.textContent = "Generate Test \u26A1";
+  }
+
+  // Disable/enable all other controls on the panel based on limit
+  var addBtn = document.getElementById("mt-add-topic");
+  if(addBtn){
+    addBtn.disabled = limitReached;
+    addBtn.style.opacity = limitReached ? "0.4" : "1";
+    addBtn.style.cursor = limitReached ? "not-allowed" : "pointer";
+  }
+  document.querySelectorAll(".mt-topic-rm, .mt-qt-cb, .mt-count-btn, .mt-time-preset").forEach(function(el){
+    if(limitReached){
+      el.setAttribute("data-mt-disabled","1");
+      el.style.pointerEvents = "none";
+      el.style.opacity = "0.4";
+    } else {
+      el.removeAttribute("data-mt-disabled");
+      el.style.pointerEvents = "";
+      el.style.opacity = "";
+    }
+  });
+  var timeInp = document.getElementById("mt-time-input");
+  if(timeInp){
+    timeInp.disabled = limitReached;
+    timeInp.style.opacity = limitReached ? "0.4" : "1";
   }
 }
 
@@ -5214,30 +5447,18 @@ function _mytestGenerate(){
   var today = _todayKey();
   var quotaRef = db.collection("users").doc(S.uid).collection("testQuota").doc(today);
 
-  // Step 1: read quota
+  // Step 1: read quota — count is advisory; activeTestId is the real lock
   quotaRef.get().then(function(snap){
-    var usedToday = snap.exists ? (snap.data().count || 0) : 0;
+    var data = snap.exists ? snap.data() : {};
+    var usedToday = data.count || 0;
     if(usedToday >= MYTEST_CONFIG.tests_per_day){
-      // Mirror to localStorage for UI display
       try{ localStorage.setItem(_mytestQuotaKey(), String(usedToday)); }catch(e){}
       showToast("You've used your daily test quota. Come back tomorrow!","error");
-      if(btn){ btn.disabled=false; btn.textContent="Daily limit reached — try tomorrow"; }
+      if(btn){ btn.disabled=false; btn.textContent="Daily limit reached — try tomorrow"; _mytestUpdateGenerateBtn(); }
       return;
     }
-
-    // Step 2: reserve the slot BEFORE calling CF so concurrent tabs can't double-generate
-    quotaRef.set({
-      count: usedToday + 1,
-      lastGenerated: firebase.firestore.FieldValue.serverTimestamp(),
-      date: today
-    }, {merge:true}).then(function(){
-      try{ localStorage.setItem(_mytestQuotaKey(), String(usedToday + 1)); }catch(e){}
-      _mytestCallCF(btn);
-    }).catch(function(e){
-      console.error("Quota write failed:", e);
-      showToast("Could not start test. Please try again.","error");
-      if(btn){ btn.disabled=false; btn.textContent="Generate Test \u26A1"; }
-    });
+    // Step 2: call CF first; only write quota AFTER CF succeeds
+    _mytestCallCF(btn, usedToday, quotaRef);
   }).catch(function(e){
     console.error("Quota check failed:", e);
     showToast("Could not check quota. Please try again.","error");
@@ -5246,7 +5467,7 @@ function _mytestGenerate(){
 }
 
 // Step 3: call the CF, then merge with locally-generated SQL/Networking questions
-function _mytestCallCF(btn){
+function _mytestCallCF(btn, usedToday, quotaRef){
   if(btn){ btn.textContent = "Generating..."; }
   document.getElementById("load-text").textContent = "Generating your test...";
   showScreen("loading");
@@ -5346,6 +5567,19 @@ function _mytestCallCF(btn){
 
     // Friendly heads-up about expiry
     showToast("Your test is ready. It will expire in 24 hours.","info");
+
+    // Write quota AFTER CF succeeds (not before) — records the active test ID
+    if(quotaRef){
+      quotaRef.set({
+        count: (usedToday||0) + 1,
+        lastGenerated: firebase.firestore.FieldValue.serverTimestamp(),
+        date: _todayKey(),
+        activeTestId: S.testId,
+        activeExpiresAt: S.testExpiresAt,
+        activeTitle: S.testTitle
+      }, {merge:true}).catch(function(e){ console.warn("Quota write failed:", e); });
+      try{ localStorage.setItem(_mytestQuotaKey(), String((usedToday||0) + 1)); }catch(e){}
+    }
 
     startTestAttempt();
   }).catch(function(e){
@@ -6002,7 +6236,8 @@ function loadHistory(){
 // ═══════════════════════════════════════════════════════════
 
 // ── SQL Free limit ──
-var SQL_FREE_PER_QTYPE = 5; // 5 per qtype per day
+// Free tier: 5 per qtype per day (DDL: 5, DML: 5 → 10 total/day)
+var SQL_FREE_PER_QTYPE = 5;
 var SQL_FREE_QTYPES = ["DDL","DML"]; // only DDL and DML free
 var SQL_PAID_QTYPES = ["DDL","DML","JOIN","Aggregate","Schema","Board","Mixed"];
 var SQL_DTYPE_QTYPES = SQL_PAID_QTYPES;

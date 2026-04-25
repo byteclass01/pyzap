@@ -296,6 +296,42 @@ tr:hover td{background:var(--s3);}
 .an-score-histo-bar span{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--text2);font-family:var(--mono);}
 .an-score-histo-labels{display:flex;gap:4px;margin-top:4px;}
 .an-score-histo-labels > div{flex:1;text-align:center;font-size:9px;color:var(--muted);}
+
+/* ═══ PAYMENTS PAGE ═══ */
+.pay-tab{padding:10px 16px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .12s;}
+.pay-tab:hover{color:var(--text);}
+.pay-tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+.pay-panel{display:none;}
+.pay-panel.active{display:block;}
+
+.pay-funnel-step{display:grid;grid-template-columns:180px 1fr 100px 80px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:12px;}
+.pay-funnel-step:last-child{border-bottom:none;}
+.pay-funnel-label{font-weight:700;color:var(--text);}
+.pay-funnel-bar{background:var(--bdr2);border-radius:4px;height:22px;overflow:hidden;position:relative;}
+.pay-funnel-bar-fill{height:100%;background:linear-gradient(to right,var(--acc),var(--gold));border-radius:4px;}
+.pay-funnel-count{font-family:var(--mono);font-weight:800;text-align:right;color:var(--text);}
+.pay-funnel-conv{font-family:var(--mono);font-weight:800;color:var(--text2);text-align:right;font-size:11px;}
+
+.pay-txn-row{display:grid;grid-template-columns:1fr 120px 80px 130px 100px;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:12px;align-items:center;}
+.pay-txn-row:last-child{border-bottom:none;}
+.pay-txn-user{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pay-txn-user-name{font-weight:700;color:var(--text);}
+.pay-txn-user-email{font-size:10px;color:var(--muted);}
+.pay-txn-amount{font-family:var(--mono);font-weight:800;color:var(--green);text-align:right;}
+.pay-txn-promo{font-family:var(--mono);font-size:10px;color:var(--gold);text-align:center;}
+.pay-txn-date{font-size:11px;color:var(--text2);}
+.pay-txn-id{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right;overflow:hidden;text-overflow:ellipsis;}
+
+.pay-abandoned-row{display:grid;grid-template-columns:1fr 120px 120px 80px;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px;align-items:center;}
+.pay-abandoned-row:last-child{border-bottom:none;}
+.pay-abandoned-reason{font-size:10px;color:var(--red);}
+
+.pay-promo-row{display:grid;grid-template-columns:120px 1fr 80px 80px 80px;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px;align-items:center;}
+.pay-promo-row:last-child{border-bottom:none;}
+.pay-promo-code{font-family:var(--mono);font-weight:800;color:var(--gold);}
+.pay-promo-tried{color:var(--text2);text-align:right;}
+.pay-promo-applied{color:var(--acc);text-align:right;}
+.pay-promo-conv{font-family:var(--mono);font-weight:700;text-align:right;}
 .q-action-btn.skip{background:var(--s3);color:var(--text2);border:1.5px solid var(--bdr2);}
 .pub-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .pub-row{display:flex;flex-direction:column;gap:5px;}
@@ -376,6 +412,7 @@ tr:hover td{background:var(--s3);}
       <div class="nav-item" data-page="boardqs"><span class="nav-icon">📚</span> Board Questions</div>
       <div class="nav-item" data-page="testbuilder"><span class="nav-icon">📋</span> Test Builder</div>
       <div class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> Analytics</div>
+      <div class="nav-item" data-page="payments"><span class="nav-icon">💰</span> Payments</div>
     </div>
     <div class="sb-footer">
       <div class="sb-admin" id="sb-admin-email"></div>
@@ -403,7 +440,9 @@ tr:hover td{background:var(--s3);}
           <div class="stat-card"><div class="stat-val" id="st-free">—</div><div class="stat-lbl">Free</div></div>
           <div class="stat-card"><div class="stat-val" id="st-expired">—</div><div class="stat-lbl">Pro Expired</div></div>
           <div class="stat-card"><div class="stat-val" id="st-banned">—</div><div class="stat-lbl">Banned</div></div>
-          <div class="stat-card"><div class="stat-val" id="st-today">—</div><div class="stat-lbl">Active Today</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-today">—</div><div class="stat-lbl">Active Today (DAU)</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-wau">—</div><div class="stat-lbl">Active 7d (WAU)</div></div>
+          <div class="stat-card"><div class="stat-val" id="st-mau">—</div><div class="stat-lbl">Active 30d (MAU)</div></div>
           <div class="stat-card"><div class="stat-val" id="st-conv">—</div><div class="stat-lbl">Conversion %</div></div>
         </div>
         <div class="stats-grid">
@@ -439,6 +478,27 @@ tr:hover td{background:var(--s3);}
           </table>
         </div>
         <div id="students-pagination" style="font-size:12px;color:var(--text2);padding:10px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"></div>
+
+        <!-- STUDENT DETAIL MODAL -->
+        <div class="atb-pub-overlay" id="stu-detail-overlay">
+          <div class="atb-pub-card" style="max-width:720px;max-height:90vh;overflow-y:auto">
+            <div class="atb-pub-title" id="stu-detail-title">Student Details</div>
+            <div id="stu-detail-profile" style="margin-bottom:14px"></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:10px;background:var(--s2);border-radius:8px">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold2);width:100%;margin-bottom:4px">Grant Pro Access</div>
+              <button class="btn-tb" onclick="grantPro(1)">1 Month</button>
+              <button class="btn-tb" onclick="grantPro(3)">3 Months</button>
+              <button class="btn-tb" onclick="grantPro(6)">6 Months</button>
+              <button class="btn-tb" onclick="grantPro(12)">12 Months</button>
+              <button class="btn-tb" onclick="revokePro()" style="background:var(--rddim);color:var(--red);border:1.5px solid var(--red)">Revoke Pro</button>
+            </div>
+            <div style="font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--gold2);margin-bottom:8px">Activity Timeline</div>
+            <div id="stu-detail-timeline"></div>
+            <div style="margin-top:14px;display:flex;gap:10px">
+              <button class="btn-tb" onclick="closeStudentDetail()">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- EMAIL -->
@@ -1103,6 +1163,58 @@ tr:hover td{background:var(--s3);}
           <div id="an-test-detail" style="margin-top:18px;"></div>
         </div>
       </div>
+
+      <!-- PAYMENTS -->
+      <div class="page" id="page-payments">
+        <div class="an-top-tabs">
+          <button class="pay-tab active" data-pay-tab="overview">Overview</button>
+          <button class="pay-tab" data-pay-tab="funnel">Funnel</button>
+          <button class="pay-tab" data-pay-tab="transactions">Transactions</button>
+          <button class="pay-tab" data-pay-tab="abandoned">Abandoned / Failed</button>
+        </div>
+
+        <div class="pay-panel active" id="pay-panel-overview">
+          <div class="an-kpi-grid" id="pay-kpis"></div>
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Revenue over time (last 30 days)</div>
+            <canvas id="pay-revenue-chart" height="160"></canvas>
+          </div>
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Recent Pro Upgrades</div>
+            <div id="pay-recent-upgrades"></div>
+          </div>
+        </div>
+
+        <div class="pay-panel" id="pay-panel-funnel">
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Conversion Funnel</div>
+            <div id="pay-funnel"></div>
+          </div>
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Promo Code Performance</div>
+            <div id="pay-promo-stats"></div>
+          </div>
+        </div>
+
+        <div class="pay-panel" id="pay-panel-transactions">
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">All Successful Payments</div>
+            <div id="pay-transactions-list"></div>
+          </div>
+        </div>
+
+        <div class="pay-panel" id="pay-panel-abandoned">
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Abandoned Checkouts</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Students who opened Razorpay checkout but didn't complete payment. Good candidates for outreach.</div>
+            <div id="pay-abandoned-list"></div>
+          </div>
+          <div class="an-chart-wrap">
+            <div class="an-chart-title">Payment Failures</div>
+            <div id="pay-failed-list"></div>
+          </div>
+        </div>
+      </div>
   </div><!-- end main-content -->
 </div><!-- end shell -->
 
@@ -1263,6 +1375,7 @@ document.querySelectorAll(".nav-item").forEach(function(item){
     if(page==="boardqs")     loadBoardQuestions();
     if(page==="testbuilder") loadTestBuilder();
     if(page==="analytics")   loadAnalytics();
+    if(page==="payments")    loadPayments();
   });
 });
 
@@ -1281,7 +1394,9 @@ function recalcDashboard(){
   var now=new Date(), todayStr=now.toDateString();
   var newDays   = parseInt((document.getElementById("dash-new-days")||{}).value)||7;
   var inactDays = parseInt((document.getElementById("dash-inactive-days")||{}).value)||7;
-  var total=0,pro=0,free=0,expired=0,banned=0,activeToday=0,newCount=0,inactive=0,hitToday=0;
+  var total=0,pro=0,free=0,expired=0,banned=0,activeToday=0,newCount=0,inactive=0,hitToday=0,wau=0,mau=0;
+  var weekAgo = now.getTime() - 7*24*60*60*1000;
+  var monthAgo = now.getTime() - 30*24*60*60*1000;
   allUsersCache.forEach(function(d){
     total++;
     var exp=d.planExpiry?(d.planExpiry.toDate?d.planExpiry.toDate():new Date(d.planExpiry)):null;
@@ -1290,7 +1405,11 @@ function recalcDashboard(){
     if(isP) pro++; else if(isX) expired++; else free++;
     if(d.banned) banned++;
     var ll=d.lastLogin?(d.lastLogin.toDate?d.lastLogin.toDate():new Date(d.lastLogin)):null;
-    if(ll&&ll.toDateString()===todayStr) activeToday++;
+    if(ll){
+      if(ll.toDateString()===todayStr) activeToday++;
+      if(ll.getTime() >= weekAgo) wau++;
+      if(ll.getTime() >= monthAgo) mau++;
+    }
     var cr=d.createdAt?(d.createdAt.toDate?d.createdAt.toDate():new Date(d.createdAt)):null;
     if(cr&&(now-cr)/86400000<=newDays) newCount++;
     if(ll&&(now-ll)/86400000>=inactDays) inactive++;
@@ -1299,6 +1418,7 @@ function recalcDashboard(){
   var set=function(id,v){var el=document.getElementById(id);if(el)el.textContent=v;};
   set("st-total",total); set("st-paid",pro); set("st-free",free);
   set("st-expired",expired); set("st-banned",banned); set("st-today",activeToday);
+  set("st-wau",wau); set("st-mau",mau);
   set("st-conv",total>0?Math.round(pro/total*100)+"%":"0%");
   set("st-new",newCount); set("st-inactive",inactive); set("st-hitlimit",hitToday);
 }
@@ -1377,13 +1497,14 @@ function renderStudentsPage(){
     var banBtn=d.banned
       ?'<button class="tbl-btn upgrade" data-uid="'+d.id+'" onclick="unbanStudent(this.dataset.uid)">Unblock</button>'
       :'<button class="tbl-btn ban" data-uid="'+d.id+'" data-name="'+esc(d.name||"Student")+'" onclick="banStudent(this.dataset.uid,this.dataset.name)">Ban</button>';
+    var viewBtn='<button class="tbl-btn" data-uid="'+d.id+'" onclick="viewStudentDetail(this.dataset.uid)" style="background:var(--accdim);border-color:var(--acc);color:var(--acc)">View</button>';
     return '<tr'+(d.banned?' style="opacity:.55"':'')+'>'+
       '<td style="font-weight:600">'+esc(d.name||"—")+bb+'</td>'+
       '<td style="font-size:11px;color:var(--text2)">'+esc(d.email||"—")+'</td>'+
       '<td>'+pb+'</td>'+
       '<td style="font-family:var(--mono)">'+(d.loginCount||0)+'</td>'+
       '<td style="font-size:11px">'+fmtDate(d.lastLogin)+'</td>'+
-      '<td style="display:flex;gap:5px;padding:8px 16px;flex-wrap:wrap">'+planBtn+banBtn+'</td>'+
+      '<td style="display:flex;gap:5px;padding:8px 16px;flex-wrap:wrap">'+viewBtn+planBtn+banBtn+'</td>'+
     '</tr>';
   }).join("");
   var tot=filteredStudents.length, pgs=Math.ceil(tot/PAGE_SIZE);
@@ -1736,12 +1857,12 @@ var ATB_TOPIC_CATALOG = [
 ];
 
 var ATB_QTYPES = {
-  String:         [{id:"Indexing",label:"Indexing"},{id:"Slicing",label:"Slicing"},{id:"Functions",label:"Functions"},{id:"PredictOutput",label:"Predict Output"}],
-  List:           [{id:"Indexing",label:"Indexing"},{id:"Slicing",label:"Slicing"},{id:"Functions",label:"Functions"},{id:"PredictOutput",label:"Predict Output"}],
-  Tuple:          [{id:"Indexing",label:"Indexing"},{id:"Functions",label:"Functions"},{id:"PredictOutput",label:"Predict Output"}],
+  String:         [{id:"Indexing",label:"Indexing"},{id:"Slicing",label:"Slicing"},{id:"SliceIdx",label:"Slice+Index"},{id:"Functions",label:"Functions"},{id:"Membership",label:"Membership"},{id:"Comparison",label:"Comparison"},{id:"PredictOutput",label:"Predict Output"}],
+  List:           [{id:"Indexing",label:"Indexing"},{id:"Slicing",label:"Slicing"},{id:"SliceIdx",label:"Slice+Index"},{id:"Functions",label:"Functions"},{id:"Membership",label:"Membership"},{id:"Comparison",label:"Comparison"},{id:"PredictOutput",label:"Predict Output"}],
+  Tuple:          [{id:"Indexing",label:"Indexing"},{id:"Slicing",label:"Slicing"},{id:"Functions",label:"Functions"},{id:"Membership",label:"Membership"},{id:"Comparison",label:"Comparison"},{id:"PredictOutput",label:"Predict Output"}],
   Dictionary:     [{id:"Operations",label:"Operations"},{id:"Functions",label:"Functions"},{id:"PredictOutput",label:"Predict Output"}],
-  Expressions:    [{id:"Mixed",label:"Mixed"}],
-  Builtin:        [{id:"Mixed",label:"Mixed"}],
+  Expressions:    [{id:"PredictOutput",label:"Predict Output"}],
+  Builtin:        [{id:"PredictOutput",label:"Predict Output"}],
   Functions:      [{id:"Practice",label:"Practice"},{id:"Board",label:"Board"}],
   Modules:        [{id:"Practice",label:"Practice"},{id:"Board",label:"Board"}],
   Exception:      [{id:"Practice",label:"Practice"},{id:"Board",label:"Board"}],
@@ -1835,18 +1956,43 @@ function atbGenerateQuestion(){
   }
   atbShowLoading(true);
   auth.currentUser.getIdToken().then(function(token){
+    // Map admin topic → CF-valid dtype + qtype
+    var cfDtype, cfQtype;
+    if(ATB.dtype === "Expressions"){ cfDtype = "String"; cfQtype = "Expressions"; }
+    else if(ATB.dtype === "Builtin"){ cfDtype = "String"; cfQtype = "BuiltinMath"; }
+    else if(ATB.dtype === "Functions" || ATB.dtype === "Modules" || ATB.dtype === "Exception"){
+      cfDtype = "Python";
+      cfQtype = ATB.dtype === "Exception" ? "ExceptionHandling" : ATB.dtype;
+    } else if(ATB.dtype === "AssertionReason"){
+      cfDtype = "Python"; cfQtype = "Functions";
+    } else {
+      // String / List / Tuple / Dictionary
+      cfDtype = ATB.dtype;
+      // Map "PredictOutput" → "Mixed" so CF picks a random concept
+      if(ATB.qtype === "PredictOutput") cfQtype = "Mixed";
+      else if(ATB.qtype === "Operations") cfQtype = "Functions"; // fallback for Dictionary Operations
+      else cfQtype = ATB.qtype;
+    }
     return fetch(CF_GENERATE, {
       method: "POST",
       headers: {"Content-Type":"application/json","Authorization":"Bearer "+token},
-      body: JSON.stringify({dtypes:[ATB.dtype], plan:"paid", qtype: ATB.qtype==="PredictOutput"?"Mixed":ATB.qtype})
+      body: JSON.stringify({topics:[cfDtype], plan:"paid", qtype: cfQtype})
     });
   }).then(function(res){return res.json().then(function(d){return{ok:res.ok,data:d};});})
   .then(function(r){
     if(!r.ok){ showToast("Error: "+(r.data.message||"Server"),"error"); atbShowLoading(false); return; }
-    var qs = r.data.allQuestions ? (r.data.allQuestions[ATB.dtype]||[]) : (r.data.questions||[]);
-    if(qs && !Array.isArray(qs)){
-      var flat=[]; Object.values(qs).forEach(function(arr){if(Array.isArray(arr))flat=flat.concat(arr);});
-      qs = flat;
+    // Extract questions — try multiple shapes the CF might return
+    var qs = [];
+    if(r.data.allQuestions){
+      // Might be {topic: [q,...]} or {topic: {qtype: [q,...]}}
+      Object.values(r.data.allQuestions).forEach(function(v){
+        if(Array.isArray(v)) qs = qs.concat(v);
+        else if(v && typeof v === "object"){
+          Object.values(v).forEach(function(arr){ if(Array.isArray(arr)) qs = qs.concat(arr); });
+        }
+      });
+    } else if(Array.isArray(r.data.questions)){
+      qs = r.data.questions;
     }
     if(!qs.length){ showToast("No question returned","error"); atbShowLoading(false); return; }
     var pick = qs[Math.floor(Math.random()*qs.length)];
@@ -2073,7 +2219,7 @@ function loadAtbOverview(){
   countEl.textContent = "Loading...";
 
   var adminP = db.collection("adminTests").orderBy("createdAt","desc").limit(50).get();
-  var selfP  = db.collection("results").where("testType","==","self_generated").orderBy("submittedAt","desc").limit(50).get();
+  var selfP  = db.collection("results").orderBy("submittedAt","desc").limit(100).get();
 
   Promise.all([adminP, selfP]).then(function(results){
     var items = [];
@@ -2091,6 +2237,8 @@ function loadAtbOverview(){
     });
     results[1].forEach(function(doc){
       var d = doc.data();
+      // Client-side filter for self-generated tests
+      if(d.testType !== "self_generated") return;
       items.push({
         id: doc.id,
         type: "self",
@@ -3131,7 +3279,11 @@ function drillIntoTest(testId){
         topics.map(function(t){
           var color = t.accuracy>=70?"var(--green)":t.accuracy>=50?"var(--amber)":"var(--red)";
           return '<div class="an-perf-row">'+
-            '<div class="an-perf-name">'+esc(t.name)+(t.accuracy<50?' <span style="color:var(--red);font-size:9px;margin-left:6px">STRUGGLING</span>':'')+'</div>'+
+            '<div class="an-perf-name">'+esc(t.name)+
+              (t.accuracy<20 ? ' <span style="color:var(--red);font-size:9px;margin-left:6px;background:var(--rddim);padding:1px 5px;border-radius:3px;font-weight:800">LIKELY BUGGY</span>' :
+               t.accuracy<50 ? ' <span style="color:var(--red);font-size:9px;margin-left:6px;font-weight:700">STRUGGLING</span>' :
+               t.accuracy>95 ? ' <span style="color:var(--amber);font-size:9px;margin-left:6px;background:rgba(245,166,35,.2);padding:1px 5px;border-radius:3px;font-weight:800">TOO EASY</span>' :
+               '')+'</div>'+
             '<div><div class="an-perf-bar"><div class="an-perf-bar-fill" style="width:'+t.accuracy+'%;background:'+color+'"></div></div></div>'+
             '<div class="an-perf-score" style="color:'+color+'">'+t.accuracy+'%</div>'+
           '</div>';
@@ -3155,12 +3307,516 @@ function drillIntoTest(testId){
     '</div>';
 }
 
+// ═══════════════════════════════════════════════════════════════════
+//   STUDENT DRILL-IN — full user timeline, Pro grant/revoke
+// ═══════════════════════════════════════════════════════════════════
+var STU = { uid: null, data: null };
+
+function viewStudentDetail(uid){
+  STU.uid = uid;
+  var user = allUsersCache.find(function(u){return u.id===uid;});
+  if(!user){ showToast("Student not found","error"); return; }
+  STU.data = user;
+
+  document.getElementById("stu-detail-overlay").classList.add("open");
+  document.getElementById("stu-detail-title").textContent = user.name || "Student";
+  renderStudentProfile();
+  renderStudentTimeline();
+}
+
+function closeStudentDetail(){
+  document.getElementById("stu-detail-overlay").classList.remove("open");
+  STU.uid = null; STU.data = null;
+}
+
+function renderStudentProfile(){
+  var u = STU.data;
+  if(!u) return;
+  var now = new Date();
+  var exp = u.planExpiry ? (u.planExpiry.toDate?u.planExpiry.toDate():new Date(u.planExpiry)) : null;
+  var isP = u.plan==="paid" && exp && exp>=now;
+  var isX = u.plan==="paid" && exp && exp<now;
+  var plan = isP ? "Pro" : isX ? "Expired Pro" : "Free";
+  var planColor = isP ? "var(--green)" : isX ? "var(--amber)" : "var(--text2)";
+
+  document.getElementById("stu-detail-profile").innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px">'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Email</span><br>'+esc(u.email||"—")+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Phone</span><br>'+esc(u.phone||"—")+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Plan</span><br><span style="color:'+planColor+';font-weight:700">'+plan+'</span>'+
+        (exp?' <span style="color:var(--muted);font-size:10px">('+(isP?"expires":"expired")+' '+exp.toLocaleDateString("en-IN")+')</span>':'')+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Joined</span><br>'+fmtDate(u.createdAt)+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Logins</span><br><span style="font-family:var(--mono);font-weight:700">'+(u.loginCount||0)+'</span></div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Last login</span><br>'+fmtDate(u.lastLogin)+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">School</span><br>'+esc(u.school||"—")+'</div>'+
+      '<div><span style="color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">Class/Board</span><br>'+esc((u.class||"?")+" · "+(u.board||"?"))+'</div>'+
+    '</div>';
+}
+
+function renderStudentTimeline(){
+  if(!STU.uid) return;
+  var host = document.getElementById("stu-detail-timeline");
+  host.innerHTML = '<div class="spinner" style="margin:20px auto"></div>';
+
+  // Gather events from multiple sources
+  var events = [];
+  var u = STU.data;
+
+  // Signup event
+  if(u.createdAt){
+    events.push({ time: u.createdAt.toDate?u.createdAt.toDate():new Date(u.createdAt), type:"signup", label:"Signed up", color:"var(--acc)" });
+  }
+  // Last login (approximate)
+  if(u.lastLogin){
+    events.push({ time: u.lastLogin.toDate?u.lastLogin.toDate():new Date(u.lastLogin), type:"login", label:"Last login", color:"var(--text2)" });
+  }
+  // Ban/unban
+  if(u.banned && u.bannedAt){
+    events.push({ time: u.bannedAt.toDate?u.bannedAt.toDate():new Date(u.bannedAt), type:"ban", label:"Account banned"+(u.banReason?": "+u.banReason:""), color:"var(--red)" });
+  }
+
+  // Attempted tests
+  (u.attemptedTests||[]).forEach(function(t){
+    events.push({
+      time: new Date(t.submittedAt),
+      type: "test",
+      label: (t.title||t.testType)+" · "+t.score+"/"+t.total+" ("+t.percentage+"%)",
+      color: t.percentage>=35 ? "var(--green)" : "var(--red)"
+    });
+  });
+
+  // Fetch payments + payment events in parallel
+  var paymentsP = db.collection("users").doc(STU.uid).collection("payments").get();
+  var paymentEventsP = db.collection("paymentEvents").where("uid","==",STU.uid).orderBy("timestamp","desc").limit(100).get();
+
+  Promise.all([paymentsP, paymentEventsP]).then(function(snaps){
+    snaps[0].forEach(function(doc){
+      var p = doc.data();
+      var time = p.createdAt ? (p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt)) : null;
+      if(time){
+        events.push({
+          time: time,
+          type: "payment",
+          label: "💰 Paid ₹"+(p.amount||0)+(p.promoCode?" (promo: "+p.promoCode+")":""),
+          color: "var(--gold)"
+        });
+      }
+    });
+    snaps[1].forEach(function(doc){
+      var e = doc.data();
+      var time = e.timestamp ? (e.timestamp.toDate?e.timestamp.toDate():new Date(e.timestamp)) : null;
+      if(!time) return;
+      var skip = ["order_created","payment_callback_received"]; // noisy, skip
+      if(skip.indexOf(e.event)>=0) return;
+      var labels = {
+        upgrade_clicked:       "👀 Viewed upgrade screen",
+        upgrade_dismissed:     "✗ Closed upgrade without paying",
+        promo_tried:           "🎟 Tried promo: "+((e.metadata&&e.metadata.code)||"?"),
+        promo_applied:         "✅ Promo applied: "+((e.metadata&&e.metadata.code)||"?"),
+        promo_rejected:        "❌ Promo rejected: "+((e.metadata&&e.metadata.code)||"?"),
+        pay_button_clicked:    "🖱 Clicked Pay",
+        checkout_opened:       "🧾 Opened Razorpay checkout",
+        checkout_closed_no_pay:"❌ Abandoned checkout",
+        payment_failed:        "💥 Payment failed"+((e.metadata&&e.metadata.error)?": "+e.metadata.error:""),
+        verification_failed:   "⚠ Payment verification failed",
+        payment_succeeded:     "✅ Payment succeeded",
+        free_upgrade_succeeded:"🎁 Free upgrade activated",
+        signature_mismatch:    "⚠ Signature mismatch (possible fraud)"
+      };
+      events.push({
+        time: time,
+        type: "event",
+        label: labels[e.event] || e.event,
+        color: e.event.indexOf("failed")>=0||e.event.indexOf("abandon")>=0||e.event.indexOf("closed_no")>=0 ? "var(--red)" :
+               e.event.indexOf("success")>=0||e.event.indexOf("applied")>=0 ? "var(--green)" : "var(--text2)"
+      });
+    });
+
+    // Sort by time (newest first)
+    events.sort(function(a,b){ return b.time.getTime() - a.time.getTime(); });
+
+    if(!events.length){
+      host.innerHTML = '<div style="color:var(--muted);padding:14px;text-align:center">No activity yet.</div>';
+      return;
+    }
+    host.innerHTML = events.map(function(e){
+      var d = e.time.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+      return '<div style="display:grid;grid-template-columns:150px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px">'+
+        '<div style="color:var(--text2);font-family:var(--mono)">'+d+'</div>'+
+        '<div style="color:'+e.color+'">'+esc(e.label)+'</div>'+
+      '</div>';
+    }).join("");
+  }).catch(function(err){
+    console.error(err);
+    host.innerHTML = '<div style="color:var(--red);padding:14px">Error loading timeline: '+esc(err.message)+'</div>';
+  });
+}
+
+function grantPro(months){
+  if(!STU.uid){ return; }
+  if(!confirm("Grant Pro for "+months+" month"+(months>1?"s":"")+"? This will extend the student's Pro access.")){ return; }
+  var now = new Date();
+  var current = STU.data.planExpiry ? (STU.data.planExpiry.toDate?STU.data.planExpiry.toDate():new Date(STU.data.planExpiry)) : null;
+  // Extend from current expiry if still active, else from now
+  var start = (current && current > now) ? current : now;
+  var newExpiry = new Date(start.getTime() + months*30*24*60*60*1000);
+
+  db.collection("users").doc(STU.uid).update({
+    plan: "paid",
+    planExpiry: newExpiry,
+    adminGranted: true,
+    adminGrantedAt: new Date(),
+    adminGrantedBy: auth.currentUser ? auth.currentUser.email : "admin",
+    adminGrantedMonths: months
+  }).then(function(){
+    // Audit log
+    return db.collection("paymentEvents").add({
+      uid: STU.uid,
+      event: "admin_pro_granted",
+      metadata: { months: months, newExpiry: newExpiry.toISOString(), grantedBy: auth.currentUser ? auth.currentUser.email : "admin" },
+      timestamp: new Date()
+    });
+  }).then(function(){
+    showToast("Granted Pro for "+months+" months","success");
+    // Refresh local cache
+    var idx = allUsersCache.findIndex(function(u){return u.id===STU.uid;});
+    if(idx>=0){ allUsersCache[idx].plan = "paid"; allUsersCache[idx].planExpiry = newExpiry; STU.data = allUsersCache[idx]; }
+    renderStudentProfile();
+    renderStudentsPage();
+    recalcDashboard();
+  }).catch(function(e){ showToast("Error: "+e.message, "error"); });
+}
+
+function revokePro(){
+  if(!STU.uid){ return; }
+  if(!confirm("Revoke Pro access? The student will immediately be moved to Free plan.")){ return; }
+  db.collection("users").doc(STU.uid).update({
+    plan: "free",
+    planExpiry: null,
+    adminRevoked: true,
+    adminRevokedAt: new Date(),
+    adminRevokedBy: auth.currentUser ? auth.currentUser.email : "admin"
+  }).then(function(){
+    return db.collection("paymentEvents").add({
+      uid: STU.uid,
+      event: "admin_pro_revoked",
+      metadata: { revokedBy: auth.currentUser ? auth.currentUser.email : "admin" },
+      timestamp: new Date()
+    });
+  }).then(function(){
+    showToast("Pro revoked","info");
+    var idx = allUsersCache.findIndex(function(u){return u.id===STU.uid;});
+    if(idx>=0){ allUsersCache[idx].plan = "free"; allUsersCache[idx].planExpiry = null; STU.data = allUsersCache[idx]; }
+    renderStudentProfile();
+    renderStudentsPage();
+    recalcDashboard();
+  }).catch(function(e){ showToast("Error: "+e.message, "error"); });
+}
+
 // Wire tab buttons
 document.addEventListener("DOMContentLoaded", function(){
   document.querySelectorAll(".an-tab").forEach(function(b){
     b.addEventListener("click", function(){ switchAnTab(b.dataset.anTab); });
   });
+  document.querySelectorAll(".pay-tab").forEach(function(b){
+    b.addEventListener("click", function(){ switchPayTab(b.dataset.payTab); });
+  });
 });
+
+// ═══════════════════════════════════════════════════════════════════
+//   PAYMENTS DASHBOARD
+//   Data sources:
+//     users with plan==="paid" and payments subcollection
+//     paymentEvents collection (funnel)
+//     promoCodes collection
+// ═══════════════════════════════════════════════════════════════════
+var PAY = {
+  loaded: false,
+  currentTab: "overview",
+  events: [],      // all payment events
+  paidUsers: [],   // users with plan==="paid"
+  payments: [],    // all payment docs (from users subcollections)
+  promos: []       // all promo code docs
+};
+
+function loadPayments(){
+  switchPayTab(PAY.currentTab);
+  if(PAY.loaded){ renderPayTab(PAY.currentTab); return; }
+
+  document.getElementById("pay-kpis").innerHTML = '<div class="an-kpi"><div class="spinner" style="margin:0 auto"></div></div>';
+
+  // Fetch events (single collection) + users (filter paid later) + promos
+  var eventsP = db.collection("paymentEvents").orderBy("timestamp","desc").limit(2000).get();
+  var usersP  = db.collection("users").get();
+  var promosP = db.collection("promoCodes").get();
+
+  Promise.all([eventsP, usersP, promosP]).then(function(snaps){
+    PAY.events = [];
+    snaps[0].forEach(function(doc){ PAY.events.push(Object.assign({id:doc.id}, doc.data())); });
+
+    PAY.paidUsers = [];
+    PAY.payments = [];
+    var paymentFetches = [];
+    snaps[1].forEach(function(doc){
+      var d = doc.data();
+      if(d.plan === "paid"){
+        PAY.paidUsers.push(Object.assign({id:doc.id}, d));
+        // Queue payment subcollection fetch
+        paymentFetches.push(db.collection("users").doc(doc.id).collection("payments").get().then(function(pSnap){
+          pSnap.forEach(function(pDoc){
+            PAY.payments.push(Object.assign({id:pDoc.id, uid:doc.id, userName:d.name, userEmail:d.email}, pDoc.data()));
+          });
+        }));
+      }
+    });
+
+    PAY.promos = [];
+    snaps[2].forEach(function(doc){ PAY.promos.push(Object.assign({id:doc.id}, doc.data())); });
+
+    Promise.all(paymentFetches).then(function(){
+      PAY.loaded = true;
+      renderPayTab(PAY.currentTab);
+    });
+  }).catch(function(e){
+    console.error("Payments load failed:", e);
+    document.getElementById("pay-kpis").innerHTML = '<div style="color:var(--red);padding:14px">Error: '+esc(e.message)+'</div>';
+  });
+}
+
+function switchPayTab(tab){
+  PAY.currentTab = tab;
+  document.querySelectorAll(".pay-tab").forEach(function(b){ b.classList.toggle("active", b.dataset.payTab===tab); });
+  document.querySelectorAll(".pay-panel").forEach(function(p){ p.classList.toggle("active", p.id==="pay-panel-"+tab); });
+  if(PAY.loaded) renderPayTab(tab);
+}
+
+function renderPayTab(tab){
+  if(tab==="overview")     renderPayOverview();
+  if(tab==="funnel")       renderPayFunnel();
+  if(tab==="transactions") renderPayTransactions();
+  if(tab==="abandoned")    renderPayAbandoned();
+}
+
+function renderPayOverview(){
+  // KPIs
+  var totalRevenue = PAY.payments.reduce(function(s,p){ return s + (p.amount||0); }, 0);
+  var totalPaid    = PAY.paidUsers.length;
+  var avgRevenue   = totalPaid>0 ? Math.round(totalRevenue/totalPaid) : 0;
+  // MRR-like: revenue in last 30 days
+  var cutoff = Date.now() - 30*24*60*60*1000;
+  var recent = PAY.payments.filter(function(p){
+    var d = p.createdAt ? (p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt)) : null;
+    return d && d.getTime() >= cutoff;
+  });
+  var recentRevenue = recent.reduce(function(s,p){ return s + (p.amount||0); }, 0);
+
+  document.getElementById("pay-kpis").innerHTML =
+    '<div class="an-kpi"><div class="an-kpi-val">₹'+totalRevenue.toLocaleString("en-IN")+'</div><div class="an-kpi-lbl">Total Revenue</div></div>'+
+    '<div class="an-kpi"><div class="an-kpi-val">'+totalPaid+'</div><div class="an-kpi-lbl">Paid Students</div></div>'+
+    '<div class="an-kpi"><div class="an-kpi-val">₹'+recentRevenue.toLocaleString("en-IN")+'</div><div class="an-kpi-lbl">Last 30 Days</div><div class="an-kpi-sub">'+recent.length+' transactions</div></div>'+
+    '<div class="an-kpi"><div class="an-kpi-val">₹'+avgRevenue.toLocaleString("en-IN")+'</div><div class="an-kpi-lbl">Avg Revenue per User</div></div>';
+
+  // Revenue chart (last 30 days)
+  renderRevenueChart();
+
+  // Recent upgrades
+  var sorted = PAY.payments.slice().sort(function(a,b){
+    var da = a.createdAt ? (a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)) : new Date(0);
+    var db = b.createdAt ? (b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)) : new Date(0);
+    return db.getTime() - da.getTime();
+  }).slice(0, 10);
+  var host = document.getElementById("pay-recent-upgrades");
+  if(!sorted.length){
+    host.innerHTML = '<div style="color:var(--muted);padding:10px">No payments yet.</div>';
+    return;
+  }
+  host.innerHTML = sorted.map(function(p){
+    var date = p.createdAt ? (p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt)).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "—";
+    return '<div class="pay-txn-row">'+
+      '<div class="pay-txn-user"><div class="pay-txn-user-name">'+esc(p.userName||"?")+'</div><div class="pay-txn-user-email">'+esc(p.userEmail||"")+'</div></div>'+
+      '<div class="pay-txn-date">'+date+'</div>'+
+      '<div class="pay-txn-promo">'+esc(p.promoCode||"—")+'</div>'+
+      '<div class="pay-txn-id">'+esc((p.razorpayPaymentId||p.id||"").slice(-12))+'</div>'+
+      '<div class="pay-txn-amount">₹'+(p.amount||0)+'</div>'+
+    '</div>';
+  }).join("");
+}
+
+function renderRevenueChart(){
+  var canvas = document.getElementById("pay-revenue-chart");
+  if(!canvas) return;
+  var ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2,2);
+  var W = canvas.offsetWidth, H = canvas.offsetHeight;
+
+  var buckets = {}, days = [];
+  for(var i=29;i>=0;i--){
+    var d = new Date(); d.setDate(d.getDate()-i);
+    var key = d.toISOString().slice(0,10);
+    buckets[key] = 0;
+    days.push(key);
+  }
+  PAY.payments.forEach(function(p){
+    if(!p.createdAt) return;
+    try{
+      var d = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
+      var k = d.toISOString().slice(0,10);
+      if(buckets[k] !== undefined) buckets[k] += (p.amount||0);
+    }catch(e){}
+  });
+  var maxVal = Math.max.apply(null, Object.values(buckets)) || 1;
+
+  ctx.clearRect(0,0,W,H);
+  var pad = 20, barAreaW = W - 2*pad, barW = barAreaW / days.length, barH = H - 2*pad;
+
+  days.forEach(function(k, i){
+    var x = pad + i*barW;
+    var v = buckets[k];
+    var h = (v/maxVal) * barH;
+    ctx.fillStyle = "rgba(34,211,160,0.85)";
+    ctx.fillRect(x+1, H-pad-h, barW-2, h);
+  });
+  ctx.strokeStyle = "rgba(150,150,150,0.3)";
+  ctx.beginPath();
+  ctx.moveTo(pad, H-pad); ctx.lineTo(W-pad, H-pad); ctx.stroke();
+
+  ctx.fillStyle = "#888"; ctx.font = "9px sans-serif";
+  for(var j=0; j<days.length; j+=5){
+    var xx = pad + j*barW;
+    ctx.fillText(days[j].slice(5), xx, H-pad+12);
+  }
+}
+
+function renderPayFunnel(){
+  // Aggregate events by type
+  var counts = {};
+  PAY.events.forEach(function(e){
+    counts[e.event] = (counts[e.event]||0) + 1;
+  });
+
+  // Funnel stages
+  var stages = [
+    { label: "Upgrade clicked",       event: "upgrade_clicked" },
+    { label: "Pay button clicked",    event: "pay_button_clicked" },
+    { label: "Order created",         event: "order_created" },
+    { label: "Checkout opened",       event: "checkout_opened" },
+    { label: "Payment succeeded",     event: "payment_verified" }
+  ];
+  var top = counts[stages[0].event] || 0;
+  var host = document.getElementById("pay-funnel");
+  if(top === 0){
+    host.innerHTML = '<div style="color:var(--muted);padding:10px">No funnel data yet. Events appear after users interact with upgrade flow.</div>';
+  } else {
+    host.innerHTML = stages.map(function(s, i){
+      var c = counts[s.event] || 0;
+      var pct = top>0 ? Math.round((c/top)*100) : 0;
+      var conv = i>0 && (counts[stages[i-1].event]||0)>0 ? Math.round((c/(counts[stages[i-1].event]||1))*100) : 100;
+      return '<div class="pay-funnel-step">'+
+        '<div class="pay-funnel-label">'+s.label+'</div>'+
+        '<div class="pay-funnel-bar"><div class="pay-funnel-bar-fill" style="width:'+pct+'%"></div></div>'+
+        '<div class="pay-funnel-count">'+c+'</div>'+
+        '<div class="pay-funnel-conv">'+(i===0?"—":conv+"%")+'</div>'+
+      '</div>';
+    }).join("");
+  }
+
+  // Promo stats
+  var promoTried = {}, promoApplied = {};
+  PAY.events.forEach(function(e){
+    if(e.event === "promo_tried"){
+      var code = e.metadata && e.metadata.code;
+      if(code) promoTried[code] = (promoTried[code]||0) + 1;
+    }
+    if(e.event === "promo_applied"){
+      var code = e.metadata && e.metadata.code;
+      if(code) promoApplied[code] = (promoApplied[code]||0) + 1;
+    }
+  });
+  var codes = Array.from(new Set(Object.keys(promoTried).concat(Object.keys(promoApplied))));
+  var promoHost = document.getElementById("pay-promo-stats");
+  if(!codes.length){
+    promoHost.innerHTML = '<div style="color:var(--muted);padding:10px">No promo code activity yet.</div>';
+  } else {
+    promoHost.innerHTML =
+      '<div class="pay-promo-row" style="font-weight:800;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">'+
+        '<div>Code</div><div></div><div>Tried</div><div>Applied</div><div>Success</div></div>'+
+      codes.map(function(c){
+        var t = promoTried[c]||0, a = promoApplied[c]||0;
+        var rate = t>0 ? Math.round((a/t)*100) : 0;
+        return '<div class="pay-promo-row">'+
+          '<div class="pay-promo-code">'+esc(c)+'</div>'+
+          '<div></div>'+
+          '<div class="pay-promo-tried">'+t+'</div>'+
+          '<div class="pay-promo-applied">'+a+'</div>'+
+          '<div class="pay-promo-conv">'+rate+'%</div>'+
+        '</div>';
+      }).join("");
+  }
+}
+
+function renderPayTransactions(){
+  var sorted = PAY.payments.slice().sort(function(a,b){
+    var da = a.createdAt ? (a.createdAt.toDate?a.createdAt.toDate():new Date(a.createdAt)) : new Date(0);
+    var db = b.createdAt ? (b.createdAt.toDate?b.createdAt.toDate():new Date(b.createdAt)) : new Date(0);
+    return db.getTime() - da.getTime();
+  });
+  var host = document.getElementById("pay-transactions-list");
+  if(!sorted.length){
+    host.innerHTML = '<div style="color:var(--muted);padding:10px">No transactions yet.</div>';
+    return;
+  }
+  host.innerHTML =
+    '<div class="pay-txn-row" style="font-weight:800;color:var(--muted);font-size:10px;letter-spacing:.8px;text-transform:uppercase">'+
+      '<div>Student</div><div>Date</div><div>Promo</div><div>Payment ID</div><div style="text-align:right">Amount</div></div>'+
+    sorted.map(function(p){
+      var date = p.createdAt ? (p.createdAt.toDate?p.createdAt.toDate():new Date(p.createdAt)).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "—";
+      return '<div class="pay-txn-row">'+
+        '<div class="pay-txn-user"><div class="pay-txn-user-name">'+esc(p.userName||"?")+'</div><div class="pay-txn-user-email">'+esc(p.userEmail||"")+'</div></div>'+
+        '<div class="pay-txn-date">'+date+'</div>'+
+        '<div class="pay-txn-promo">'+esc(p.promoCode||"—")+'</div>'+
+        '<div class="pay-txn-id">'+esc((p.razorpayPaymentId||p.id||"").slice(-12))+'</div>'+
+        '<div class="pay-txn-amount">₹'+(p.amount||0)+'</div>'+
+      '</div>';
+    }).join("");
+}
+
+function renderPayAbandoned(){
+  var abandoned = PAY.events.filter(function(e){ return e.event === "checkout_closed_no_pay"; }).slice(0, 50);
+  var failed    = PAY.events.filter(function(e){ return e.event === "payment_failed" || e.event === "signature_mismatch" || e.event === "verification_failed"; }).slice(0, 50);
+
+  var host = document.getElementById("pay-abandoned-list");
+  if(!abandoned.length){
+    host.innerHTML = '<div style="color:var(--muted);padding:10px">No abandoned checkouts. Good news!</div>';
+  } else {
+    host.innerHTML = abandoned.map(function(e){
+      var date = e.timestamp ? (e.timestamp.toDate?e.timestamp.toDate():new Date(e.timestamp)).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "—";
+      return '<div class="pay-abandoned-row">'+
+        '<div class="pay-txn-user"><div class="pay-txn-user-name">'+esc(e.userName||"?")+'</div><div class="pay-txn-user-email">'+esc(e.userEmail||"")+'</div></div>'+
+        '<div class="pay-txn-date">'+date+'</div>'+
+        '<div class="pay-abandoned-reason">Closed popup</div>'+
+        '<div class="pay-txn-amount" style="color:var(--amber)">₹'+((e.metadata && e.metadata.amount)||"—")+'</div>'+
+      '</div>';
+    }).join("");
+  }
+
+  var fHost = document.getElementById("pay-failed-list");
+  if(!failed.length){
+    fHost.innerHTML = '<div style="color:var(--muted);padding:10px">No payment failures.</div>';
+  } else {
+    fHost.innerHTML = failed.map(function(e){
+      var date = e.timestamp ? (e.timestamp.toDate?e.timestamp.toDate():new Date(e.timestamp)).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "—";
+      var reason = (e.metadata && (e.metadata.error || e.metadata.reason)) || e.event;
+      return '<div class="pay-abandoned-row">'+
+        '<div class="pay-txn-user"><div class="pay-txn-user-name">'+esc(e.userName||"?")+'</div><div class="pay-txn-user-email">'+esc(e.userEmail||"")+'</div></div>'+
+        '<div class="pay-txn-date">'+date+'</div>'+
+        '<div class="pay-abandoned-reason">'+esc(reason)+'</div>'+
+        '<div class="pay-txn-amount" style="color:var(--red)">✗</div>'+
+      '</div>';
+    }).join("");
+  }
+}
 </script>
 </body>
 </html>
