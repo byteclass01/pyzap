@@ -23,39 +23,37 @@
   --shadow:0 24px 64px rgba(0,0,0,.6);
 }
 
-html[data-theme="paper"]{
-  /* Theme 2: Paper Cream — warm off-white paper, rich navy text, terracotta accent.
-     Designed for strong contrast and comfortable reading on screens. */
-  --bg:#F1E9D6;--surf:#FBF6E8;--card:#FFFDF4;--bdr:#D4C5A3;--bdr2:#B8A478;
-  --gold:#A64B1F;--gold2:#C56532;--gold3:#E38454;
-  --gdim:rgba(166,75,31,.12);--gdim2:rgba(166,75,31,.05);--gglow:rgba(166,75,31,.24);
-  --green:#1F6B47;--gndim:rgba(31,107,71,.14);
-  --red:#B82A3D;--rddim:rgba(184,42,61,.10);
-  --blue:#143661;--bldim:rgba(20,54,97,.09);
-  --amber:#A65F0E;--ambdim:rgba(166,95,14,.10);
-  --text:#14243F;--text2:#3E4D6B;--muted:#7A7560;
-  --cbg:#F8F0DE;--kw:#143661;--str:#A64B1F;--num:#1F6B47;--punc:#7A1A4D;--cmt:#948872;
-  --acc:#1F6B47;--accdim:rgba(31,107,71,.14);
-  --s2:#F0E7D0;--s3:#E5D9BD;
-  --shadow:0 12px 40px rgba(20,36,63,.18);
+html[data-theme="light"]{
+  /* Theme 2: Light Day — Linear/Notion-style indigo on near-white. PRO ONLY. */
+  --bg:#F8FAFC;--surf:#FFFFFF;--card:#FFFFFF;--bdr:#E2E8F0;--bdr2:#CBD5E1;
+  --gold:#F59E0B;--gold2:#FBBF24;--gold3:#FCD34D;
+  --gdim:rgba(245,158,11,.12);--gdim2:rgba(245,158,11,.05);--gglow:rgba(245,158,11,.22);
+  --green:#10B981;--gndim:rgba(16,185,129,.12);
+  --red:#EF4444;--rddim:rgba(239,68,68,.10);
+  --blue:#3B82F6;--bldim:rgba(59,130,246,.10);
+  --amber:#F59E0B;--ambdim:rgba(245,158,11,.10);
+  --text:#0F172A;--text2:#475569;--muted:#94A3B8;
+  --cbg:#F1F5F9;--kw:#4F46E5;--str:#059669;--num:#DC2626;--punc:#7C3AED;--cmt:#94A3B8;
+  --acc:#4F46E5;--accdim:rgba(79,70,229,.10);
+  --s2:#F8FAFC;--s3:#F1F5F9;
+  --shadow:0 4px 16px rgba(15,23,42,.08);
 }
 
-html[data-theme="forest"]{
-  /* Theme 3: Deep Forest — rich forest green, sage accents, warm cream text.
-     Visually distinct from Midnight (no blues, no gold). */
-  --bg:#0A1F18;--surf:#11302A;--card:#1A4135;--bdr:#244F44;--bdr2:#366E5E;
-  --gold:#D4A574;--gold2:#E8C397;--gold3:#F4DAB2;
-  --gdim:rgba(212,165,116,.14);--gdim2:rgba(212,165,116,.06);--gglow:rgba(212,165,116,.24);
-  --green:#7FD4A4;--gndim:rgba(127,212,164,.14);
-  --red:#E5857C;--rddim:rgba(229,133,124,.11);
-  --blue:#A8D4C9;--bldim:rgba(168,212,201,.10);
-  --amber:#E8C37A;--ambdim:rgba(232,195,122,.12);
-  --text:#EEF4E8;--text2:#AAC1B3;--muted:#6B8278;
-  --cbg:#071A14;--kw:#A8D4C9;--str:#D4A574;--num:#7FD4A4;--punc:#D9A2B8;--cmt:#446052;
-  --acc:#7FD4A4;--accdim:rgba(127,212,164,.16);
-  --s2:#0E2A22;--s3:#163A32;
-  --shadow:0 20px 56px rgba(0,0,0,.5);
-}
+/* Light-theme shadow softening — heavy black shadows look ugly on white */
+html[data-theme="light"] .toast{box-shadow:0 4px 24px rgba(15,23,42,.12);}
+html[data-theme="light"] .modal-overlay{background:rgba(15,23,42,.45);}
+html[data-theme="light"] #upgrade-popup{background:rgba(15,23,42,.50);}
+html[data-theme="light"] .login-box{box-shadow:0 0 0 1px rgba(15,23,42,.04),0 8px 32px rgba(15,23,42,.10);}
+html[data-theme="light"] .mobile-drawer-overlay{background:rgba(15,23,42,.30);}
+html[data-theme="light"] .mobile-drawer{box-shadow:-12px 0 32px rgba(15,23,42,.10);}
+html[data-theme="light"] .sel-pop{box-shadow:0 8px 32px rgba(15,23,42,.12),0 0 0 1px rgba(79,70,229,.08);}
+html[data-theme="light"] .sel-pop-backdrop.open{background:rgba(15,23,42,.30);}
+html[data-theme="light"] .mt-picker-overlay{background:rgba(15,23,42,.30);}
+html[data-theme="light"] .mt-picker-card{box-shadow:0 8px 32px rgba(15,23,42,.12);}
+html[data-theme="light"] .tsw-preview{box-shadow:0 2px 8px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
+html[data-theme="light"] .lcard{box-shadow:0 0 0 1px rgba(15,23,42,.04),0 8px 32px rgba(15,23,42,.10);}
+html[data-theme="light"] .login-stat-chip{box-shadow:0 4px 12px rgba(15,23,42,.08);}
+html[data-theme="light"] .overlay{background:rgba(15,23,42,.50);}
 
 html{height:100%;scrollbar-width:thin;scrollbar-color:var(--bdr) var(--bg);}
 body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;}
@@ -488,6 +486,12 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .sel-pop.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto;}
 .sel-pop::before{content:'';position:absolute;top:-6px;left:100px;width:12px;height:12px;background:var(--surf);border-top:1px solid var(--bdr2);border-left:1px solid var(--bdr2);transform:rotate(45deg);}
 .sel-pop-handle{display:none;width:40px;height:4px;background:var(--bdr2);border-radius:999px;margin:0 auto 14px;}
+.sp-close-btn{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:8px;background:transparent;border:none;color:var(--text2);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;z-index:5;}
+.sp-close-btn:hover{background:var(--gdim);color:var(--gold);}
+.sp-apply-btn{display:block;width:100%;margin-top:14px;padding:11px 18px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .12s;}
+.sp-apply-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+html[data-theme="light"] .sp-apply-btn{color:#FFFFFF;background:var(--acc);}
+html[data-theme="light"] .sp-apply-btn:hover{background:#4338CA;}
 
 .sp-section{margin-bottom:16px;}
 .sp-section:last-child{margin-bottom:0;}
@@ -565,6 +569,8 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .mt-head{}
 .mt-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;}
 .mt-sub{font-size:13px;color:var(--text2);line-height:1.55;}
+.mt-sub-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:3px;}
+.mt-quota-chip{font-size:11px;font-weight:700;color:var(--gold);background:var(--gdim);border:1px solid rgba(245,166,35,.3);border-radius:999px;padding:3px 10px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
 .mt-quota{background:var(--gdim);border:1px solid rgba(245,166,35,.28);border-radius:10px;padding:9px 13px;font-size:12.5px;color:var(--text);}
 .mt-quota b{color:var(--gold);font-family:'JetBrains Mono',monospace;}
 
@@ -658,6 +664,26 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .profile-card-plan .profile-card-head{margin-bottom:4px;}
 .profile-card-icon{font-size:15px;opacity:.9;}
 .profile-card-title{font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold2);}
+
+/* Contact form */
+.contact-form{display:flex;flex-direction:column;gap:12px;}
+.contact-row{display:flex;flex-direction:column;gap:5px;}
+.contact-lbl{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;}
+.contact-opt{font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;}
+.contact-input{padding:9px 12px;background:var(--cbg);border:1.5px solid var(--bdr2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .15s;font-family:inherit;}
+.contact-input:focus{border-color:var(--gold);}
+textarea.contact-input{resize:vertical;font-family:'Outfit',sans-serif;line-height:1.5;}
+.contact-file-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cbg);border:1.5px dashed var(--bdr2);border-radius:8px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.contact-file-btn:hover{border-color:var(--gold);color:var(--gold);}
+.contact-img-clear{display:block;margin-top:4px;padding:4px 10px;background:var(--rddim);border:none;border-radius:5px;color:var(--red);font-size:11px;cursor:pointer;}
+.contact-meta{font-size:11px;color:var(--muted);padding:8px 12px;background:var(--cbg);border-radius:8px;line-height:1.6;}
+.contact-meta b{color:var(--text2);font-weight:600;}
+.contact-submit{padding:11px 18px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .15s;}
+.contact-submit:hover{background:var(--gold2);transform:translateY(-1px);}
+.contact-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.contact-success{padding:11px 14px;background:var(--gndim);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;text-align:center;}
+html[data-theme="light"] .contact-submit{background:var(--acc);color:#FFFFFF;}
+html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
 .profile-details{display:flex;flex-direction:column;gap:10px;}
 .profile-row{display:flex;gap:10px;align-items:baseline;font-size:13.5px;}
 .profile-row-lbl{min-width:90px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
@@ -699,15 +725,14 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .tsw-midnight::before{background:#F5A623;}
 .tsw-midnight::after{background:#22D3A0;}
 
-.tsw-paper{background:linear-gradient(135deg,#F1E9D6 0%,#FBF6E8 100%);}
-.tsw-paper::before{background:#A64B1F;}
-.tsw-paper::after{background:#143661;}
-
-.tsw-forest{background:linear-gradient(135deg,#0A1F18 0%,#11302A 100%);}
-.tsw-forest::before{background:#D4A574;}
-.tsw-forest::after{background:#7FD4A4;}
+.tsw-light{background:linear-gradient(135deg,#FFFFFF 0%,#F8FAFC 100%);}
+.tsw-light::before{background:#4F46E5;}
+.tsw-light::after{background:#F59E0B;}
 
 .tsw-name{display:block;white-space:nowrap;text-align:center;}
+.tsw-lock{display:none;font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--gold);background:var(--gdim);padding:2px 6px;border-radius:4px;margin-top:4px;}
+.theme-swatch.locked .tsw-lock{display:inline-block;}
+.theme-swatch.locked .tsw-preview{opacity:.55;}
 
 @media(max-width:500px){.profile-theme-grid{grid-template-columns:1fr 1fr;}}
 
@@ -1088,10 +1113,8 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
       <div class="ta-mcq" id="ta-mcq"></div>
     </div>
     <div class="ta-btn-row">
-      <button class="ta-btn" id="ta-prev">&#x2190; Prev</button>
       <div class="unans-warn" id="unans-warn"></div>
-      <button class="ta-btn" id="ta-next">Next &#x2192;</button>
-      <button class="ta-btn submit" id="ta-submit">Submit Test</button>
+      <button class="ta-btn submit" id="ta-submit">Submit &amp; Next &#x2192;</button>
     </div>
   </div>
 </div>
@@ -1199,6 +1222,9 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
     <div class="sel-pop" id="sel-pop" role="dialog" aria-label="Practice settings" aria-hidden="true">
       <div class="sel-pop-handle"></div>
 
+      <!-- Close button -->
+      <button class="sp-close-btn" id="sp-close-btn" aria-label="Close">&times;</button>
+
       <!-- Intro -->
       <div class="sp-intro">
         <div class="sp-intro-title">Choose what to practice</div>
@@ -1228,6 +1254,9 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
         </div>
         <div class="sp-mode-hint" id="sp-mode-hint"></div>
       </div>
+
+      <!-- Apply button -->
+      <button class="sp-apply-btn" id="sp-apply-btn">Apply &amp; Close</button>
     </div>
   <!-- ═══ PRACTICE PANEL ═══ -->
   <div class="main-panel active" id="panel-practice">
@@ -1408,17 +1437,14 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
           <span class="profile-card-title">Theme</span>
         </div>
         <div class="profile-theme-grid">
-          <button class="theme-swatch" data-theme="midnight" aria-label="Midnight Gold">
+          <button class="theme-swatch" data-theme="midnight" aria-label="Default Dark">
             <span class="tsw-preview tsw-midnight"></span>
-            <span class="tsw-name">Midnight Gold</span>
+            <span class="tsw-name">Default</span>
           </button>
-          <button class="theme-swatch" data-theme="paper" aria-label="Paper White">
-            <span class="tsw-preview tsw-paper"></span>
-            <span class="tsw-name">Paper White</span>
-          </button>
-          <button class="theme-swatch" data-theme="forest" aria-label="Forest Slate">
-            <span class="tsw-preview tsw-forest"></span>
-            <span class="tsw-name">Forest Slate</span>
+          <button class="theme-swatch" data-theme="light" aria-label="Light Day (Pro)">
+            <span class="tsw-preview tsw-light"></span>
+            <span class="tsw-name">Light Day</span>
+            <span class="tsw-lock" id="tsw-lock-light">&#x1F512; Pro</span>
           </button>
         </div>
       </div>
@@ -1461,6 +1487,51 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
         </div>
       </div>
 
+      <!-- Contact -->
+      <div class="profile-card">
+        <div class="profile-card-head">
+          <span class="profile-card-icon">&#x1F4E7;</span>
+          <span class="profile-card-title">Contact Us</span>
+        </div>
+        <div class="contact-form">
+          <div class="contact-row">
+            <label class="contact-lbl">Type</label>
+            <select id="contact-type" class="contact-input">
+              <option value="">Select type</option>
+              <option value="bug">Bug / Wrong Answer</option>
+              <option value="payment">Payment Issue</option>
+              <option value="feature">Feature Request</option>
+              <option value="general">General Feedback</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="contact-row">
+            <label class="contact-lbl">Message</label>
+            <textarea id="contact-message" class="contact-input" rows="4" placeholder="Tell us what's going on..."></textarea>
+          </div>
+          <div class="contact-row">
+            <label class="contact-lbl">Screenshot <span class="contact-opt">(optional)</span></label>
+            <div class="contact-file-wrap">
+              <input type="file" id="contact-screenshot" accept="image/*" style="display:none" onchange="contactPreviewImage(this)">
+              <label for="contact-screenshot" class="contact-file-btn">
+                <span>&#x1F4CE;</span> Attach screenshot
+              </label>
+              <div id="contact-img-preview" style="display:none;margin-top:8px;">
+                <img id="contact-img-tag" src="" style="max-width:100%;max-height:150px;border-radius:8px;border:1px solid var(--bdr2);">
+                <button type="button" onclick="contactClearImage()" class="contact-img-clear">Remove</button>
+              </div>
+            </div>
+          </div>
+          <div class="contact-meta" id="contact-meta">
+            <!-- Auto-filled name/email/phone shown here -->
+          </div>
+          <button id="contact-submit-btn" class="contact-submit" onclick="submitContact()">Send Message</button>
+          <div id="contact-success" class="contact-success" style="display:none;">
+            &#x2713; Message sent! We'll get back to you soon.
+          </div>
+        </div>
+      </div>
+
       <!-- Sign out -->
       <div class="profile-card profile-signout-card">
         <button class="profile-signout-btn" id="profile-signout-btn">
@@ -1481,6 +1552,7 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 'use strict';
 
@@ -1937,6 +2009,11 @@ function applyPlanUI(){
   updateFreeBanner();
   if(typeof renderPopover==="function") renderPopover();
   if(typeof updateChipLabel==="function") updateChipLabel();
+  // Re-apply theme so swatch locks update; if user was on a locked theme but is now free, kick back to default
+  if(typeof applyTheme === "function"){
+    var current = document.documentElement.getAttribute("data-theme") || "midnight";
+    applyTheme(current);
+  }
 }
 var PYTHON_DTYPES = ["Functions","Modules","Exception","AssertionReason","Expressions","Builtin"];
 var PAID_ONLY_DTYPES = ["Functions","Modules","Exception","AssertionReason","Expressions","Builtin"];
@@ -2005,13 +2082,14 @@ function getTopicRules(dt){
   dt = dt || S.dtype;
   // forcedMode: 'mcq' | 'type' | null (allow toggle)
   // qtypeKind: 'pills' (Indexing/Slicing/... for Python concepts), 'pbCheckbox' (Practice/Board),
-  //            'sqlCheckbox', 'netCheckbox', 'hide'
+  //            'sqlCheckbox', 'netCheckbox', 'expCheckbox', 'hide'
   if(dt==="Networking") return {forcedMode:"mcq", qtypeKind:"netCheckbox"};
   if(dt==="AssertionReason") return {forcedMode:"mcq", qtypeKind:"hide"};
   if(dt==="SQL") return {forcedMode:"type", qtypeKind:"sqlCheckbox"};
   if(dt==="Exception") return {forcedMode:"mcq", qtypeKind:"pbCheckbox"};
   if(dt==="Modules") return {forcedMode:"mcq", qtypeKind:"pbCheckbox"};
   if(dt==="Functions") return {forcedMode:null, qtypeKind:"pbCheckbox"};
+  if(dt==="Expressions") return {forcedMode:"mcq", qtypeKind:"expCheckbox"};
   // String/List/Tuple/Dictionary/Mixed — use concept pills (Indexing/Slicing/…)
   return {forcedMode:null, qtypeKind:"pills"};
 }
@@ -2068,6 +2146,10 @@ function applyQtypeLocks(){
   }
   if(rules.qtypeKind==="netCheckbox"){
     renderNetCheckboxes();
+    return;
+  }
+  if(rules.qtypeKind==="expCheckbox"){
+    renderExpressionsCheckboxes();
     return;
   }
 }
@@ -2284,6 +2366,49 @@ function renderNetCheckboxes(){
   });
 }
 
+// ── Render Expressions multi-checkboxes (Basic / Advanced / Board) ──
+function renderExpressionsCheckboxes(){
+  var qg = document.getElementById('qtype-group');
+  if(!qg) return;
+  if(!qg.dataset.origHTML) qg.dataset.origHTML = qg.innerHTML;
+  qg.dataset.customMode = 'exp';
+  var m = getChecked('Expressions');
+  // Default: Basic + Advanced checked
+  if(!m.Basic && !m.Advanced && !m.Board){ m = {Basic:true, Advanced:true}; setChecked('Expressions', m); }
+
+  qg.innerHTML =
+    '<label class="net-qt-cb'+(m.Basic?' checked':'')+'" data-expmode="Basic">'+
+      '<span class="net-qt-cb-box"></span>'+
+      '<span class="net-qt-cb-lbl">Basic</span>'+
+    '</label>'+
+    '<label class="net-qt-cb'+(m.Advanced?' checked':'')+'" data-expmode="Advanced">'+
+      '<span class="net-qt-cb-box"></span>'+
+      '<span class="net-qt-cb-lbl">Advanced</span>'+
+    '</label>'+
+    '<label class="net-qt-cb'+(m.Board?' checked':'')+'" data-expmode="Board">'+
+      '<span class="net-qt-cb-box"></span>'+
+      '<span class="net-qt-cb-lbl">Board</span>'+
+    '</label>';
+
+  qg.querySelectorAll('.net-qt-cb').forEach(function(lbl){
+    lbl.addEventListener('click', function(e){
+      e.preventDefault();
+      var mode = lbl.dataset.expmode;
+      var mm = getChecked('Expressions');
+      mm[mode] = !mm[mode];
+      setChecked('Expressions', mm);
+      lbl.classList.toggle('checked', !!mm[mode]);
+      var any = mm.Basic || mm.Advanced || mm.Board;
+      if(!any){
+        mm[mode] = true; setChecked('Expressions', mm);
+        lbl.classList.add('checked');
+        showToast("At least one level must be selected.","info");
+        return;
+      }
+    });
+  });
+}
+
 // ═══════════════════════════════════════════════════════════
 //   LOGIN STAT CHIP ROTATOR
 // ═══════════════════════════════════════════════════════════
@@ -2320,7 +2445,8 @@ function renderNetCheckboxes(){
 // ═══════════════════════════════════════════════════════════
 //   THEME SYSTEM — load/save from Firestore, persist via localStorage
 // ═══════════════════════════════════════════════════════════
-var AVAILABLE_THEMES = ["midnight","paper","forest"];
+var AVAILABLE_THEMES = ["midnight","light"];
+var PAID_ONLY_THEMES = ["light"];
 function getActiveTheme(){
   try{
     var t = localStorage.getItem("pyzap_theme");
@@ -2330,11 +2456,18 @@ function getActiveTheme(){
 }
 function applyTheme(theme){
   if(AVAILABLE_THEMES.indexOf(theme) === -1) theme = "midnight";
+  // Force free students to default theme
+  if(PAID_ONLY_THEMES.indexOf(theme) >= 0 && S.plan !== "paid"){
+    theme = "midnight";
+  }
   document.documentElement.setAttribute("data-theme", theme);
   try{ localStorage.setItem("pyzap_theme", theme); }catch(e){}
-  // Update swatch active state
+  // Update swatch active state + lock state
   document.querySelectorAll(".theme-swatch").forEach(function(s){
     s.classList.toggle("active", s.dataset.theme === theme);
+    var t = s.dataset.theme;
+    var locked = (PAID_ONLY_THEMES.indexOf(t) >= 0) && S.plan !== "paid";
+    s.classList.toggle("locked", locked);
   });
 }
 // Apply theme immediately on load (no flash of wrong theme)
@@ -2362,6 +2495,13 @@ document.addEventListener("DOMContentLoaded", function(){
   document.querySelectorAll(".theme-swatch").forEach(function(sw){
     sw.addEventListener("click", function(){
       var theme = sw.dataset.theme;
+      // Block paid-only themes for free users
+      if(PAID_ONLY_THEMES.indexOf(theme) >= 0 && S.plan !== "paid"){
+        if(typeof showUpgrade === "function"){
+          showUpgrade("Custom themes are a Pro feature. Upgrade to unlock.");
+        }
+        return;
+      }
       applyTheme(theme);
       if(S.userData) S.userData.theme = theme;
       saveThemeToFirestore(theme);
@@ -2430,6 +2570,7 @@ function closeSelPop(){
   if(p) p.setAttribute("aria-hidden","true");
   if(b) b.classList.remove("open");
   if(c) c.classList.remove("open");
+  if(typeof updateChipLabel === "function") updateChipLabel();
 }
 
 // Render chip label "<Topic> · <Qtypes joined>"
@@ -2480,8 +2621,7 @@ function renderPopover(){
       renderPopover();
       renderLimitGrid();
       updateChipLabel();
-      loadConceptQuestions(topic);
-      closeSelPop();
+      // Don't auto-close — let user pick qtypes; close happens via × / Apply / backdrop
     });
   });
   renderPopoverQtypes();
@@ -2644,13 +2784,31 @@ document.addEventListener("DOMContentLoaded", function(){
   var chip = document.getElementById("sel-chip");
   var pop = document.getElementById("sel-pop");
   var bd = document.getElementById("sel-pop-backdrop");
+  var closeBtn = document.getElementById("sp-close-btn");
+  var applyBtn = document.getElementById("sp-apply-btn");
   if(chip) chip.addEventListener("click", function(e){
     e.stopPropagation();
     if(pop && pop.classList.contains("open")) closeSelPop(); else openSelPop();
   });
   if(bd) bd.addEventListener("click", closeSelPop);
+  if(closeBtn) closeBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    closeSelPop();
+  });
+  if(applyBtn) applyBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    // Load the topic's questions with the selected qtypes/mode
+    if(typeof loadConceptQuestions === "function"){
+      loadConceptQuestions(S.dtype);
+    }
+    closeSelPop();
+  });
   document.addEventListener("click", function(e){
     if(pop && pop.classList.contains("open") && !pop.contains(e.target) && !(chip && chip.contains(e.target))){
+      // Backdrop / outside click — also load questions for current selection
+      if(typeof loadConceptQuestions === "function"){
+        loadConceptQuestions(S.dtype);
+      }
       closeSelPop();
     }
   });
@@ -2667,7 +2825,7 @@ function switchTab(tabName){
   if(panel)panel.classList.add("active");
   if(tabName==="tests"){loadAdminTests();loadSelfTestPanel();}
   if(tabName==="history")loadHistory();
-  if(tabName==="profile")renderProfile();
+  if(tabName==="profile"){renderProfile(); refreshContactMeta();}
   if(tabName==="practice"){updateFreeBanner(); renderLimitGrid();}
 }
 document.querySelectorAll(".app-nav-item,.tn-item").forEach(function(item){item.addEventListener("click",function(){switchTab(item.dataset.tab);});});
@@ -2850,7 +3008,109 @@ document.addEventListener("DOMContentLoaded", function(){
       }catch(e){ location.reload(); }
     }
   });
+  // Refresh contact meta when profile panel becomes visible
+  refreshContactMeta();
 });
+
+// ═══════════════════════════════════════════════════════════════════
+//   CONTACT FORM
+// ═══════════════════════════════════════════════════════════════════
+var _contactImgFile = null;
+
+function refreshContactMeta(){
+  var meta = document.getElementById("contact-meta");
+  if(!meta) return;
+  var u = S.userData || {};
+  var d = new Date();
+  var dateStr = d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+  meta.innerHTML =
+    '<div><b>From:</b> '+esc(u.name||"—")+'</div>'+
+    '<div><b>Email:</b> '+esc(u.email||"—")+'</div>'+
+    '<div><b>Phone:</b> '+esc(u.phone||"—")+'</div>'+
+    '<div><b>Date:</b> '+dateStr+'</div>';
+}
+
+function contactPreviewImage(input){
+  var file = input.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){
+    showToast("Image too large (max 5 MB)","error");
+    input.value = "";
+    return;
+  }
+  _contactImgFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    document.getElementById("contact-img-tag").src = e.target.result;
+    document.getElementById("contact-img-preview").style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function contactClearImage(){
+  _contactImgFile = null;
+  document.getElementById("contact-screenshot").value = "";
+  document.getElementById("contact-img-preview").style.display = "none";
+}
+
+function submitContact(){
+  if(!S.uid){ showToast("Please sign in first","error"); return; }
+  var type = document.getElementById("contact-type").value;
+  var msg = document.getElementById("contact-message").value.trim();
+  if(!type){ showToast("Please select a type","error"); return; }
+  if(!msg){ showToast("Please enter your message","error"); return; }
+
+  var btn = document.getElementById("contact-submit-btn");
+  btn.disabled = true; btn.textContent = "Sending...";
+
+  var u = S.userData || {};
+  var data = {
+    uid: S.uid,
+    name: u.name || "",
+    email: u.email || "",
+    phone: u.phone || "",
+    plan: S.plan || "free",
+    type: type,
+    message: msg,
+    resolved: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  function saveDoc(imageUrl){
+    if(imageUrl) data.screenshotUrl = imageUrl;
+    db.collection("contactSubmissions").add(data).then(function(){
+      btn.disabled = false; btn.textContent = "Send Message";
+      // Clear form
+      document.getElementById("contact-type").value = "";
+      document.getElementById("contact-message").value = "";
+      contactClearImage();
+      // Show success
+      var success = document.getElementById("contact-success");
+      success.style.display = "block";
+      setTimeout(function(){ success.style.display = "none"; }, 5000);
+      showToast("Message sent! \u2713","success");
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = "Send Message";
+      showToast("Error: "+e.message,"error");
+    });
+  }
+
+  if(_contactImgFile){
+    var ts = Date.now();
+    var path = "contact/"+S.uid+"_"+ts+"_"+_contactImgFile.name.replace(/[^\w.-]/g,"_");
+    var ref = firebase.storage().ref(path);
+    ref.put(_contactImgFile).then(function(snap){
+      return snap.ref.getDownloadURL();
+    }).then(function(url){
+      saveDoc(url);
+    }).catch(function(e){
+      btn.disabled = false; btn.textContent = "Send Message";
+      showToast("Upload failed: "+e.message,"error");
+    });
+  } else {
+    saveDoc(null);
+  }
+}
 
 // ═══ LAUNCH ═══
 
@@ -3865,124 +4125,367 @@ function _perturbAnswer(ans, topic){
 //   EXPRESSIONS — operator precedence, arithmetic, logical
 // ═══════════════════════════════════════════════════════════
 
-function _genExpression(){
+// ───────────────────────────────────────────────────────────
+//  EXPRESSION QUESTIONS — CBSE board pattern
+//  Template A: Arithmetic (operator precedence, **, /, //, %, parentheses)
+//  Template B: Logical/Relational (and/or/not + comparisons, fixed CBSE options)
+//  50/50 random pick per call
+// ───────────────────────────────────────────────────────────
+
+// Right-associative power evaluator: a ** b ** c = a ** (b ** c)
+function _powChain(arr){
+  // arr = [base, exp1, exp2, ...] right-associative
+  var result = arr[arr.length - 1];
+  for(var i = arr.length - 2; i >= 0; i--){
+    result = Math.pow(arr[i], result);
+  }
+  return result;
+}
+
+// ── Template A: Arithmetic ──
+function _genExprArith(){
   var templates = [
+    // print(a + b * c) — multiplication first
     function(){
-      var a=_rint(2,10), b=_rint(2,5), c=_rint(1,5);
-      var val = a + b*c;
-      return { lines:['print('+a+' + '+b+' * '+c+')'], answer:String(val) };
+      var a=_rint(2,15), b=_rint(2,8), c=_rint(2,8);
+      return { lines:['print('+a+' + '+b+' * '+c+')'], answer:String(a + b*c) };
     },
+    // print((a + b) * c) — parentheses
     function(){
-      var a=_rint(2,10), b=_rint(1,5), c=_rint(1,5);
-      var val = (a+b)*c;
-      return { lines:['print(('+a+' + '+b+') * '+c+')'], answer:String(val) };
+      var a=_rint(2,12), b=_rint(2,8), c=_rint(2,6);
+      return { lines:['print(('+a+' + '+b+') * '+c+')'], answer:String((a+b)*c) };
     },
+    // print(a // b) — floor division
     function(){
-      var a=_rint(10,30), b=_rint(2,8);
+      var a=_rint(15,50), b=_rint(2,9);
       return { lines:['print('+a+' // '+b+')'], answer:String(Math.floor(a/b)) };
     },
+    // print(a % b) — modulo
     function(){
-      var a=_rint(10,30), b=_rint(2,8);
+      var a=_rint(15,50), b=_rint(3,9);
       return { lines:['print('+a+' % '+b+')'], answer:String(a%b) };
     },
+    // print(a ** b ** c) — RIGHT-associative power, key CBSE trap
     function(){
-      var a=_rint(2,5), b=_rint(2,4);
-      return { lines:['print('+a+' ** '+b+')'], answer:String(Math.pow(a,b)) };
+      var a=_rint(2,4), b=2, c=2;
+      var val = _powChain([a,b,c]);
+      return { lines:['print('+a+' ** '+b+' ** '+c+')'], answer:String(val) };
     },
+    // print(a - b ** c) — minus with power
     function(){
-      var a=_rint(2,8), b=_rint(1,5), c=_rint(2,5);
-      var val = a*b + c;
-      return { lines:['print('+a+' * '+b+' + '+c+')'], answer:String(val) };
+      var a=_rint(20,50), b=_rint(2,4), c=_rint(2,3);
+      var val = a - Math.pow(b,c);
+      return { lines:['print('+a+' - '+b+' ** '+c+')'], answer:String(val) };
     },
+    // print(a - b ** c ** d + e / f) — full CBSE-style mix
     function(){
-      var a=_rint(20,50), b=_rint(2,5), c=_rint(1,4);
-      var val = a / (b*c);
-      return { lines:['print('+a+' / ('+b+' * '+c+'))'], answer:String(val) };
+      var a=_rint(8,15), b=_rint(2,3), c=2, d=2;
+      var e=_rint(100,200), f=_rint(2,10);
+      while(e % f !== 0){ e = e + (f - (e%f)); }  // ensure clean float
+      var val = a - _powChain([b,c,d]) + (e/f);
+      return { lines:['print('+a+'-'+b+'**'+c+'**'+d+'+'+e+'/'+f+')'], answer:String(val) };
     },
+    // print(a + b - c) — left-to-right
     function(){
-      var a=_rint(5,15), b=_rint(2,5);
-      return { lines:['print('+a+' > '+b+')'], answer:String(a>b?"True":"False") };
+      var a=_rint(10,25), b=_rint(5,15), c=_rint(2,10);
+      return { lines:['print('+a+' + '+b+' - '+c+')'], answer:String(a+b-c) };
     },
+    // print(a / b) — true division (always float in py3)
     function(){
-      var a=_rint(2,10), b=_rint(2,10);
-      return { lines:['print('+a+' == '+b+')'], answer:(a===b?"True":"False") };
+      var a=_rint(10,40), b=_pick([2,4,5,8]);
+      var val = a / b;
+      return { lines:['print('+a+' / '+b+')'], answer:String(val) };
     },
+    // print(a * b + c // d) — mixed
     function(){
-      var a=_pick(['True','False']);
-      var b=_pick(['True','False']);
-      var av=(a==='True'), bv=(b==='True');
-      return { lines:['print('+a+' and '+b+')'], answer:(av&&bv)?"True":"False" };
+      var a=_rint(2,8), b=_rint(2,6), c=_rint(20,50), d=_rint(3,8);
+      var val = a*b + Math.floor(c/d);
+      return { lines:['print('+a+' * '+b+' + '+c+' // '+d+')'], answer:String(val) };
     },
+    // print(-a + b) — unary minus
     function(){
-      var a=_pick(['True','False']);
-      var b=_pick(['True','False']);
-      var av=(a==='True'), bv=(b==='True');
-      return { lines:['print('+a+' or '+b+')'], answer:(av||bv)?"True":"False" };
+      var a=_rint(5,15), b=_rint(3,12);
+      return { lines:['print(-'+a+' + '+b+')'], answer:String(-a+b) };
     },
+    // print(a ** 2 - b * c) — squaring
     function(){
-      var a=_pick(['True','False']);
-      var av=(a==='True');
-      return { lines:['print(not '+a+')'], answer:av?"False":"True" };
+      var a=_rint(3,8), b=_rint(2,5), c=_rint(2,7);
+      var val = a*a - b*c;
+      return { lines:['print('+a+' ** 2 - '+b+' * '+c+')'], answer:String(val) };
     },
+    // print((a - b) // c) — parentheses with floor div
     function(){
-      var a=_rint(2,8), b=_rint(2,8), c=_rint(1,5);
-      var val = a+b-c;
-      return { lines:['print('+a+' + '+b+' - '+c+')'], answer:String(val) };
+      var a=_rint(20,50), b=_rint(3,12), c=_rint(2,5);
+      var val = Math.floor((a-b)/c);
+      return { lines:['print(('+a+' - '+b+') // '+c+')'], answer:String(val) };
     },
+    // print(a % b + c) — modulo with addition
     function(){
-      var a=_rint(10,20), b=_rint(3,7);
-      var val = a - b*2;
-      return { lines:['print('+a+' - '+b+' * 2)'], answer:String(val) };
+      var a=_rint(15,40), b=_rint(3,8), c=_rint(2,8);
+      var val = (a%b) + c;
+      return { lines:['print('+a+' % '+b+' + '+c+')'], answer:String(val) };
     },
+    // print(a + b * c - d) — mixed
     function(){
-      var a=_rint(1,5), b=_rint(1,5), c=_rint(2,5);
-      var val = a + b**c;
-      return { lines:['print('+a+' + '+b+' ** '+c+')'], answer:String(val) };
-    },
-    function(){
-      var a=_rint(5,20), b=_rint(2,5);
-      return { lines:['print('+a+' / '+b+')'], answer:String(a/b) };
-    },
-    function(){
-      var a=_rint(2,10), b=_rint(2,10), c=_rint(2,10);
-      var val = (a>b) && (b<c);
-      return { lines:['print('+a+' > '+b+' and '+b+' < '+c+')'], answer:val?"True":"False" };
-    },
-    function(){
-      var a=_rint(1,5), b=_rint(1,5);
-      return { lines:['print('+a+' != '+b+')'], answer:(a!==b)?"True":"False" };
-    },
-    function(){
-      var a=_rint(2,6), b=_rint(2,6);
-      var val = a*a + b*b;
-      return { lines:['print('+a+'*'+a+' + '+b+'*'+b+')'], answer:String(val) };
-    },
-    function(){
-      var a=_rint(1,10);
-      var val = -a + 5;
-      return { lines:['print(-'+a+' + 5)'], answer:String(val) };
+      var a=_rint(5,15), b=_rint(2,5), c=_rint(2,5), d=_rint(2,8);
+      var val = a + b*c - d;
+      return { lines:['print('+a+' + '+b+' * '+c+' - '+d+')'], answer:String(val) };
     }
   ];
   return _pick(templates)();
 }
+
+// Generate numeric distractors near the correct answer
+function _arithDistractors(answerStr){
+  var n = parseFloat(answerStr);
+  if(isNaN(n)) return ["0", "1", "2"];
+  var isInt = (answerStr.indexOf(".") === -1);
+  function fmt(x){
+    if(isInt) return String(Math.round(x));
+    // round to 2 decimals for floats
+    return String(Math.round(x*100)/100);
+  }
+  // Sensible distractors — common student errors
+  var d = new Set();
+  d.add(fmt(n + 1));
+  d.add(fmt(n - 1));
+  if(n !== 0) d.add(fmt(-n));
+  d.add(fmt(n * 2));
+  d.add(fmt(n + 10));
+  d.add(fmt(Math.floor(n/2)));
+  d.delete(answerStr);
+  var arr = Array.from(d).filter(function(x){return x !== answerStr;});
+  // Shuffle and take 3
+  for(var i=arr.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var t=arr[i]; arr[i]=arr[j]; arr[j]=t;
+  }
+  return arr.slice(0,3);
+}
+
+// ── Template B: Logical/Relational ──
+function _genExprLogical(){
+  // Build an expression like: print(<comp1> <op1> <comp2> [<op2> [not] <comp3>])
+  // CBSE-style fixed options: True, False, Null, No output
+
+  // Helper: comparison operators
+  function _cmp(a, b, op){
+    switch(op){
+      case "<":  return a < b;
+      case ">":  return a > b;
+      case "<=": return a <= b;
+      case ">=": return a >= b;
+      case "==": return a === b;
+      case "!=": return a !== b;
+    }
+    return false;
+  }
+
+  var templates = [
+    // 2-comparison: print(a<b and c>d)
+    function(){
+      var a=_rint(5,40), b=_rint(5,40), c=_rint(5,40), d=_rint(5,40);
+      var op1=_pick(["<",">","<=",">=","==","!="]);
+      var op2=_pick(["<",">","<=",">=","==","!="]);
+      var bOp=_pick(["and","or"]);
+      var v1=_cmp(a,b,op1), v2=_cmp(c,d,op2);
+      var val = bOp==="and" ? (v1 && v2) : (v1 || v2);
+      return {
+        lines: ['print('+a+op1+b+' '+bOp+' '+c+op2+d+')'],
+        answer: val ? "True" : "False"
+      };
+    },
+    // 3-comparison with not: print(a<b and c>d or not e>f)  ← CBSE example pattern
+    function(){
+      var a=_rint(10,80), b=_rint(10,80), c=_rint(10,80), d=_rint(10,80), e=_rint(10,80), f=_rint(10,80);
+      var op1=_pick(["<",">","<=",">="]);
+      var op2=_pick(["<",">","<=",">="]);
+      var op3=_pick(["<",">","<=",">="]);
+      var v1=_cmp(a,b,op1), v2=_cmp(c,d,op2), v3=!_cmp(e,f,op3); // not e<>f
+      // and binds tighter than or
+      var val = (v1 && v2) || v3;
+      return {
+        lines: ['print('+a+op1+b+' and '+c+op2+d+' or not '+e+op3+f+')'],
+        answer: val ? "True" : "False"
+      };
+    },
+    // not with single comparison: print(not a<b)
+    function(){
+      var a=_rint(5,30), b=_rint(5,30);
+      var op=_pick(["<",">","<=",">=","==","!="]);
+      var val = !_cmp(a,b,op);
+      return {
+        lines: ['print(not '+a+op+b+')'],
+        answer: val ? "True" : "False"
+      };
+    },
+    // Boolean literals: print(True and False or not True)
+    function(){
+      var a=_pick([true,false]), b=_pick([true,false]), c=_pick([true,false]);
+      var bOp1=_pick(["and","or"]), bOp2=_pick(["and","or"]);
+      var notC = !c;
+      var v1 = bOp1==="and" ? (a && b) : (a || b);
+      var val = bOp2==="and" ? (v1 && notC) : (v1 || notC);
+      return {
+        lines: ['print('+(a?"True":"False")+' '+bOp1+' '+(b?"True":"False")+' '+bOp2+' not '+(c?"True":"False")+')'],
+        answer: val ? "True" : "False"
+      };
+    },
+    // Chained and/or: print(a>b and b>c or c==d)
+    function(){
+      var a=_rint(20,80), b=_rint(20,80), c=_rint(20,80), d=_rint(20,80);
+      var op1=_pick([">","<",">=","<="]);
+      var op2=_pick([">","<",">=","<="]);
+      var op3=_pick(["==","!="]);
+      var v1=_cmp(a,b,op1), v2=_cmp(b,c,op2), v3=_cmp(c,d,op3);
+      var val = (v1 && v2) || v3;
+      return {
+        lines: ['print('+a+op1+b+' and '+b+op2+c+' or '+c+op3+d+')'],
+        answer: val ? "True" : "False"
+      };
+    }
+  ];
+  return _pick(templates)();
+}
+
+// ── Master expression generator: 50/50 between A and B ──
+function _genExpression(){
+  var pickArith = Math.random() < 0.5;
+  var qd = pickArith ? _genExprArith() : _genExprLogical();
+  qd._isLogical = !pickArith;  // flag for distractor strategy
+  return qd;
+}
+
+// Override _generateDistractors when the question is logical (CBSE fixed options)
+// We need to wire this into the existing distractor pipeline.
+function _expressionDistractors(qd){
+  if(qd._isLogical){
+    // Fixed CBSE options
+    var all = ["True", "False", "Null", "No output"];
+    // Make sure correct answer is in the set
+    if(all.indexOf(qd.answer) === -1) all[0] = qd.answer;
+    return all.filter(function(x){return x !== qd.answer;}).slice(0,3);
+  } else {
+    return _arithDistractors(qd.answer);
+  }
+}
+
+// State for Expressions cycle (no-repeat)
+var _expCycle = { key:"", queue:[], idx:0 };
 
 function loadExpressionsQuestion(){
   if(S.plan !== "paid"){
     showUpgrade("Expressions is for Pro students. Upgrade to unlock.");
     return;
   }
-  var qd = _genExpression();
-  var q = {
-    lines: qd.lines,
-    answer: qd.answer,
-    qtype: "predict_output",
-    source: "generated_expressions",
-    options: null
-  };
-  if(S.mode === "mcq"){
-    q.options = _generateDistractors(qd.answer, "Expressions");
+
+  // Read selected levels
+  var checked = getChecked('Expressions');
+  if(!checked.Basic && !checked.Advanced && !checked.Board){
+    checked = {Basic:true, Advanced:true};
+    setChecked('Expressions', checked);
   }
-  _presentGeneratedQuestion(q, "Expressions");
+  var wantBasic    = !!checked.Basic;
+  var wantAdvanced = !!checked.Advanced;
+  var wantBoard    = !!checked.Board;
+
+  // Helper: filter cached batch by level
+  function filterBatch(){
+    var batch = S.allQuestions["Expressions"] || [];
+    var pool = [];
+    if(wantBasic)    pool = pool.concat(batch.filter(function(q){return q.level === "Basic";}));
+    if(wantAdvanced) pool = pool.concat(batch.filter(function(q){return q.level === "Advanced";}));
+    return pool;
+  }
+
+  // Helper: get board questions (from cache, fetch if not loaded)
+  function getBoardPool(cb){
+    if(window._expBoardCache !== undefined){ cb(_expBoardCache || []); return; }
+    if(typeof db === "undefined"){ cb([]); return; }
+    window._expBoardCache = []; // mark fetching
+    db.collection("boardQuestions").where("topic","==","Expressions").limit(100).get().then(function(snap){
+      var arr = [];
+      snap.forEach(function(doc){
+        var d = doc.data();
+        arr.push({
+          lines: d.lines || [d.prompt || ""],
+          options: d.options || [],
+          answer: d.answer || "",
+          explanation: d.explanation || "",
+          qtype: "Expressions",
+          level: "Board",
+          topic: "Expressions",
+          source: "board"
+        });
+      });
+      window._expBoardCache = arr;
+      cb(arr);
+    }).catch(function(e){ console.warn("expBoard fetch:", e); window._expBoardCache = []; cb([]); });
+  }
+
+  function buildPool(boardArr){
+    var pool = filterBatch();
+    if(wantBoard) pool = pool.concat(boardArr || []);
+    return pool;
+  }
+
+  function presentFromPool(pool){
+    if(!pool.length){
+      setCardLoading("No questions match your selection. Try a different level.");
+      return;
+    }
+    // No-repeat cycle keyed by level selection
+    var key = (wantBasic?"B":"")+(wantAdvanced?"A":"")+(wantBoard?"D":"");
+    if(_expCycle.key !== key || _expCycle.idx >= _expCycle.queue.length){
+      // Build fresh shuffled queue of indices
+      var idxs = pool.map(function(_,i){return i;});
+      for(var i=idxs.length-1;i>0;i--){
+        var j=Math.floor(Math.random()*(i+1));
+        var t=idxs[i]; idxs[i]=idxs[j]; idxs[j]=t;
+      }
+      _expCycle = { key:key, queue:idxs, idx:0 };
+    }
+    var pickIdx = _expCycle.queue[_expCycle.idx];
+    _expCycle.idx++;
+    var pick = pool[pickIdx];
+
+    var q = {
+      lines: pick.lines || [],
+      answer: pick.answer || "",
+      qtype: "predict_output",
+      source: pick.source || "generated_expressions",
+      options: pick.options && pick.options.length ? pick.options : null,
+      _isLogical: pick.answer === "True" || pick.answer === "False"
+    };
+    if(S.mode === "mcq" && (!q.options || !q.options.length)){
+      // Shouldn't happen for CF batch (it has options), but fallback
+      q.options = ["True","False","Null","No output"];
+    }
+    _presentGeneratedQuestion(q, "Expressions");
+  }
+
+  // Load batch from server if needed
+  function ensureBatchAndPresent(){
+    var batch = S.allQuestions["Expressions"] || [];
+    if(batch.length === 0 && (wantBasic || wantAdvanced)){
+      setCardLoading("Loading...");
+      fetchConceptFromServer("Expressions", function(){
+        if(wantBoard){
+          getBoardPool(function(b){ presentFromPool(buildPool(b)); });
+        } else {
+          presentFromPool(buildPool([]));
+        }
+      });
+      return;
+    }
+    if(wantBoard){
+      getBoardPool(function(b){ presentFromPool(buildPool(b)); });
+    } else {
+      presentFromPool(buildPool([]));
+    }
+  }
+
+  ensureBatchAndPresent();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4989,7 +5492,7 @@ var MYTEST_TOPIC_QTYPES = {
   List:         ["Indexing","Slicing","SliceIdx","Functions","Membership","Comparison","PredictOutput"],
   Tuple:        ["Indexing","Slicing","Functions","Membership","Comparison","PredictOutput"],
   Dictionary:   ["Operations","Functions","PredictOutput"],
-  Expressions:  ["PredictOutput"],
+  Expressions:  ["Basic","Advanced","Board"],
   Builtin:      ["PredictOutput"],
   Functions:    ["Practice","Board"],
   Modules:      ["Practice","Board"],
@@ -5076,6 +5579,9 @@ function loadSelfTestPanel(){
   _MYTEST_STATE = { topics: [] };
   _mytestRenderShell(el);
 
+  // Prefetch networking board questions (one-time, cached in memory)
+  _prefetchNetBoardQuestions();
+
   // Sync Firestore quota + check for active (unsubmitted) test (one read)
   if(S.uid){
     var today = _todayKey();
@@ -5145,30 +5651,17 @@ function _mytestResumeTest(testId){
     if(!snap.exists){ showToast("Test not found","error"); showScreen("app"); return; }
     var d = snap.data();
     if(d.submitted){ showToast("This test was already submitted.","info"); showScreen("app"); return; }
-    // Check expiry
     var exp = d.expiresAt && d.expiresAt.toDate ? d.expiresAt.toDate() : (d.expiresAt ? new Date(d.expiresAt) : null);
     if(exp && exp <= new Date()){ showToast("This test has expired.","error"); showScreen("app"); return; }
 
-    var cfQuestions = d.questions || [];
-    var cfAnswers   = d.answers   || [];
-    var localTopics = (d.topics || []).filter(function(t){return t.id==="SQL" || t.id==="Networking";});
+    var allQ = d.questions || [];
+    var allA = d.answers   || [];
 
-    // Regenerate local SQL/Networking questions (can't persist these reliably)
-    var localQs = [], localAns = [];
-    localTopics.forEach(function(topic){
-      var split = _mytestSplit(topic.count, (topic.qtypes||[]).length || 1);
-      (topic.qtypes || ["Mixed"]).forEach(function(qt, i){
-        var n = split[i];
-        for(var k=0;k<n;k++){
-          var q = _mytestGenerateOne(topic.id, qt);
-          if(q){ localQs.push(q); localAns.push({answer:q.answer, explanation:q.explanation||""}); }
-        }
-      });
-    });
-
-    var allQ = cfQuestions.concat(localQs);
-    var allA = cfAnswers.concat(localAns);
-    if(!allQ.length){ showToast("Could not resume test.","error"); showScreen("app"); return; }
+    // Backwards-compat: older tests may not have SQL/Networking persisted
+    if(!allQ.length){
+      showToast("Could not resume — please generate a new test.","error");
+      showScreen("app"); return;
+    }
 
     S.testMode = "self";
     S.testId = testId;
@@ -5190,13 +5683,16 @@ function _mytestResumeTest(testId){
 
 function _mytestRenderShell(el){
   var usedToday = _mytestUsedToday();
+  var remaining = Math.max(0, MYTEST_CONFIG.tests_per_day - usedToday);
   el.innerHTML =
     '<div class="mt-wrap">'+
       '<div class="mt-head">'+
         '<div class="mt-title">Build Your Own Test</div>'+
-        '<div class="mt-sub">Pick topics, question types and time &mdash; up to '+MYTEST_CONFIG.max_questions_per_topic+' questions per topic.</div>'+
+        '<div class="mt-sub-row">'+
+          '<span class="mt-sub">Up to '+MYTEST_CONFIG.max_questions_per_topic+' questions per topic.</span>'+
+          '<span class="mt-quota-chip" id="mt-quota">'+remaining+' of '+MYTEST_CONFIG.tests_per_day+' left today</span>'+
+        '</div>'+
       '</div>'+
-      '<div class="mt-quota" id="mt-quota">You have generated <b>'+usedToday+'</b> of <b>'+MYTEST_CONFIG.tests_per_day+'</b> test'+(MYTEST_CONFIG.tests_per_day>1?"s":"")+' today.</div>'+
       '<div id="mt-topics"></div>'+
       '<button class="mt-add-topic" id="mt-add-topic">+ Add topic</button>'+
       '<div class="mt-section-label">Test duration</div>'+
@@ -5215,7 +5711,8 @@ function _mytestRefreshQuotaUI(){
   var q = document.getElementById("mt-quota");
   if(!q) return;
   var used = _mytestUsedToday();
-  q.innerHTML = 'You have generated <b>'+used+'</b> of <b>'+MYTEST_CONFIG.tests_per_day+'</b> test'+(MYTEST_CONFIG.tests_per_day>1?"s":"")+' today.';
+  var remaining = Math.max(0, MYTEST_CONFIG.tests_per_day - used);
+  q.textContent = remaining + ' of ' + MYTEST_CONFIG.tests_per_day + ' left today';
   _mytestUpdateGenerateBtn();
 }
 
@@ -5568,6 +6065,16 @@ function _mytestCallCF(btn, usedToday, quotaRef){
     // Friendly heads-up about expiry
     showToast("Your test is ready. It will expire in 24 hours.","info");
 
+    // Persist full merged questions to Firestore so resume gets the SAME questions back
+    // (server-side CF only knew about the CF questions; we're adding local SQL/Net here)
+    if(localTopics.length > 0 && S.testId){
+      db.collection("selfTests").doc(S.testId).update({
+        questions: shuffledQ,
+        answers: shuffledA,
+        total: shuffledQ.length
+      }).catch(function(e){ console.warn("Self-test merge persist failed:", e); });
+    }
+
     // Write quota AFTER CF succeeds (not before) — records the active test ID
     if(quotaRef){
       quotaRef.set({
@@ -5595,7 +6102,40 @@ function _mytestGenerateOne(topic, qtype){
   try{
     var qd = null;
     // Route to the right generator
-    if(topic==="Expressions"){ qd = _genExpression(); }
+    if(topic==="Expressions"){
+      // Pull from CF batch (already loaded by practice) or from board cache
+      var wantLevel = qtype || "Basic";  // "Basic" | "Advanced" | "Board"
+      if(wantLevel === "Board"){
+        var arr = window._expBoardCache || [];
+        if(arr.length){
+          var p = arr[Math.floor(Math.random()*arr.length)];
+          return {
+            lines: p.lines||[],
+            options: p.options||null,
+            answer: p.answer||"",
+            qtype: "Expressions",
+            dtype: "Expressions",
+            explanation: p.explanation||""
+          };
+        }
+        // Board not loaded — fall through to local generator
+      } else {
+        var batch = (S.allQuestions["Expressions"]||[]).filter(function(q){return q.level === wantLevel;});
+        if(batch.length){
+          var p2 = batch[Math.floor(Math.random()*batch.length)];
+          return {
+            lines: p2.lines||[],
+            options: p2.options||null,
+            answer: p2.answer||"",
+            qtype: "Expressions",
+            dtype: "Expressions",
+            explanation: p2.explanation||""
+          };
+        }
+      }
+      // Fallback to local generator if batch missing
+      qd = _genExpression();
+    }
     else if(topic==="Builtin"){ qd = _genBuiltin(); }
     else if(topic==="String" && (qtype==="PredictOutput"||!qtype)){ qd = _genStringPredict(); }
     else if(topic==="List"   && (qtype==="PredictOutput"||!qtype)){ qd = _genListPredict(); }
@@ -5628,16 +6168,100 @@ function _mytestGenerateOne(topic, qtype){
       else if(topic==="Dictionary") qd = _genDictPredict();
     }
     else if(topic==="SQL"){
-      // Use the SQL generator directly
-      if(typeof generateOneSQL==="function"){
-        var sq = generateOneSQL(qtype);
-        if(sq) return {
-          lines: sq.lines||[],
-          options: sq.options||null,
-          answer: sq.answer,
-          qtype: qtype, dtype: "SQL",
-          explanation: sq.explanation||""
-        };
+      // Use the sync SQL generators directly
+      try{
+        var schema = sqlGenSingleSchema();
+        var sq;
+        if(qtype==="DDL")            sq = sqlGenDDL(schema);
+        else if(qtype==="DML")       sq = sqlGenDML(schema);
+        else if(qtype==="Aggregate") sq = sqlGenAggregate(schema);
+        else if(qtype==="Schema")    sq = sqlGenSchemaTheory(schema);
+        else if(qtype==="JOIN"){
+          var joinSchemas = sqlGenJoinSchemas();
+          // JOIN gen returns a slightly different structure — use DML on combined schema as fallback
+          sq = sqlGenDML(joinSchemas[0]);
+        }
+        else                         sq = sqlGenDDL(schema); // safe fallback
+        if(sq && sq.prompt){
+          // Build a schema description as the question lines
+          var schemaLines = [
+            "Table: " + schema.name,
+            schema.columns.map(function(c){return c.n+" "+c.t+(c.pk?" PRIMARY KEY":"");}).join(", "),
+            "",
+            sq.prompt
+          ];
+          return {
+            lines: schemaLines,
+            options: null,  // SQL is type-mode, not MCQ
+            answer: sq.answer || "",
+            qtype: qtype, dtype: "SQL",
+            explanation: sq.explanation||""
+          };
+        }
+      }catch(e){ console.warn("SQL gen failed:",e); }
+      return null;
+    }
+    else if(topic==="Networking"){
+      // Board qtype → fetch from Firestore boardQuestions collection (one-time async pre-load)
+      if(qtype === "Board"){
+        // Use cached board questions if available
+        if(window._netBoardCache && _netBoardCache.length){
+          var p = _netBoardCache[Math.floor(Math.random() * _netBoardCache.length)];
+          var lines = (p.lines || [p.description || p.prompt || ""]).slice();
+          var ans = p.answer || (p.subAnswers && p.subAnswers[0]) || "";
+          var opts = p.options || [];
+          if(!opts.length && ans){
+            opts = [ans, "Star topology", "LAN", "MAN"].filter(function(x,i,a){return a.indexOf(x)===i;}).slice(0,4);
+          }
+          return {
+            lines: lines,
+            options: opts,
+            answer: ans,
+            qtype: "Board", dtype: "Networking",
+            explanation: p.explanation||""
+          };
+        }
+        // No cache yet — fall through to practice-style generation
+      }
+      // Practice qtype (or Board fallback) — local case generator
+      if(typeof netGenerateCase === "function"){
+        try{
+          var nc = netGenerateCase();
+          var subQs = [
+            { q: "Suggest the most suitable place (block) to install the server.", a: nc.serverBlock || nc.blocks[0].name },
+            { q: "Suggest the most suitable cable layout (topology) for connecting the blocks.", a: nc.topology || "Star" },
+            { q: "Suggest a network type (LAN/MAN/WAN) for connecting the campus blocks.", a: nc.campusNetType || "LAN" },
+            { q: "Suggest a network type (LAN/MAN/WAN) for connecting head office to campus.", a: nc.hoNetType || "WAN" }
+          ];
+          var pick = subQs[Math.floor(Math.random()*subQs.length)];
+          var lines = [
+            (nc.company||"Company") + " is setting up "+(nc.orgType||"an organization")+" with "+(nc.blocks||[]).length+" blocks at "+(nc.campus||"a campus")+".",
+            "Blocks: " + (nc.blocks||[]).map(function(b){return b.name+" ("+b.computers+" computers)";}).join(", "),
+            "Head office is at "+(nc.headOffice||"a remote city")+" approx "+(nc.headOfficeDistance||500)+" km away.",
+            "",
+            "Question: " + pick.q
+          ];
+          var distractors;
+          if(pick.q.indexOf("place") >= 0){
+            distractors = (nc.blocks||[]).map(function(b){return b.name;}).filter(function(n){return n!==pick.a;}).slice(0,3);
+          } else if(pick.q.indexOf("topology") >= 0 || pick.q.indexOf("layout") >= 0){
+            distractors = ["Bus","Ring","Mesh","Star","Tree"].filter(function(t){return t!==pick.a;}).slice(0,3);
+          } else {
+            distractors = ["LAN","MAN","WAN","PAN"].filter(function(t){return t!==pick.a;}).slice(0,3);
+          }
+          var options = [pick.a].concat(distractors);
+          for(var s=options.length-1;s>0;s--){
+            var t=Math.floor(Math.random()*(s+1));
+            var tmp=options[s];options[s]=options[t];options[t]=tmp;
+          }
+          return {
+            lines: lines,
+            options: options,
+            answer: pick.a,
+            qtype: "Networking", dtype: "Networking",
+            explanation: ""
+          };
+        }catch(e){ console.error("Net gen failed:",e); }
       }
     }
     else if(["Functions","Modules","Exception"].indexOf(topic)>=0){
@@ -5660,8 +6284,19 @@ function _mytestGenerateOne(topic, qtype){
     }
 
     if(!qd) return null;
-    // Build MCQ options
-    var options = _generateDistractors(qd.answer, topic);
+    // Build MCQ options — use CBSE-style for Expressions
+    var options;
+    if(topic === "Expressions"){
+      var distr = _expressionDistractors(qd);
+      options = [qd.answer].concat(distr);
+      for(var k=options.length-1;k>0;k--){
+        var j=Math.floor(Math.random()*(k+1));
+        var t=options[k]; options[k]=options[j]; options[j]=t;
+      }
+      options = options.slice(0,4);
+    } else {
+      options = _generateDistractors(qd.answer, topic);
+    }
     return {
       lines: qd.lines,
       options: options,
@@ -5681,6 +6316,19 @@ document.addEventListener("DOMContentLoaded", function(){
   loadMytestConfig();
 });
 
+// Pre-fetch Networking board questions so My Test can use them without per-call Firestore reads
+window._netBoardCache = null;
+function _prefetchNetBoardQuestions(){
+  if(window._netBoardCache !== null) return; // already attempted
+  if(typeof db === "undefined") return;
+  window._netBoardCache = []; // mark as fetching
+  db.collection("boardQuestions").where("topic","==","Networking").limit(50).get().then(function(snap){
+    var arr = [];
+    snap.forEach(function(doc){ arr.push(doc.data()); });
+    window._netBoardCache = arr;
+  }).catch(function(e){ console.warn("netBoard prefetch:", e); window._netBoardCache = []; });
+}
+
 
 function startTestAttempt(){
   S.currentQ=0;S.totalTimeSecs=0;S.questionStartTime=Date.now();
@@ -5690,12 +6338,11 @@ function startTestAttempt(){
 function renderTestNav(){
   var nav=document.getElementById("q-nav");
   nav.innerHTML=S.testQuestions.map(function(_,i){
-    var ans=S.testAnswers[i]&&S.testAnswers[i].answer!==null;
-    return'<button class="q-dot'+(i===S.currentQ?" curr":ans?" ans":"")+'" data-idx="'+i+'">'+(i+1)+'</button>';
+    var a = S.testAnswers[i];
+    var ans = a && a.answer !== null && a.answer !== "";
+    return'<button class="q-dot'+(i===S.currentQ?" curr":ans?" ans":"")+'" data-idx="'+i+'" disabled>'+(i+1)+'</button>';
   }).join("");
-  nav.querySelectorAll(".q-dot").forEach(function(dot){
-    dot.addEventListener("click",function(){saveTestAnswer();S.currentQ=parseInt(dot.dataset.idx);S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
-  });
+  // q-nav is read-only — clicking does nothing. Students can only go forward via Submit.
 }
 
 function renderTestQuestion(){
@@ -5708,16 +6355,33 @@ function renderTestQuestion(){
   gEl.innerHTML=(q.lines||[]).map(function(_,i){return'<div>'+(i+1)+'</div>';}).join("");
   cEl.innerHTML=(q.lines||[]).map(function(l){return'<div class="code-line">'+hl(l)+'</div>';}).join("");
   var mcq=document.getElementById("ta-mcq"),ltrs=["A","B","C","D"];
-  mcq.innerHTML=(q.options||[]).map(function(opt,i){
-    var isSel=ans&&ans.answer===opt;
-    return'<button class="mcq-opt'+(isSel?" sel":"")+'" data-val="'+esc(opt)+'"><span class="opt-ltr">'+ltrs[i]+'</span>'+esc(opt)+'</button>';
-  }).join("");
-  mcq.querySelectorAll(".mcq-opt").forEach(function(btn){
-    btn.addEventListener("click",function(){mcq.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");});btn.classList.add("sel");S.testAnswers[S.currentQ].answer=btn.dataset.val;renderTestNav();});
-  });
-  document.getElementById("ta-prev").disabled=S.currentQ===0;
-  document.getElementById("ta-next").disabled=S.currentQ===total-1;
-  var unanswered=S.testAnswers.filter(function(a){return !a||a.answer===null;}).length;
+  if(!q.options || !q.options.length){
+    // Type-mode (SQL queries, written answers) — show textarea
+    var currentVal = (ans && ans.answer) || "";
+    mcq.innerHTML = '<textarea class="ta-type-input" id="ta-type-input" placeholder="Type your answer here..." style="width:100%;min-height:90px;padding:10px;background:var(--cbg);border:1.5px solid var(--bdr2);border-radius:8px;color:var(--text);font-family:\'JetBrains Mono\',monospace;font-size:13px;line-height:1.5;resize:vertical;outline:none;">'+esc(currentVal)+'</textarea>';
+    var inp = document.getElementById("ta-type-input");
+    if(inp){
+      inp.addEventListener("input", function(){
+        S.testAnswers[S.currentQ].answer = inp.value.trim();
+        renderTestNav();
+      });
+    }
+  } else {
+    mcq.innerHTML=(q.options||[]).map(function(opt,i){
+      var isSel=ans&&ans.answer===opt;
+      return'<button class="mcq-opt'+(isSel?" sel":"")+'" data-val="'+esc(opt)+'"><span class="opt-ltr">'+ltrs[i]+'</span>'+esc(opt)+'</button>';
+    }).join("");
+    mcq.querySelectorAll(".mcq-opt").forEach(function(btn){
+      btn.addEventListener("click",function(){mcq.querySelectorAll(".mcq-opt").forEach(function(b){b.classList.remove("sel");});btn.classList.add("sel");S.testAnswers[S.currentQ].answer=btn.dataset.val;renderTestNav();});
+    });
+  }
+  // Submit/Next button label
+  var subBtn = document.getElementById("ta-submit");
+  if(subBtn){
+    if(S.currentQ === total-1){ subBtn.textContent = "Submit Test"; subBtn.classList.add("final"); }
+    else { subBtn.innerHTML = "Submit &amp; Next \u2192"; subBtn.classList.remove("final"); }
+  }
+  var unanswered=S.testAnswers.filter(function(a){return !a||a.answer===null||a.answer==="";}).length;
   document.getElementById("unans-warn").textContent=unanswered>0?unanswered+" unanswered":"";
 }
 
@@ -5754,11 +6418,25 @@ function startTestTimer(){
   },1000);
 }
 
-document.getElementById("ta-prev").addEventListener("click",function(){if(S.currentQ===0)return;saveTestAnswer();S.currentQ--;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
-document.getElementById("ta-next").addEventListener("click",function(){if(S.currentQ>=S.testQuestions.length-1)return;saveTestAnswer();S.currentQ++;S.questionStartTime=Date.now();renderTestNav();renderTestQuestion();});
 document.getElementById("ta-submit").addEventListener("click",function(){
   saveTestAnswer();
-  var unanswered=S.testAnswers.filter(function(a){return !a||a.answer===null;}).length;
+  var ans = S.testAnswers[S.currentQ];
+  var answered = ans && ans.answer !== null && ans.answer !== "";
+  if(!answered){
+    showToast("Please answer the question first.","info");
+    return;
+  }
+  var total = S.testQuestions.length;
+  // Not last question → advance immediately
+  if(S.currentQ < total - 1){
+    S.currentQ++;
+    S.questionStartTime = Date.now();
+    renderTestNav();
+    renderTestQuestion();
+    return;
+  }
+  // Last question → confirm submit
+  var unanswered=S.testAnswers.filter(function(a){return !a||a.answer===null||a.answer==="";}).length;
   if(unanswered>0)showModal("Submit Test?","You have "+unanswered+" unanswered question(s). Submit anyway?","Submit Anyway",function(){submitTest(false);});
   else showModal("Submit Test?","Are you sure? You cannot retake this test.","Submit",function(){submitTest(false);});
 });
@@ -7479,8 +8157,27 @@ function sqlGenerateOne(qtype,onDone){
         // fallback to mixed if no board questions
         onDone(sqlGenerateOne("Mixed",onDone));return;
       }
-      var q=sqlPick(qs);
-      onDone(q);
+      var raw=sqlPick(qs);
+      // Convert new-schema (caseText + subQuestions) to renderable shape
+      if(raw && raw.caseText){
+        // Ensure pz-* CSS is loaded (lives inside netInjectCSS)
+        if(typeof netInjectCSS === "function") netInjectCSS();
+        var subqs = raw.subQuestions || [];
+        var pickSubQ = subqs.length ? subqs[Math.floor(Math.random()*subqs.length)] : null;
+        var schemaHTML = '<div class="sql-board-case">' + _pyzapRenderCaseText(raw.caseText) + '</div>';
+        var q = {
+          lines: [pickSubQ ? pickSubQ.question : "Write a SQL query for the above case."],
+          answer: pickSubQ ? pickSubQ.answer : "",
+          qtype: "write_query",
+          source: "sql_board",
+          schemaHTML: schemaHTML,
+          isBoard: true
+        };
+        onDone(q);
+        return;
+      }
+      // Legacy / image-based — return as-is, may have minimal info
+      onDone(raw);
     });
     return;
   }
@@ -8096,12 +8793,105 @@ function netInjectCSS(){
     ".net-done-box{text-align:center;padding:20px 0;}"+
     ".net-done-title{font-size:16px;font-weight:700;color:var(--acc);margin-bottom:8px;}"+
     ".net-done-sub{font-size:12px;color:var(--text2);margin-bottom:16px;}"+
-    "@media(max-width:700px){.net-case-box{padding:14px 14px;}.net-case-intro{font-size:12.5px;}.net-comp-tbl,.net-dist-table{font-size:11.5px;}.net-comp-tbl th,.net-dist-table th,.net-comp-tbl td,.net-dist-table td{padding:6px 12px;}}";
+    "@media(max-width:700px){.net-case-box{padding:14px 14px;}.net-case-intro{font-size:12.5px;}.net-comp-tbl,.net-dist-table{font-size:11.5px;}.net-comp-tbl th,.net-dist-table th,.net-comp-tbl td,.net-dist-table td{padding:6px 12px;}}"+
+    /* ── PyZap key-value case text (Board SQL/Networking) ── */
+    ".pz-case-para{font-size:13.5px;color:var(--text);line-height:1.65;margin:10px 0;white-space:pre-wrap;}"+
+    ".pz-case-tbl-wrap{margin:14px 0;}"+
+    ".pz-case-tbl-name{font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--gold);margin-bottom:6px;}"+
+    ".pz-case-tbl{width:100%;border-collapse:collapse;background:var(--cbg);border-radius:6px;overflow:hidden;}"+
+    ".pz-case-tbl th{background:var(--gdim);color:var(--gold);padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--bdr2);font-weight:800;}"+
+    ".pz-case-tbl td{padding:7px 12px;border:1px solid var(--bdr);font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);}"+
+    ".pz-case-tbl tr:nth-child(even) td{background:rgba(245,166,35,.03);}";
   document.head.appendChild(s);
 }
 
 // ── Render case info box (always visible during questions) ──
+// ── PyZap key-value text parser (used for Board SQL/Networking cases) ──
+// Format: lines of "Table: X" followed by rows like "Col: val, Col: val"
+function _pyzapParseCaseText(text){
+  if(!text) return [{type:"text",content:""}];
+  var lines = text.split(/\r?\n/);
+  var blocks = [];
+  var currentText = [];
+  var currentTable = null;
+
+  function flushText(){
+    if(currentText.length){
+      blocks.push({type:"text", content: currentText.join("\n").trim()});
+      currentText = [];
+    }
+  }
+  function flushTable(){
+    if(currentTable && currentTable.rows.length){
+      blocks.push(currentTable);
+    }
+    currentTable = null;
+  }
+
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i];
+    var trimmed = line.trim();
+    var tableMatch = trimmed.match(/^Table:\s*(.+)$/i);
+    if(tableMatch){
+      flushText(); flushTable();
+      currentTable = { type:"table", name: tableMatch[1].trim(), columns: [], rows: [] };
+      continue;
+    }
+    if(currentTable !== null && trimmed){
+      var pairs = trimmed.split(/,\s*/).map(function(p){
+        var m = p.match(/^([^:]+):\s*(.*)$/);
+        return m ? { key: m[1].trim(), val: m[2].trim() } : null;
+      }).filter(Boolean);
+      if(pairs.length){
+        if(!currentTable.columns.length){
+          currentTable.columns = pairs.map(function(p){return p.key;});
+        }
+        currentTable.rows.push(pairs.map(function(p){return p.val;}));
+      } else {
+        flushTable();
+        currentText.push(line);
+      }
+      continue;
+    }
+    if(currentTable !== null && !trimmed){
+      flushTable();
+      continue;
+    }
+    currentText.push(line);
+  }
+  flushText(); flushTable();
+  return blocks;
+}
+
+// Render parsed blocks as styled HTML for the student
+function _pyzapRenderCaseText(text){
+  var blocks = _pyzapParseCaseText(text);
+  return blocks.map(function(b){
+    if(b.type === "text"){
+      return '<div class="pz-case-para">'+esc(b.content)+'</div>';
+    }
+    if(b.type === "table"){
+      var thead = '<thead><tr>'+b.columns.map(function(c){return '<th>'+esc(c)+'</th>';}).join("")+'</tr></thead>';
+      var tbody = '<tbody>'+b.rows.map(function(r){
+        return '<tr>'+r.map(function(v){return '<td>'+esc(v)+'</td>';}).join("")+'</tr>';
+      }).join("")+'</tbody>';
+      return '<div class="pz-case-tbl-wrap"><div class="pz-case-tbl-name">Table: '+esc(b.name)+'</div>'+
+        '<div class="scrollable-tbl"><div class="scroll-inner"><table class="pz-case-tbl">'+thead+tbody+'</table></div></div>'+
+      '</div>';
+    }
+    return "";
+  }).join("");
+}
+
 function netRenderCaseBox(c){
+  // ── Board case: render PyZap key-value text directly ──
+  if(c.isBoard && c.caseText){
+    return '<div class="net-case-box">'+
+      '<div class="net-case-title">Case Study</div>'+
+      _pyzapRenderCaseText(c.caseText) +
+    '</div>';
+  }
+
   var h='<div class="net-case-box">';
   h+='<div class="net-case-title">Case Study</div>';
 
@@ -8277,7 +9067,6 @@ function netLoadBoardCase(){
   netFetchBoard(function(qs){
     if(!qs.length){
       if(NET.mode==="both"&&NET.practicePhase){
-        // Both mode, practice done, no board questions
         netShowDone("No board questions available. Add them via Admin \u2192 Board Questions.",false);
       }else{
         setCardLoaded();
@@ -8285,7 +9074,6 @@ function netLoadBoardCase(){
       }
       return;
     }
-    // Check free limit for board mode
     if(S.plan!=="paid"&&netIsLimitReached()){
       netShowDone("You've used your "+NET_FREE_DAILY_LIMIT+" free Networking cases for today. Come back tomorrow or upgrade to Pro.",false);
       return;
@@ -8296,52 +9084,33 @@ function netLoadBoardCase(){
     var q=qs[_netBoardIdx % qs.length];
     _netBoardIdx++;
 
-    // Convert board question format to case format
-    var c={
-      company:q.case_text?q.case_text[0]:(q.company||"Company"),
-      campus:q.case_text?q.case_text[1]:(q.campus||"Campus"),
-      headOffice:q.case_text?q.case_text[2]:(q.headOffice||"Head Office"),
-      headOfficeDistance:q.marks||1000,
-      blocks:q.lines?q.lines.map(function(l,i){
-        var parts=l.split(":");
-        return {name:parts[0]||("Block "+(i+1)),computers:parseInt(parts[1])||50};
-      }):[],
-      distances:[],
-      isBoard:true,
-      boardQuestions:q.answer?q.answer.split("\n"):[]
+    // Build NET.caseData: caseText is the new field (text-based)
+    NET.caseData = {
+      caseText: q.caseText || "",
+      isBoard: true
     };
-
-    // For board questions, use stored questions directly
-    NET.caseData=c;
-    NET.questions=netBuildBoardQuestions(q);
+    // Build sub-questions from new MCQ schema (subQuestions array)
+    NET.questions = (q.subQuestions || []).map(function(sq){
+      return {
+        question: sq.question || "",
+        options: sq.options || [],
+        answer: sq.answer || "",
+        isMcq: true
+      };
+    });
+    if(!NET.questions.length){
+      // Fallback: legacy single-answer format (subAnswers + subLabels)
+      var labels = q.subLabels || [];
+      var answers = q.subAnswers || [];
+      NET.questions = labels.map(function(lbl, i){
+        return { question: lbl, answer: answers[i] || "", options: [], isMcq:false };
+      });
+    }
     NET.currentQ=0;
     NET.practicePhase=false;
     setCardLoaded();
     netShowQuestion();
   });
-}
-
-function netBuildBoardQuestions(boardQ){
-  // Board questions stored as lines[] with answers
-  // Format: each line is a sub-question, answer in answer field (newline separated)
-  var lines=boardQ.lines||[];
-  var answers=(boardQ.answer||"").split("\n");
-  var qs=[];
-  for(var i=0;i<Math.min(5,lines.length);i++){
-    qs.push({
-      qnum:i+1,
-      prompt:lines[i],
-      answer:answers[i]||"",
-      options:[answers[i]||"","Option B","Option C","Option D"],
-      explanation:"",
-      isBoard:true
-    });
-  }
-  // Pad to 5 if needed
-  while(qs.length<5){
-    qs.push({qnum:qs.length+1,prompt:"Sub-question "+(qs.length+1),answer:"",options:["","","",""],explanation:"",isBoard:true});
-  }
-  return qs;
 }
 
 // ── Show current sub-question ──
