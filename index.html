@@ -24,36 +24,71 @@
 }
 
 html[data-theme="light"]{
-  /* Theme 2: Light Day — Linear/Notion-style indigo on near-white. PRO ONLY. */
-  --bg:#F8FAFC;--surf:#FFFFFF;--card:#FFFFFF;--bdr:#E2E8F0;--bdr2:#CBD5E1;
+  /* Theme 2: Light Day — refreshed: sharper text, richer indigo, more depth */
+  /* Backgrounds: subtle warmth, clear hierarchy */
+  --bg:#F5F7FB;          /* slightly cooler-warm than F8FAFC, more comfortable */
+  --surf:#FFFFFF;
+  --card:#FFFFFF;
+  --bdr:#DDE3ED;         /* slightly darker than E2E8F0 — visible without being heavy */
+  --bdr2:#B8C2D4;        /* punchier secondary border */
+
+  /* Brand: richer indigo (was washed out) */
   --gold:#F59E0B;--gold2:#FBBF24;--gold3:#FCD34D;
-  --gdim:rgba(245,158,11,.12);--gdim2:rgba(245,158,11,.05);--gglow:rgba(245,158,11,.22);
-  --green:#10B981;--gndim:rgba(16,185,129,.12);
-  --red:#EF4444;--rddim:rgba(239,68,68,.10);
-  --blue:#3B82F6;--bldim:rgba(59,130,246,.10);
-  --amber:#F59E0B;--ambdim:rgba(245,158,11,.10);
-  --text:#0F172A;--text2:#475569;--muted:#94A3B8;
-  --cbg:#F1F5F9;--kw:#4F46E5;--str:#059669;--num:#DC2626;--punc:#7C3AED;--cmt:#94A3B8;
-  --acc:#4F46E5;--accdim:rgba(79,70,229,.10);
-  --s2:#F8FAFC;--s3:#F1F5F9;
-  --shadow:0 4px 16px rgba(15,23,42,.08);
+  --gdim:rgba(245,158,11,.14);--gdim2:rgba(245,158,11,.06);--gglow:rgba(245,158,11,.28);
+
+  /* Semantic — punchier, more saturated */
+  --green:#059669;--gndim:rgba(5,150,105,.14);
+  --red:#DC2626;--rddim:rgba(220,38,38,.12);
+  --blue:#2563EB;--bldim:rgba(37,99,235,.12);
+  --amber:#D97706;--ambdim:rgba(217,119,6,.12);
+
+  /* Text — much sharper contrast */
+  --text:#020617;        /* slate-950, deeper black for sharp reads */
+  --text2:#334155;       /* slate-700, was 475569 — punchier secondary */
+  --muted:#64748B;       /* slate-500, was 94A3B8 — readable muted */
+
+  /* Code: stronger syntax colors */
+  --cbg:#F8FAFC;
+  --kw:#4338CA;          /* indigo-700 — keywords */
+  --str:#047857;         /* emerald-700 — strings */
+  --num:#B91C1C;         /* red-700 — numbers */
+  --punc:#6D28D9;        /* violet-700 — punctuation */
+  --cmt:#64748B;         /* slate-500 — comments */
+
+  /* Accent — true indigo, deeper for buttons/CTAs */
+  --acc:#4338CA;         /* indigo-700, was 4F46E5 indigo-600 */
+  --accdim:rgba(67,56,202,.12);
+
+  --s2:#FFFFFF;          /* equal to card — popovers feel solid */
+  --s3:#EEF2F8;          /* gentle elevated surface */
+  --shadow:0 4px 16px rgba(2,6,23,.08);
 }
 
-/* Light-theme shadow softening — heavy black shadows look ugly on white */
-html[data-theme="light"] .toast{box-shadow:0 4px 24px rgba(15,23,42,.12);}
-html[data-theme="light"] .modal-overlay{background:rgba(15,23,42,.45);}
-html[data-theme="light"] #upgrade-popup{background:rgba(15,23,42,.50);}
-html[data-theme="light"] .login-box{box-shadow:0 0 0 1px rgba(15,23,42,.04),0 8px 32px rgba(15,23,42,.10);}
-html[data-theme="light"] .mobile-drawer-overlay{background:rgba(15,23,42,.30);}
-html[data-theme="light"] .mobile-drawer{box-shadow:-12px 0 32px rgba(15,23,42,.10);}
-html[data-theme="light"] .sel-pop{box-shadow:0 8px 32px rgba(15,23,42,.12),0 0 0 1px rgba(79,70,229,.08);}
-html[data-theme="light"] .sel-pop-backdrop.open{background:rgba(15,23,42,.30);}
-html[data-theme="light"] .mt-picker-overlay{background:rgba(15,23,42,.30);}
-html[data-theme="light"] .mt-picker-card{box-shadow:0 8px 32px rgba(15,23,42,.12);}
-html[data-theme="light"] .tsw-preview{box-shadow:0 2px 8px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
-html[data-theme="light"] .lcard{box-shadow:0 0 0 1px rgba(15,23,42,.04),0 8px 32px rgba(15,23,42,.10);}
-html[data-theme="light"] .login-stat-chip{box-shadow:0 4px 12px rgba(15,23,42,.08);}
-html[data-theme="light"] .overlay{background:rgba(15,23,42,.50);}
+/* Light-theme shadow + texture refinements */
+html[data-theme="light"] .toast{box-shadow:0 8px 28px rgba(2,6,23,.16);}
+html[data-theme="light"] .modal-overlay{background:rgba(2,6,23,.55);}
+html[data-theme="light"] #upgrade-popup{background:rgba(2,6,23,.55);}
+html[data-theme="light"] .login-box{box-shadow:0 1px 3px rgba(2,6,23,.06),0 12px 36px rgba(2,6,23,.10);}
+html[data-theme="light"] .mobile-drawer-overlay{background:rgba(2,6,23,.45);}
+html[data-theme="light"] .mobile-drawer{box-shadow:-12px 0 32px rgba(2,6,23,.12);}
+html[data-theme="light"] .sel-pop{box-shadow:0 12px 40px rgba(2,6,23,.16),0 0 0 1px rgba(67,56,202,.08);}
+html[data-theme="light"] .sel-pop-backdrop.open{background:rgba(2,6,23,.40);}
+html[data-theme="light"] .mt-picker-overlay{background:rgba(2,6,23,.45);}
+html[data-theme="light"] .mt-picker-card{box-shadow:0 12px 40px rgba(2,6,23,.16);}
+html[data-theme="light"] .tsw-preview{box-shadow:0 2px 8px rgba(2,6,23,.10);border:1px solid rgba(2,6,23,.10);}
+html[data-theme="light"] .lcard{box-shadow:0 1px 3px rgba(2,6,23,.06),0 12px 36px rgba(2,6,23,.10);}
+html[data-theme="light"] .login-stat-chip{box-shadow:0 4px 12px rgba(2,6,23,.10);}
+html[data-theme="light"] .overlay{background:rgba(2,6,23,.55);}
+
+/* Light-theme card depth — subtle gradient + better border */
+html[data-theme="light"] .qcard{box-shadow:0 1px 3px rgba(2,6,23,.06),0 4px 12px rgba(2,6,23,.04);}
+html[data-theme="light"] .profile-card{box-shadow:0 1px 2px rgba(2,6,23,.04);}
+html[data-theme="light"] .topbar-stats-chip{box-shadow:0 1px 2px rgba(2,6,23,.04);}
+html[data-theme="light"] .app-topbar{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);}
+
+/* Light-theme accent buttons — indigo with proper contrast */
+html[data-theme="light"] .btn-check{background:linear-gradient(135deg,var(--acc),#3730A3);color:#FFFFFF;}
+html[data-theme="light"] .btn-check:disabled{background:#F1F5F9;color:#94A3B8;border:1.5px solid var(--bdr);}
 
 html{height:100%;scrollbar-width:thin;scrollbar-color:var(--bdr) var(--bg);}
 body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;}
@@ -99,6 +134,19 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .topbar-stat.ss .topbar-stat-val{color:var(--gold);}
 .topbar-plan-badge{padding:3px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
 .topbar-plan-badge.free{background:rgba(34,211,160,.12);color:var(--green);border:1px solid rgba(34,211,160,.25);}
+.topbar-stats-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;background:var(--card);border:1px solid var(--bdr);border-radius:999px;font-size:11px;font-weight:700;color:var(--text2);}
+.topbar-stats-chip .ts-item{display:inline-flex;align-items:center;gap:4px;}
+.topbar-stats-chip .ts-lbl{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.topbar-stats-chip .ts-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:800;color:var(--text);}
+.topbar-stats-chip .ts-correct .ts-val{color:var(--green);}
+.topbar-stats-chip .ts-wrong .ts-val{color:var(--red);}
+.topbar-stats-chip .ts-correct .ts-icon{color:var(--green);font-size:11px;font-weight:800;}
+.topbar-stats-chip .ts-wrong .ts-icon{color:var(--red);font-size:11px;font-weight:800;}
+.topbar-stats-chip .ts-sep{width:1px;height:14px;background:var(--bdr);}
+@media(max-width:520px){
+  .topbar-stats-chip{padding:4px 8px;gap:6px;}
+  .topbar-stats-chip .ts-lbl{display:none;}
+}
 .topbar-plan-badge.paid{background:var(--gdim);color:var(--gold);border:1px solid rgba(245,166,35,.25);}
 
 /* ─── PANELS ─── */
@@ -184,10 +232,14 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .expl.show{display:block;}
 .btn-row{padding:10px 14px;display:flex;gap:8px;border-top:1px solid var(--bdr);flex-shrink:0;}
 .btn{padding:7px 16px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .12s;}
-.btn-check{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;flex:1;}
-.btn-check:disabled{opacity:.4;cursor:default;}
-.btn-next{background:var(--card);border:1.5px solid var(--bdr2);color:var(--text2);flex:1;}
+.btn-check{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;flex:1;transition:all .2s;}
+.btn-check:disabled{background:var(--card);border:1.5px solid var(--bdr);color:var(--muted);opacity:.6;cursor:default;}
+.btn-next{background:var(--card);border:1.5px solid var(--bdr2);color:var(--text2);flex:1;transition:all .2s;}
 .btn-next:hover{border-color:var(--gold);color:var(--gold);}
+/* Once Check is disabled (answer submitted), highlight Next as primary */
+.btn-check:disabled + .btn-next{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#000;font-weight:800;}
+.btn-check:disabled + .btn-next:hover{filter:brightness(1.05);transform:translateY(-1px);}
+html[data-theme="light"] .btn-check:disabled + .btn-next{color:#FFFFFF;background:linear-gradient(135deg,var(--acc),#4338CA);}
 
 /* ─── TESTS ─── */
 .tests-sub-tabs{display:flex;gap:4px;padding-bottom:12px;border-bottom:1px solid var(--bdr);margin-bottom:14px;flex-shrink:0;}
@@ -244,7 +296,7 @@ body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit'
 .toast.info{background:var(--blue);color:#fff;}
 
 /* ─── MODAL ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:8000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.hidden{display:none;}
 .modal{background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px;width:100%;max-width:380px;position:relative;}
 .modal-close{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
@@ -1156,6 +1208,7 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
       <div class="app-nav-item" data-tab="tests"></div>
       <div class="app-nav-item" data-tab="history"></div>
       <div class="app-nav-item" data-tab="profile"></div>
+      <div class="app-nav-item" data-tab="contact"></div>
     </div>
     <div class="app-sb-footer">
       <button class="btn-sb-logout" id="logout-btn">Sign Out</button>
@@ -1178,6 +1231,15 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
 
       <div class="app-topbar-spacer"></div>
 
+      <!-- Stats chip (Practice tab only) -->
+      <span class="topbar-stats-chip" id="topbar-stats-chip" style="display:none;">
+        <span class="ts-item"><span class="ts-lbl">Done</span> <span class="ts-val" id="ts-done">0</span></span>
+        <span class="ts-sep"></span>
+        <span class="ts-item ts-correct"><span class="ts-icon">&#x2713;</span> <span class="ts-val" id="ts-correct">0</span></span>
+        <span class="ts-sep"></span>
+        <span class="ts-item ts-wrong"><span class="ts-icon">&#x2717;</span> <span class="ts-val" id="ts-wrong">0</span></span>
+      </span>
+
       <!-- Plan badge -->
       <span class="topbar-plan-badge free" id="topbar-plan-badge">Free</span>
 
@@ -1187,6 +1249,7 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
         <button class="tn-item" data-tab="tests"><span class="tn-icon">&#x1F4DD;</span><span class="tn-label">Tests</span></button>
         <button class="tn-item" data-tab="history"><span class="tn-icon">&#x1F4CA;</span><span class="tn-label">History</span></button>
         <button class="tn-item" data-tab="profile"><span class="tn-icon">&#x1F464;</span><span class="tn-label">Profile</span></button>
+        <button class="tn-item" data-tab="contact"><span class="tn-icon">&#x1F4E7;</span><span class="tn-label">Contact</span></button>
       </nav>
 
       <!-- Mobile hamburger -->
@@ -1211,6 +1274,7 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
         <button class="md-item" data-tab="tests"><span class="md-item-icon">&#x1F4DD;</span> Tests</button>
         <button class="md-item" data-tab="history"><span class="md-item-icon">&#x1F4CA;</span> History</button>
         <button class="md-item" data-tab="profile"><span class="md-item-icon">&#x1F464;</span> Profile</button>
+        <button class="md-item" data-tab="contact"><span class="md-item-icon">&#x1F4E7;</span> Contact</button>
       </div>
       <div class="md-foot">
         <button class="md-signout" id="md-signout">Sign Out</button>
@@ -1459,21 +1523,6 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
         <button class="profile-clear-btn" id="profile-clear-btn">Clear</button>
       </div>
 
-      <!-- My Stats -->
-      <div class="profile-card">
-        <div class="profile-card-head">
-          <span class="profile-card-icon">&#x1F4CA;</span>
-          <span class="profile-card-title">My Stats</span>
-        </div>
-        <div class="profile-stats-grid">
-          <div class="profile-stat"><div class="profile-stat-val" id="prof-done">0</div><div class="profile-stat-lbl">Done</div></div>
-          <div class="profile-stat sc"><div class="profile-stat-val" id="prof-correct">0</div><div class="profile-stat-lbl">Correct</div></div>
-          <div class="profile-stat sw"><div class="profile-stat-val" id="prof-wrong">0</div><div class="profile-stat-lbl">Wrong</div></div>
-          <div class="profile-stat ss"><div class="profile-stat-val" id="prof-streak">0</div><div class="profile-stat-lbl">Streak</div></div>
-          <div class="profile-stat sb"><div class="profile-stat-val" id="prof-best">0</div><div class="profile-stat-lbl">Best</div></div>
-        </div>
-      </div>
-
       <!-- Today's Progress (free only) -->
       <div class="profile-card" id="profile-limit-card" style="display:none">
         <div class="profile-card-head">
@@ -1487,12 +1536,25 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
         </div>
       </div>
 
-      <!-- Contact -->
-      <div class="profile-card">
-        <div class="profile-card-head">
-          <span class="profile-card-icon">&#x1F4E7;</span>
-          <span class="profile-card-title">Contact Us</span>
+      <!-- Sign out -->
+      <div class="profile-card profile-signout-card">
+        <button class="profile-signout-btn" id="profile-signout-btn">
+          <span>&#x21AA;</span> Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONTACT ═══ -->
+  <div class="main-panel" id="panel-contact">
+    <div class="profile-wrap">
+      <div class="profile-header">
+        <div class="profile-name-row">
+          <h1 class="profile-name">Contact Us</h1>
         </div>
+        <div class="profile-email">Send us a message — bug, payment issue, feedback, or anything else.</div>
+      </div>
+      <div class="profile-card">
         <div class="contact-form">
           <div class="contact-row">
             <label class="contact-lbl">Type</label>
@@ -1507,7 +1569,7 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
           </div>
           <div class="contact-row">
             <label class="contact-lbl">Message</label>
-            <textarea id="contact-message" class="contact-input" rows="4" placeholder="Tell us what's going on..."></textarea>
+            <textarea id="contact-message" class="contact-input" rows="5" placeholder="Tell us what's going on..."></textarea>
           </div>
           <div class="contact-row">
             <label class="contact-lbl">Screenshot <span class="contact-opt">(optional)</span></label>
@@ -1522,24 +1584,13 @@ html[data-theme="light"] .contact-submit:hover{background:#4338CA;}
               </div>
             </div>
           </div>
-          <div class="contact-meta" id="contact-meta">
-            <!-- Auto-filled name/email/phone shown here -->
-          </div>
           <button id="contact-submit-btn" class="contact-submit" onclick="submitContact()">Send Message</button>
           <div id="contact-success" class="contact-success" style="display:none;">
             &#x2713; Message sent! We'll get back to you soon.
           </div>
         </div>
       </div>
-
-      <!-- Sign out -->
-      <div class="profile-card profile-signout-card">
-        <button class="profile-signout-btn" id="profile-signout-btn">
-          <span>&#x21AA;</span> Sign Out
-        </button>
-      </div>
     </div>
-  </div>
 
   </div><!-- end app-main -->
 
@@ -2072,10 +2123,6 @@ function applyDtypeLocks(){
   applyQtypeLocks();
 }
 
-function isPythonDtype(dt){
-  return PYTHON_DTYPES.indexOf(dt||S.dtype) >= 0;
-}
-
 // ── Topic-specific mode rules ──
 // Each topic declares: forcedMode (or null = allow toggle), qtypeMode ('checkbox'|'pills'|'hide')
 function getTopicRules(dt){
@@ -2545,9 +2592,9 @@ var TOPIC_QTYPES = {
 
 // Which qtype UI — "pills" (single select), "checkbox" (multi), or "none"
 function getQtypeKind(dt){
-  if(dt==="SQL"||dt==="Networking"||dt==="Functions"||dt==="Modules"||dt==="Exception") return "checkbox";
+  if(dt==="SQL"||dt==="Networking"||dt==="Functions"||dt==="Modules"||dt==="Exception"||dt==="Expressions") return "checkbox";
   if(dt==="AssertionReason") return "none";
-  if(dt==="Expressions"||dt==="Builtin") return "none";
+  if(dt==="Builtin") return "none";
   return "pills";
 }
 
@@ -2699,6 +2746,7 @@ function renderPopoverQtypes(){
         // Trigger reload based on topic
         if(dt==="SQL" && typeof loadSQLMulti==="function") loadSQLMulti();
         else if(dt==="Networking" && typeof loadNetworkingFromCheckboxes==="function") loadNetworkingFromCheckboxes();
+        else if(dt==="Expressions" && typeof loadExpressionsQuestion==="function") loadExpressionsQuestion();
         else if((dt==="Functions"||dt==="Modules"||dt==="Exception") && typeof loadPracticeBoardQuestions==="function") loadPracticeBoardQuestions(dt);
       });
     });
@@ -2823,10 +2871,14 @@ function switchTab(tabName){
   document.querySelectorAll(".main-panel").forEach(function(p){p.classList.remove("active");});
   var panel=document.getElementById("panel-"+tabName);
   if(panel)panel.classList.add("active");
+  // Show stats chip only on Practice
+  var sc = document.getElementById("topbar-stats-chip");
+  if(sc) sc.style.display = (tabName==="practice") ? "" : "none";
   if(tabName==="tests"){loadAdminTests();loadSelfTestPanel();}
   if(tabName==="history")loadHistory();
-  if(tabName==="profile"){renderProfile(); refreshContactMeta();}
-  if(tabName==="practice"){updateFreeBanner(); renderLimitGrid();}
+  if(tabName==="profile") renderProfile();
+  if(tabName==="contact"){ /* contact form has no init needed */ }
+  if(tabName==="practice"){updateFreeBanner(); renderLimitGrid(); if(typeof updHdr==="function") updHdr();}
 }
 document.querySelectorAll(".app-nav-item,.tn-item").forEach(function(item){item.addEventListener("click",function(){switchTab(item.dataset.tab);});});
 document.querySelectorAll(".sub-tab").forEach(function(tab){
@@ -3137,6 +3189,8 @@ function launchApp(){
   updHdr();
   applyPlanUI();
   syncThemeFromUser();
+  // Show stats chip (we're on Practice tab by default)
+  var sc=document.getElementById("topbar-stats-chip"); if(sc) sc.style.display="";
   // Initialize chip/popover
   if(typeof renderPopover==="function") renderPopover();
   if(typeof updateChipLabel==="function") updateChipLabel();
@@ -3225,10 +3279,6 @@ function loadConceptCache(dtype){
   } else {
     return loadFreeConcept(dtype);
   }
-}
-function clearConceptCache(dtype){
-  try{ localStorage.removeItem(lsKeyPaidConcept(dtype)); }catch(e){}
-  try{ localStorage.removeItem(lsKeyFreeNested(dtype)); }catch(e){}
 }
 
 // ─── Progress helpers ───
@@ -5243,6 +5293,10 @@ function updHdr(){
     var el=document.getElementById("hs-"+k); if(el)el.textContent=vals[k];
     var mel=document.getElementById("ms-"+k); if(mel)mel.textContent=vals[k];
   });
+  // Update topbar stats chip (visible only on Practice tab)
+  var td=document.getElementById("ts-done"); if(td) td.textContent=S.total;
+  var tc=document.getElementById("ts-correct"); if(tc) tc.textContent=S.score;
+  var tw=document.getElementById("ts-wrong"); if(tw) tw.textContent=S.wrong;
   saveStats();
 }
 
@@ -5547,10 +5601,6 @@ function _mytestUsedToday(){
     return isNaN(n)?0:n;
   }catch(e){ return 0; }
 }
-function _mytestMarkUsed(){
-  try{ localStorage.setItem(_mytestQuotaKey(), String(_mytestUsedToday()+1)); }catch(e){}
-}
-
 // Split a total count across qtypes as evenly as possible
 function _mytestSplit(total, qtypeCount){
   if(qtypeCount<=0) return [];
@@ -6951,10 +7001,6 @@ function sqlIsQtypeLimitReached(qtype){
   if(qtype==="DML") return (u.DML||0) >= SQL_FREE_PER_QTYPE;
   return true; // all other qtypes blocked for free
 }
-function sqlIsFreeQtype(qt){
-  return SQL_FREE_QTYPES.indexOf(qt) > -1;
-}
-
 // ── Helpers ──
 function sqlPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function sqlRandInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
@@ -8259,12 +8305,6 @@ var SQL_QTYPE_LABELS={DDL:"DDL",DML:"DML",JOIN:"JOIN",Aggregate:"Group By",Schem
 
 function isSQLDtype(dt){ return (dt||S.dtype)==="SQL"; }
 
-function sqlFreeBlocked(qtype){
-  if(S.plan==="paid") return false;
-  if(SQL_FREE_QTYPES.indexOf(qtype)===-1) return true;
-  return sqlIsQtypeLimitReached(qtype);
-}
-
 function loadSQLQuestions(qtype){
   S.qtype=qtype;
   // Check free restrictions
@@ -8428,10 +8468,6 @@ function netIncrementFreeUsage(){
 function netIsLimitReached(){
   if(S.plan==="paid") return false;
   return netGetFreeUsage().count>=NET_FREE_DAILY_LIMIT;
-}
-function netFreeRemaining(){
-  if(S.plan==="paid") return 999;
-  return Math.max(0,NET_FREE_DAILY_LIMIT-netGetFreeUsage().count);
 }
 
 // ── Helpers ──
@@ -8761,15 +8797,6 @@ function netInjectCSS(){
   _netCSSInjected=true;
   var s=document.createElement("style");
   s.textContent=
-    ".net-mode-card{background:var(--s2);border:1px solid var(--bdr2);border-radius:12px;padding:20px 22px;margin-bottom:0;}"+
-    ".net-mode-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;}"+
-    ".net-mode-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}"+
-    ".net-checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer;}"+
-    ".net-checkbox{width:18px;height:18px;border:2px solid var(--bdr2);border-radius:4px;background:var(--s3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}"+
-    ".net-checkbox.checked{background:var(--acc);border-color:var(--acc);}"+
-    ".net-checkbox.checked::after{content:'\\2713';color:#000;font-size:11px;font-weight:800;}"+
-    ".net-checkbox-lbl{font-size:13px;color:var(--text2);font-weight:600;}"+
-    ".net-checkbox-desc{font-size:11px;color:var(--muted);margin-left:28px;margin-top:-6px;}"+
     ".net-case-box{background:var(--s2);border:1px solid var(--bdr2);border-radius:12px;padding:18px 22px;margin-bottom:10px;flex-shrink:0;width:100%;box-sizing:border-box;}"+
     ".net-case-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:10px;display:flex;align-items:center;gap:8px;}"+
     ".net-case-title::before{content:'';width:3px;height:14px;background:var(--gold);border-radius:2px;}"+
@@ -8960,93 +8987,6 @@ function loadNetworkingQuestions(){
   loadNetworkingFromCheckboxes();
 }
 
-function netShowModeSelector(){
-  // Build mode selector in qcard content area
-  document.getElementById("qnum").textContent="Networking";
-  document.getElementById("qbadge").textContent="Case Study";
-  document.getElementById("qprompt").textContent="Select mode to start:";
-
-  // Hide code/mcq/type areas
-  renderCode([],document.getElementById("gutter"),document.getElementById("code"));
-  document.getElementById("mcq-grid").style.display="none";
-  document.getElementById("mcq-grid").innerHTML="";
-  var ta=document.getElementById("type-area");if(ta)ta.classList.remove("show");
-  var wa=document.getElementById("write-area");if(wa)wa.style.display="none";
-  document.getElementById("btn-check").style.display="none";
-  document.getElementById("btn-next").style.display="none";  setFB("","empty");
-  document.getElementById("expl").className="expl";
-
-  // Build selector in expl area (repurpose as content area)
-  var rem=S.plan==="paid"?"":' <span style="font-size:10px;color:var(--muted)">('+netFreeRemaining()+' cases left today)</span>';
-  var el=document.getElementById("expl");
-  el.className="expl show";
-  el.innerHTML=
-    '<div class="net-mode-card">'+
-    '<div class="net-mode-title">Choose Practice Mode'+rem+'</div>'+
-    '<div class="net-mode-options">'+
-      '<div>'+
-        '<div class="net-checkbox-row" onclick="netToggleMode(\'practice\')">'+
-          '<div class="net-checkbox" id="net-cb-practice"></div>'+
-          '<span class="net-checkbox-lbl">Practice Mode</span>'+
-        '</div>'+
-        '<div class="net-checkbox-desc">Fresh case generated with random company, blocks and distances</div>'+
-      '</div>'+
-      '<div>'+
-        '<div class="net-checkbox-row" onclick="netToggleMode(\'board\')">'+
-          '<div class="net-checkbox" id="net-cb-board"></div>'+
-          '<span class="net-checkbox-lbl">Board Questions</span>'+
-        '</div>'+
-        '<div class="net-checkbox-desc">Real CBSE exam-style questions from question bank</div>'+
-      '</div>'+
-    '</div>'+
-    '<button class="btn btn-check" onclick="netStartSession()" style="width:100%;margin-top:4px;">Start \u2192</button>'+
-    '</div>';
-
-  NET._practiceChecked=false;
-  NET._boardChecked=false;
-}
-
-function netToggleMode(mode){
-  if(mode==="practice"){
-    NET._practiceChecked=!NET._practiceChecked;
-    var cb=document.getElementById("net-cb-practice");
-    if(cb)cb.className="net-checkbox"+(NET._practiceChecked?" checked":"");
-  }else{
-    NET._boardChecked=!NET._boardChecked;
-    var cb=document.getElementById("net-cb-board");
-    if(cb)cb.className="net-checkbox"+(NET._boardChecked?" checked":"");
-  }
-  // Sync top-row qtype checkboxes
-  var topCb=document.querySelector('.net-qt-cb[data-netmode="'+mode+'"]');
-  if(topCb){
-    var checked = mode==="practice" ? NET._practiceChecked : NET._boardChecked;
-    topCb.classList.toggle("checked", checked);
-  }
-}
-
-function netStartSession(){
-  if(!NET._practiceChecked&&!NET._boardChecked){
-    setFB("Please select at least one mode to continue.","wrong");
-    return;
-  }
-  if(NET._practiceChecked&&NET._boardChecked) NET.mode="both";
-  else if(NET._practiceChecked) NET.mode="practice";
-  else NET.mode="board";
-
-  NET.practicePhase=true;
-  NET.boardDone=false;
-  NET.currentQ=0;
-
-  // Restore btn-check and btn-next
-  document.getElementById("btn-check").style.display="";
-  document.getElementById("btn-next").style.display="";
-
-  if(NET.mode==="board"||(NET.mode==="both"&&false)){
-    netLoadBoardCase();
-  }else{
-    netStartPracticeCase();
-  }
-}
 
 function netStartPracticeCase(){
   // Check free limit
